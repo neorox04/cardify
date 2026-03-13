@@ -176,15 +176,15 @@
             </div>
 
             <div class="form-group">
-                <label for="profile_photo" class="form-label">Foto de Perfil</label>
+                <label for="avatar" class="form-label">Foto de Perfil</label>
                 <input 
                     type="file" 
-                    id="profile_photo" 
-                    name="profile_photo" 
-                    class="form-input @error('profile_photo') error @enderror"
+                    id="avatar" 
+                    name="avatar" 
+                    class="form-input @error('avatar') error @enderror"
                     accept="image/*"
                 >
-                @error('profile_photo')
+                @error('avatar')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
             </div>

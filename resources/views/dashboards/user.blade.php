@@ -9,8 +9,8 @@
         <p class="page-subtitle">Gerir os seus cartões de visita digitais</p>
     </div>
     <a href="{{ route('business-cards.create') }}" class="btn btn-primary">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         Criar Cartão
     </a>
@@ -18,10 +18,9 @@
 
 <div class="stats-grid">
     <div class="stat-card">
-        <div class="stat-icon" style="background: #EEF2FF; color: #0066FF;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z" stroke="currentColor" stroke-width="2"/>
-                <path d="M16 21V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V21" stroke="currentColor" stroke-width="2"/>
+        <div class="stat-icon blue">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
         </div>
         <div>
@@ -31,10 +30,10 @@
     </div>
 
     <div class="stat-card">
-        <div class="stat-icon" style="background: #F0FDF4; color: #10B981;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="currentColor" stroke-width="2"/>
-                <path d="M2.45825 12C3.73253 7.94288 7.52281 5 12.0004 5C16.4781 5 20.2684 7.94291 21.5426 12C20.2684 16.0571 16.4781 19 12.0005 19C7.52281 19 3.73251 16.0571 2.45825 12Z" stroke="currentColor" stroke-width="2"/>
+        <div class="stat-icon green">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
         </div>
         <div>
@@ -42,7 +41,48 @@
             <div class="stat-label">Visualizações Totais</div>
         </div>
     </div>
+
+    <div class="stat-card">
+        <div class="stat-icon purple">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+        </div>
+        <div>
+            <div class="stat-value">{{ $companies->count() }}</div>
+            <div class="stat-label">Empresas</div>
+        </div>
+    </div>
 </div>
+
+<!-- Empresas do Utilizador -->
+@if($companies->isNotEmpty())
+<div class="content-section">
+    <div class="section-header">
+        <h2 class="section-title">As Minhas Empresas</h2>
+    </div>
+    
+    <div class="companies-grid">
+        @foreach($companies as $company)
+            <a href="{{ route('user.company.show', $company) }}" class="company-card">
+                <div class="company-avatar">
+                    {{ strtoupper(substr($company->name, 0, 2)) }}
+                </div>
+                <div class="company-info">
+                    <h3 class="company-name">{{ $company->name }}</h3>
+                    <p class="company-role">{{ $company->pivot->role }}</p>
+                    @if($company->industry)
+                        <span class="company-industry">{{ $company->industry }}</span>
+                    @endif
+                </div>
+                <svg class="company-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </a>
+        @endforeach
+    </div>
+</div>
+@endif
 
 <div class="content-section">
     <div class="section-header">
@@ -51,14 +91,17 @@
 
     @if($businessCards->isEmpty())
         <div class="empty-state">
-            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="8" y="20" width="48" height="32" rx="4" stroke="#D4D4D4" stroke-width="2"/>
-                <line x1="16" y1="30" x2="32" y2="30" stroke="#D4D4D4" stroke-width="2" stroke-linecap="round"/>
-                <line x1="16" y1="38" x2="40" y2="38" stroke="#D4D4D4" stroke-width="2" stroke-linecap="round"/>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="64" height="64">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
             <h3>Ainda não tem cartões</h3>
-            <p>Crie o seu primeiro cartão de visita digital</p>
-            <a href="{{ route('business-cards.create') }}" class="btn btn-primary">Criar Primeiro Cartão</a>
+            <p>Crie o seu primeiro cartão de visita digital e comece a fazer networking de forma moderna.</p>
+            <a href="{{ route('business-cards.create') }}" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Criar Primeiro Cartão
+            </a>
         </div>
     @else
         <div class="cards-grid">
@@ -75,22 +118,103 @@
                     
                     <div class="card-stats">
                         <div class="card-stat">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z" stroke="currentColor" stroke-width="1.5"/>
-                                <path d="M1.63867 8C2.48835 5.29525 5.01521 3.33333 8.00027 3.33333C10.9853 3.33333 13.5122 5.29527 14.3619 8C13.5122 10.7047 10.9853 12.6667 8.00033 12.6667C5.01521 12.6667 2.48834 10.7047 1.63867 8Z" stroke="currentColor" stroke-width="1.5"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
-                            {{ number_format($card->views_count) }}
+                            {{ number_format($card->views_count) }} visualizações
                         </div>
                     </div>
 
                     <div class="card-actions">
                         <a href="{{ route('business-cards.show', $card) }}" class="btn-link">Ver</a>
                         <a href="{{ route('business-cards.edit', $card) }}" class="btn-link">Editar</a>
-                        <a href="{{ route('business-cards.public', $card->slug) }}" class="btn-link" target="_blank">Partilhar</a>
+                        <a href="{{ route('card.public', $card->slug) }}" class="btn-link" target="_blank">Partilhar</a>
                     </div>
                 </div>
             @endforeach
         </div>
     @endif
 </div>
+
+<style>
+    .stat-icon.purple {
+        background: #F3E8FF;
+        color: #9333EA;
+    }
+
+    .companies-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+    }
+
+    .company-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        text-decoration: none;
+        color: inherit;
+        transition: var(--transition);
+    }
+
+    .company-card:hover {
+        border-color: var(--accent);
+        background: var(--bg-elevated);
+        transform: translateY(-2px);
+    }
+
+    .company-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: var(--radius-md);
+        background: var(--accent-subtle);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .company-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .company-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 4px 0;
+    }
+
+    .company-role {
+        font-size: 14px;
+        color: var(--accent);
+        margin: 0 0 4px 0;
+    }
+
+    .company-industry {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        background: var(--bg-secondary);
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .company-arrow {
+        color: var(--text-tertiary);
+        flex-shrink: 0;
+    }
+
+    .company-card:hover .company-arrow {
+        color: var(--accent);
+    }
+</style>
 @endsection

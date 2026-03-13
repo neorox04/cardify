@@ -10,7 +10,7 @@
     </div>
     <div style="display: flex; gap: 12px;">
         <a href="{{ route('business-cards.edit', $businessCard) }}" class="btn btn-secondary">Editar</a>
-        <a href="{{ route('business-cards.public', $businessCard->slug) }}" class="btn btn-primary" target="_blank">Ver Público</a>
+        <a href="{{ route('card.public', $businessCard->slug) }}" class="btn btn-primary" target="_blank">Ver Público</a>
     </div>
 </div>
 

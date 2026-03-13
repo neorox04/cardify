@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>DBsCard - Cartões de Visita Digitais</title>
+    <title>Cardify - Cartões de Visita Digitais</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -124,6 +124,9 @@
         }
 
         .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 24px;
             font-weight: 800;
             background: var(--gradient-1);
@@ -131,6 +134,10 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: -0.5px;
+        }
+
+        .logo svg {
+            flex-shrink: 0;
         }
 
         .nav-links {
@@ -243,10 +250,27 @@
             padding: 120px 0 80px;
             position: relative;
             overflow: hidden;
+            background: var(--bg-primary);
         }
 
-        .hero::before {
-            display: none;
+        .hero-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #particles-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .hero > .container {
+            position: relative;
+            z-index: 1;
         }
 
         .hero-grid {
@@ -289,12 +313,52 @@
             50% { opacity: 0.4; }
         }
 
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
         .hero h1 {
             font-size: clamp(48px, 6vw, 72px);
             font-weight: 800;
             line-height: 1.05;
             letter-spacing: -2px;
             margin-bottom: 24px;
+            animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+            opacity: 0;
         }
 
         .hero h1 .gradient {
@@ -310,12 +374,16 @@
             line-height: 1.7;
             margin-bottom: 40px;
             max-width: 480px;
+            animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+            opacity: 0;
         }
 
         .hero-actions {
             display: flex;
             gap: 16px;
             flex-wrap: wrap;
+            animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+            opacity: 0;
         }
 
         .btn-lg {
@@ -329,6 +397,8 @@
             margin-top: 64px;
             padding-top: 32px;
             border-top: 1px solid var(--border);
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+            opacity: 0;
         }
 
         .stat {
@@ -354,23 +424,9 @@
         .hero-visual {
             position: relative;
             height: 600px;
-        }
-
-        .hero-visual::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.06) 30%, transparent 65%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        [data-theme="light"] .hero-visual::before {
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.03) 30%, transparent 65%);
+            animation: slideInRight 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+            opacity: 0;
+            z-index: 2;
         }
 
         #hero-canvas {
@@ -1115,7 +1171,19 @@
     <!-- Navigation -->
     <nav id="navbar">
         <div class="nav-inner">
-            <a href="/" class="logo">DBsCard</a>
+            <a href="/" class="logo">
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#06b6d4"/>
+                            <stop offset="100%" style="stop-color:#6366f1"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14c2.5 0 4.5-0.5 6.5-1.5" stroke="url(#logoGradient)" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    <path d="M22 8l4 4-4 4" stroke="url(#logoGradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                Cardify
+            </a>
             <div class="nav-links">
                 <a href="#features">Funcionalidades</a>
                 <a href="#how-it-works">Como Funciona</a>
@@ -1146,6 +1214,11 @@
 
     <!-- Hero Section -->
     <section class="hero">
+        <!-- Particles Background -->
+        <div class="hero-particles">
+            <canvas id="particles-canvas"></canvas>
+        </div>
+        
         <div class="container">
             <div class="hero-grid">
                 <div class="hero-content">
@@ -1412,7 +1485,7 @@
             
             <div class="testimonials-grid">
                 <div class="testimonial-featured">
-                    <p class="testimonial-quote">"O DBsCard mudou completamente a forma como faço networking. Já não preciso de andar com centenas de cartões físicos e as pessoas ficam sempre impressionadas quando partilho via NFC."</p>
+                    <p class="testimonial-quote">"O Cardify mudou completamente a forma como faço networking. Já não preciso de andar com centenas de cartões físicos e as pessoas ficam sempre impressionadas quando partilho via NFC."</p>
                     <div class="testimonial-author">
                         <div class="testimonial-avatar">JS</div>
                         <div class="testimonial-info">
@@ -1473,7 +1546,19 @@
         <div class="container">
             <div class="footer-top">
                 <div class="footer-brand">
-                    <div class="logo">DBsCard</div>
+                    <div class="logo">
+                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="logoGradientFooter" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#06b6d4"/>
+                                    <stop offset="100%" style="stop-color:#6366f1"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14c2.5 0 4.5-0.5 6.5-1.5" stroke="url(#logoGradientFooter)" stroke-width="3" stroke-linecap="round" fill="none"/>
+                            <path d="M22 8l4 4-4 4" stroke="url(#logoGradientFooter)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        </svg>
+                        Cardify
+                    </div>
                     <p>A plataforma líder em cartões de visita digitais em Portugal. Conecte, partilhe e cresça a sua rede profissional.</p>
                 </div>
                 <div class="footer-links">
@@ -1506,7 +1591,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© {{ date('Y') }} DBsCard. Todos os direitos reservados.</p>
+                <p>© {{ date('Y') }} Cardify. Todos os direitos reservados.</p>
                 <div class="footer-social">
                     <a href="#" aria-label="LinkedIn">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -1572,30 +1657,30 @@
         const gradientCanvas = document.createElement('canvas');
         gradientCanvas.width = 512;
         gradientCanvas.height = 512;
-        const ctx = gradientCanvas.getContext('2d');
-        const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+        const cardCtx = gradientCanvas.getContext('2d');
+        const gradient = cardCtx.createLinearGradient(0, 0, 512, 512);
         gradient.addColorStop(0, '#6366f1');
         gradient.addColorStop(0.5, '#8b5cf6');
         gradient.addColorStop(1, '#06b6d4');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 512, 512);
+        cardCtx.fillStyle = gradient;
+        cardCtx.fillRect(0, 0, 512, 512);
         
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.beginPath();
-        ctx.arc(400, 100, 150, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(100, 400, 100, 0, Math.PI * 2);
-        ctx.fill();
+        cardCtx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        cardCtx.beginPath();
+        cardCtx.arc(400, 100, 150, 0, Math.PI * 2);
+        cardCtx.fill();
+        cardCtx.beginPath();
+        cardCtx.arc(100, 400, 100, 0, Math.PI * 2);
+        cardCtx.fill();
         
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 48px Inter, sans-serif';
-        ctx.fillText('DBsCard', 40, 200);
-        ctx.font = '24px Inter, sans-serif';
-        ctx.fillText('Digital Business Cards', 40, 250);
-        ctx.font = '20px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.fillText('www.dbscard.pt', 40, 420);
+        cardCtx.fillStyle = 'white';
+        cardCtx.font = 'bold 48px Inter, sans-serif';
+        cardCtx.fillText('Cardify', 40, 200);
+        cardCtx.font = '24px Inter, sans-serif';
+        cardCtx.fillText('Digital Business Cards', 40, 250);
+        cardCtx.font = '20px Inter, sans-serif';
+        cardCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        cardCtx.fillText('www.cardify.pt', 40, 420);
         
         const texture = new THREE.CanvasTexture(gradientCanvas);
         
@@ -1695,6 +1780,83 @@
             camera.updateProjectionMatrix();
             renderer.setSize(canvas.clientWidth, canvas.clientHeight);
         });
+
+        // Simple Floating Particles
+        const particlesCanvas = document.getElementById('particles-canvas');
+        const pCtx = particlesCanvas.getContext('2d');
+        let dots = [];
+        let mouse = { x: null, y: null };
+        
+        function resizeParticlesCanvas() {
+            particlesCanvas.width = window.innerWidth;
+            particlesCanvas.height = window.innerHeight;
+        }
+        resizeParticlesCanvas();
+        window.addEventListener('resize', resizeParticlesCanvas);
+
+        class Dot {
+            constructor() {
+                this.x = Math.random() * particlesCanvas.width;
+                this.y = Math.random() * particlesCanvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedY = Math.random() * 0.3 + 0.1;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            draw() {
+                const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+                pCtx.fillStyle = isDark 
+                    ? `rgba(99, 102, 241, ${this.opacity})` 
+                    : `rgba(99, 102, 241, ${this.opacity * 0.6})`;
+                pCtx.beginPath();
+                pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                pCtx.fill();
+            }
+
+            update() {
+                this.y -= this.speedY;
+                
+                // Reset when out of screen
+                if (this.y < -10) {
+                    this.y = particlesCanvas.height + 10;
+                    this.x = Math.random() * particlesCanvas.width;
+                }
+
+                // Subtle mouse interaction
+                if (mouse.x && mouse.y) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 100) {
+                        this.x -= dx * 0.02;
+                        this.y -= dy * 0.02;
+                    }
+                }
+            }
+        }
+
+        function initDots() {
+            dots = [];
+            const count = Math.min(50, (particlesCanvas.width * particlesCanvas.height) / 20000);
+            for (let i = 0; i < count; i++) {
+                dots.push(new Dot());
+            }
+        }
+        initDots();
+
+        function animateDots() {
+            pCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+            dots.forEach(dot => {
+                dot.draw();
+                dot.update();
+            });
+            requestAnimationFrame(animateDots);
+        }
+        animateDots();
+
+        window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
+        window.addEventListener('resize', initDots);
 
         // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {

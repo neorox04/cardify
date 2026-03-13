@@ -39,7 +39,7 @@
                     </div>
 
                     <div class="card-actions">
-                        <a href="{{ route('business-cards.public', $card->slug) }}" class="btn-link" target="_blank">Ver</a>
+                        <a href="{{ route('card.public', $card->slug) }}" class="btn-link" target="_blank">Ver</a>
                     </div>
                 </div>
             @endforeach

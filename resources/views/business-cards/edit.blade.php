@@ -188,23 +188,23 @@
                 @enderror
             </div>
 
-            @if($businessCard->profile_photo)
+            @if($businessCard->avatar)
                 <div class="form-group">
                     <label class="form-label">Foto Atual</label>
-                    <img src="{{ Storage::url($businessCard->profile_photo) }}" alt="Foto de perfil" style="max-width: 150px; border-radius: 8px;">
+                    <img src="{{ Storage::url($businessCard->avatar) }}" alt="Foto de perfil" style="max-width: 150px; border-radius: 8px;">
                 </div>
             @endif
 
             <div class="form-group">
-                <label for="profile_photo" class="form-label">{{ $businessCard->profile_photo ? 'Alterar Foto de Perfil' : 'Foto de Perfil' }}</label>
+                <label for="avatar" class="form-label">{{ $businessCard->avatar ? 'Alterar Foto de Perfil' : 'Foto de Perfil' }}</label>
                 <input 
                     type="file" 
-                    id="profile_photo" 
-                    name="profile_photo" 
-                    class="form-input @error('profile_photo') error @enderror"
+                    id="avatar" 
+                    name="avatar" 
+                    class="form-input @error('avatar') error @enderror"
                     accept="image/*"
                 >
-                @error('profile_photo')
+                @error('avatar')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
             </div>
