@@ -206,6 +206,11 @@
 
         <div class="auto-download">
             <p>📥 O contacto será transferido automaticamente</p>
+            <div class="metrics" style="margin-top: 12px; color: #a1a1aa; font-size: 13px;">
+                <span>👁️ Visualizações: {{ $businessCard->views_count ?? 0 }}</span> |
+                <span>📱 QR Scans: {{ $businessCard->qr_scans ?? 0 }}</span> |
+                <span>💾 Contacts Saved: {{ $businessCard->contacts_saved ?? 0 }}</span>
+            </div>
         </div>
 
         <p class="message">

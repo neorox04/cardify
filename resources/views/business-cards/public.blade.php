@@ -344,6 +344,11 @@
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode(route('card.save', $businessCard)) }}" alt="QR Code" width="140" height="140">
                     </div>
                     <p class="qr-hint">Lê o QR Code para guardar o contacto</p>
+                    <div class="metrics" style="margin-top: 12px; color: #a1a1aa; font-size: 13px;">
+                        <span>👁️ Visualizações: {{ $businessCard->views_count ?? 0 }}</span> |
+                        <span>📱 QR Scans: {{ $businessCard->qr_scans ?? 0 }}</span> |
+                        <span>💾 Contacts Saved: {{ $businessCard->contacts_saved ?? 0 }}</span>
+                    </div>
                 </div>
 
                 @if($businessCard->bio)

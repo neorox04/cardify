@@ -41,12 +41,16 @@
                 <p class="card-company">{{ $card->company->name ?? 'Sem empresa' }}</p>
                 
                 <div class="card-stats">
-                    <div class="card-stat">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z" stroke="currentColor" stroke-width="1.5"/>
-                            <path d="M1.63867 8C2.48835 5.29525 5.01521 3.33333 8.00027 3.33333C10.9853 3.33333 13.5122 5.29527 14.3619 8C13.5122 10.7047 10.9853 12.6667 8.00033 12.6667C5.01521 12.6667 2.48834 10.7047 1.63867 8Z" stroke="currentColor" stroke-width="1.5"/>
-                        </svg>
-                        {{ number_format($card->views_count) }} visualizações
+                    <div class="card-stat" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+                        <div style="display: flex; align-items: center;">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-right: 6px;">
+                                <path d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M1.63867 8C2.48835 5.29525 5.01521 3.33333 8.00027 3.33333C10.9853 3.33333 13.5122 5.29527 14.3619 8C13.5122 10.7047 10.9853 12.6667 8.00033 12.6667C5.01521 12.6667 2.48834 10.7047 1.63867 8Z" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            <span>{{ number_format($card->views_count) }} visualizações</span>
+                        </div>
+                        <div style="color:#6366f1; margin-left: 22px;">QR Scans: {{ $card->qr_scans ?? 0 }}</div>
+                        <div style="color:#22c55e; margin-left: 22px;">Contacts Saved: {{ $card->contacts_saved ?? 0 }}</div>
                     </div>
                 </div>
 
