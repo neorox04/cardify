@@ -323,7 +323,7 @@
             <!-- Profile Section -->
             <div class="profile-section">
                 @if($businessCard->avatar)
-                    <img src="{{ Storage::url($businessCard->avatar) }}" alt="{{ $businessCard->full_name }}" class="profile-photo">
+                    <img src="{{ asset('storage/' . $businessCard->avatar) }}" alt="{{ $businessCard->full_name }}" class="profile-photo">
                 @else
                     <div class="profile-placeholder">{{ substr($businessCard->full_name, 0, 1) }}</div>
                 @endif
