@@ -14,6 +14,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// Nova rota para testes
+Route::get('/testes', function () {
+    return view('testes');
+})->name('testes');
+
 // Authentication routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
