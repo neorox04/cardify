@@ -341,7 +341,11 @@
                 <!-- QR Code Section - Below Name -->
                 <div class="qr-section">
                     <div class="qr-container">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode(route('card.save', $businessCard)) }}" alt="QR Code" width="140" height="140">
+                        @if(isset($isDemo))
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode(route('card.demo')) }}" alt="QR Code" width="140" height="140">
+                        @else
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode(route('card.save', $businessCard)) }}" alt="QR Code" width="140" height="140">
+                        @endif
                     </div>
                     <p class="qr-hint">Lê o QR Code para guardar o contacto</p>
                     <div class="metrics" style="margin-top: 12px; color: #a1a1aa; font-size: 13px;">

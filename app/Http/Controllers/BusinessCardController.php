@@ -182,12 +182,74 @@ class BusinessCardController extends Controller
     }
 
     /**
+     * Display demo business card with Cardifys info.
+     */
+    public function demoCard(): View
+    {
+        $businessCard = new BusinessCard([
+            'full_name' => 'Cardifys',
+            'position' => 'Cartão de Visita Digital',
+            'email' => 'hello@cardifys.com',
+            'phone' => '+351 912 345 678',
+            'mobile' => '+351 912 345 678',
+            'website' => 'https://cardifys.com',
+            'bio' => 'A forma mais inteligente de partilhar o teu contacto profissional. Cria o teu cartão digital, partilha com um QR Code e deixa uma impressão memorável. 🚀',
+            'linkedin_url' => 'https://linkedin.com/company/cardifys',
+            'instagram_url' => 'https://instagram.com/cardifys',
+            'twitter_url' => 'https://x.com/cardifys',
+            'theme' => 'default',
+            'is_public' => true,
+            'is_active' => true,
+            'views_count' => 1250,
+            'slug' => 'demo',
+        ]);
+
+        // Set fake metrics for display
+        $businessCard->qr_scans = 438;
+        $businessCard->contacts_saved = 312;
+
+        // Set an ID for vcard route (won't actually work but prevents errors)
+        $businessCard->id = 0;
+
+        return view('business-cards.public', [
+            'businessCard' => $businessCard,
+            'isDemo' => true,
+        ]);
+    }
+
+    /**
      * Show save contact page (for QR code scanning).
      */
     public function saveContact(BusinessCard $businessCard)
     {
         $businessCard->increment('qr_scans');
         return view('business-cards.save-contact', compact('businessCard'));
+    }
+
+    /**
+     * Download demo vCard for Cardifys.
+     */
+    public function demoVCard()
+    {
+        $vcard = "BEGIN:VCARD\r\n";
+        $vcard .= "VERSION:3.0\r\n";
+        $vcard .= "FN:Cardifys\r\n";
+        $vcard .= "N:;Cardifys;;;\r\n";
+        $vcard .= "TITLE:Cartão de Visita Digital\r\n";
+        $vcard .= "ORG:Cardifys\r\n";
+        $vcard .= "EMAIL;TYPE=WORK:hello@cardifys.com\r\n";
+        $vcard .= "TEL;TYPE=WORK:+351 912 345 678\r\n";
+        $vcard .= "TEL;TYPE=CELL:+351 912 345 678\r\n";
+        $vcard .= "URL:https://cardifys.com\r\n";
+        $vcard .= "X-SOCIALPROFILE;TYPE=linkedin:https://linkedin.com/company/cardifys\r\n";
+        $vcard .= "X-SOCIALPROFILE;TYPE=instagram:https://instagram.com/cardifys\r\n";
+        $vcard .= "X-SOCIALPROFILE;TYPE=twitter:https://x.com/cardifys\r\n";
+        $vcard .= "NOTE:A forma mais inteligente de partilhar o teu contacto profissional.\r\n";
+        $vcard .= "END:VCARD\r\n";
+
+        return response($vcard)
+            ->header('Content-Type', 'text/vcard')
+            ->header('Content-Disposition', 'attachment; filename="cardifys-demo.vcf"');
     }
 
     /**

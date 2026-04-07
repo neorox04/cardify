@@ -1131,6 +1131,46 @@
             .p-badge-saved { display: none; }
             .p-badge-nfc { display: none; }
         }
+
+        .demo-section { padding: 160px 0; background: var(--bg-primary); position: relative; overflow: hidden; }
+        .demo-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 600px; background: radial-gradient(ellipse, rgba(99,102,241,0.07) 0%, transparent 65%); pointer-events: none; }
+        .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; position: relative; z-index: 2; }
+        .demo-steps { display: flex; flex-direction: column; gap: 28px; margin-top: 40px; }
+        .demo-step { display: flex; gap: 18px; align-items: flex-start; }
+        .demo-step-num { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-subtle); border: 1px solid rgba(99,102,241,0.25); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+        .demo-step-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+        .demo-step-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+        .demo-cta-note { margin-top: 36px; display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-secondary); }
+        .demo-cta-note svg { width: 18px; height: 18px; color: #10b981; flex-shrink: 0; }
+        .demo-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 44px 40px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .demo-card::before { content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px; background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent); }
+        .demo-card-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: var(--accent); margin-bottom: 28px; }
+        .demo-card-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+        .demo-digital-card { background: linear-gradient(160deg, #1a1a2e, #0c0c18); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 22px 20px; width: 100%; max-width: 260px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.1); margin-bottom: 28px; }
+        .ddc-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; margin-bottom: 9px; border: 2px solid rgba(99,102,241,0.35); }
+        .ddc-avatar svg { width: 26px; height: 26px; }
+        .ddc-name { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; letter-spacing: -0.02em; }
+        .ddc-role { font-family: 'Sora', sans-serif; font-size: 10px; color: #6366f1; margin-bottom: 16px; }
+        .demo-qr-box { width: 140px; height: 140px; background: white; border-radius: 10px; padding: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin-bottom: 10px; overflow: hidden; }
+        .demo-qr-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border: 1.5px dashed #d1d5db; border-radius: 6px; }
+        .demo-qr-placeholder svg { width: 36px; height: 36px; color: #6366f1; opacity: .6; }
+        .demo-qr-placeholder span { font-size: 9px; color: #9ca3af; text-align: center; line-height: 1.4; font-family: 'Inter', sans-serif; }
+        .ddc-divider { width: 100%; height: 1px; background: rgba(255,255,255,0.06); margin: 14px 0; }
+        .ddc-links { width: 100%; display: flex; flex-direction: column; gap: 5px; }
+        .ddc-link { display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 7px; }
+        .ddc-link-icon { width: 18px; height: 18px; border-radius: 4px; background: rgba(99,102,241,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ddc-link-icon svg { width: 9px; height: 9px; color: #818cf8; }
+        .ddc-link-text { font-family: 'Sora', sans-serif; font-size: 9px; color: #4a4c72; }
+        .demo-qr-hint { font-size: 12px; color: var(--text-tertiary); text-align: center; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; }
+        .demo-qr-hint svg { width: 13px; height: 13px; color: var(--accent); }
+        .demo-or { font-size: 12px; color: var(--text-tertiary); margin: 8px 0 12px; }
+        .demo-link-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: none; transition: var(--transition); }
+        .demo-link-btn:hover { gap: 10px; }
+        .demo-link-btn svg { width: 13px; height: 13px; }
+ 
+        @media (max-width: 1024px) {
+            .demo-grid { grid-template-columns: 1fr; gap: 48px; }
+        }
     </style>
 <script>
     if ('serviceWorker' in navigator) {
@@ -1433,6 +1473,111 @@
             </div>
         </div>
     </section>
+
+    <section id="demo" class="demo-section">
+    <div class="container">
+        <div class="demo-grid">
+ 
+            <!-- LEFT: copy -->
+            <div class="demo-copy">
+                <div class="section-eyebrow">Demo ao vivo</div>
+                <h2 class="section-title">Experimenta antes<br>de te registares.</h2>
+                <p class="section-subtitle" style="margin-bottom:0;">Pega no telemóvel, aponta a câmara para o QR Code e vê exactamente o que um cliente ou parceiro vê quando recebe o teu cartão Cardifys.</p>
+ 
+                <div class="demo-steps">
+                    <div class="demo-step">
+                        <div class="demo-step-num">1</div>
+                        <div>
+                            <div class="demo-step-title">Abre a câmara do telemóvel</div>
+                            <div class="demo-step-desc">Funciona com a câmara nativa do iOS e Android. Sem instalar qualquer app.</div>
+                        </div>
+                    </div>
+                    <div class="demo-step">
+                        <div class="demo-step-num">2</div>
+                        <div>
+                            <div class="demo-step-title">Aponta para o QR Code</div>
+                            <div class="demo-step-desc">Um link aparece automaticamente no ecrã. Clica e o cartão abre no browser.</div>
+                        </div>
+                    </div>
+                    <div class="demo-step">
+                        <div class="demo-step-num">3</div>
+                        <div>
+                            <div class="demo-step-title">Explora o cartão demo</div>
+                            <div class="demo-step-desc">Vê o design, os links, guarda o contacto como vCard. É isto que os teus contactos vão receber.</div>
+                        </div>
+                    </div>
+                </div>
+ 
+                <div class="demo-cta-note">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Sem registo. Sem dados pedidos. Experimenta à vontade.
+                </div>
+            </div>
+ 
+            <!-- RIGHT: QR card -->
+            <div class="demo-card">
+                <div class="demo-card-badge">Cartão de Demonstração</div>
+ 
+                <!-- Mini cartão digital -->
+                <div class="demo-digital-card">
+                    <div class="ddc-avatar">
+                        <svg fill="none" viewBox="0 0 40 40">
+                            <circle cx="20" cy="14" r="6" fill="rgba(255,255,255,0.25)"/>
+                            <path d="M8 38C8 30.268 13.373 25 20 25C26.627 25 32 30.268 32 38" fill="rgba(255,255,255,0.15)"/>
+                        </svg>
+                    </div>
+                    <div class="ddc-name">Cardifys Demo</div>
+                    <div class="ddc-role">Cartão de visita digital</div>
+ 
+                    {{-- QR CODE funcional - aponta para o cartão demo --}}
+                    <div class="demo-qr-box">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=6366f1&data={{ urlencode(route('card.demo')) }}"
+                             alt="QR Code Demo Cardifys"
+                             style="width:100%;height:100%;object-fit:contain;border-radius:4px;">
+                    </div>
+ 
+                    <div class="ddc-divider"></div>
+                    <div class="ddc-links">
+                        <div class="ddc-link">
+                            <div class="ddc-link-icon">
+                                <svg fill="none" viewBox="0 0 12 12" stroke="currentColor"><rect x="1" y="2" width="10" height="8" rx="1.5" stroke-width="1"/><path d="M1 4.5L6 7L11 4.5" stroke-width="1"/></svg>
+                            </div>
+                            <span class="ddc-link-text">hello@cardifys.com</span>
+                        </div>
+                        <div class="ddc-link">
+                            <div class="ddc-link-icon">
+                                <svg fill="none" viewBox="0 0 12 12" stroke="currentColor"><circle cx="6" cy="6" r="4.5" stroke-width="1"/><path d="M6 1.5C6 1.5 4.5 3.5 4.5 6C4.5 8.5 6 10.5 6 10.5M6 1.5C6 1.5 7.5 3.5 7.5 6C7.5 8.5 6 10.5 6 10.5M1.5 6H10.5" stroke-width="1"/></svg>
+                            </div>
+                            <span class="ddc-link-text">cardifys.com</span>
+                        </div>
+                    </div>
+                </div>
+ 
+                <!-- Instrução scan -->
+                <div class="demo-qr-hint">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Aponta a câmara do telemóvel para o QR
+                </div>
+ 
+                <div class="demo-or">— ou —</div>
+ 
+                {{-- Link direto para abrir o cartão demo --}}
+                <a href="{{ route('card.demo') }}" class="demo-link-btn" target="_blank" rel="noopener">
+                    Abrir cartão demo no browser
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                </a>
+            </div>
+ 
+        </div>
+    </div>
+</section>
 
     <!-- Pricing Section -->
     <section id="pricing" class="pricing-section">

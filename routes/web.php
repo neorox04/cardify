@@ -51,6 +51,8 @@ Route::middleware('guest')->group(function () {
 });
 
 // Public business card view
+Route::get('/card/demo', [BusinessCardController::class, 'demoCard'])->name('card.demo');
+Route::get('/card/demo/vcard', [BusinessCardController::class, 'demoVCard'])->name('card.demo.vcard');
 Route::get('/card/{slug}', [BusinessCardController::class, 'publicCard'])->name('card.public');
 Route::get('/card/{businessCard}/vcard', [BusinessCardController::class, 'downloadVCard'])->name('card.vcard');
 Route::get('/card/{businessCard}/save', [BusinessCardController::class, 'saveContact'])->name('card.save');
