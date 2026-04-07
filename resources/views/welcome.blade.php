@@ -1172,10 +1172,18 @@
                     </svg>
                 </button>
                 @auth
-                    <span class="welcome-user">Bem-vindo {{ Auth::user()->name }}</span>
-                    <form method="POST" action="{{ route('logout') }}" style="display:inline; margin-left: 10px;">
+                    <a href="{{ route('dashboard') }}" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
                         @csrf
-                        <button type="submit" class="btn btn-secondary">Logout</button>
+                        <button type="submit" class="btn btn-ghost">Sair</button>
                     </form>
                 @else
                     <a href="/login" class="btn btn-ghost">Entrar</a>

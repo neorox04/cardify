@@ -64,7 +64,7 @@
 </head>
 <body>
     <div class="legal-header">
-        <a href="{{ route('welcome') }}">Cardifys</a>
+        <a href="{{ route('home') }}">Cardifys</a>
         @auth
             <div style="margin-top:16px;display:flex;justify-content:center;align-items:center;gap:16px;">
                 <span style="color:#a5b4fc;font-size:1.1rem;font-weight:600;">Bem-vindo {{ Auth::user()->name }}</span>
