@@ -42,7 +42,6 @@ class UserDashboardController extends Controller
     public function updateProfile(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . Auth::id(),
             'phone' => 'nullable|string|max:20',
             'bio' => 'nullable|string|max:500',
@@ -51,7 +50,7 @@ class UserDashboardController extends Controller
 
         $user = Auth::user();
         
-        $userData = $request->only(['name', 'email', 'phone', 'bio']);
+        $userData = $request->only(['email', 'phone', 'bio']);
 
         if ($request->hasFile('avatar')) {
             // Handle avatar upload

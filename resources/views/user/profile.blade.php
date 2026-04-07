@@ -19,18 +19,15 @@
             <h3 class="form-section-title">Informações Pessoais</h3>
             
             <div class="form-group">
-                <label for="name" class="form-label">Nome *</label>
+                <label for="name" class="form-label">Nome</label>
                 <input 
                     type="text" 
                     id="name" 
-                    name="name" 
-                    class="form-input @error('name') error @enderror"
-                    value="{{ old('name', $user->name) }}" 
-                    required
+                    class="form-input"
+                    value="{{ $user->name }}" 
+                    disabled
                 >
-                @error('name')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
+                <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 6px;">O nome não pode ser alterado. Contacta o suporte se precisares de ajuda.</p>
             </div>
 
             <div class="form-group">
