@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CompanyInviteEmail;
+use App\Mail\InviteAcceptedEmail;
+use App\Mail\InviteDeclinedEmail;
 use App\Models\CompanyInvite;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class CompanyInviteController extends Controller
@@ -76,12 +80,16 @@ class CompanyInviteController extends Controller
             return back()->with('error', 'Já existe um convite pendente para este email.');
         }
 
-        CompanyInvite::create([
+        $invite = CompanyInvite::create([
             'company_id' => $company->id,
             'email' => $validated['email'],
             'invited_by' => Auth::id(),
             'role' => $validated['role'],
         ]);
+
+        Mail::to($validated['email'])->send(
+            new CompanyInviteEmail($invite, $company, Auth::user())
+        );
 
         return back()->with('success', 'Convite enviado com sucesso!');
     }
@@ -109,6 +117,13 @@ class CompanyInviteController extends Controller
         // Update invite status
         $invite->update(['status' => 'accepted']);
 
+        // Notificar o invitador
+        if ($invite->inviter) {
+            Mail::to($invite->inviter->email)->send(
+                new InviteAcceptedEmail($invite, $invite->company, Auth::user())
+            );
+        }
+
         return redirect()->route('user.invites')->with('success', "Juntaste-te à empresa {$invite->company->name}!");
     }
 
@@ -127,6 +142,13 @@ class CompanyInviteController extends Controller
         }
 
         $invite->update(['status' => 'declined']);
+
+        // Notificar o invitador
+        if ($invite->inviter) {
+            Mail::to($invite->inviter->email)->send(
+                new InviteDeclinedEmail($invite, $invite->company, Auth::user())
+            );
+        }
 
         return redirect()->route('user.invites')->with('success', 'Convite recusado.');
     }
