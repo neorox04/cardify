@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') - Cardify</title>
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="theme-color" content="#6366f1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,6 +30,11 @@
             --error: #ef4444;
             --error-subtle: rgba(239, 68, 68, 0.1);
             --warning: #f59e0b;
+            --warning-subtle: rgba(245, 158, 11, 0.1);
+            --pink: #EC4899;
+            --pink-subtle: rgba(236, 72, 153, 0.1);
+            --purple: #8b5cf6;
+            --purple-subtle: rgba(139, 92, 246, 0.1);
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
@@ -156,13 +164,6 @@
             border-radius: 10px;
             min-width: 20px;
             text-align: center;
-        }
-        }
-
-        .nav-item svg {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
         }
 
         .sidebar-footer {
@@ -330,6 +331,21 @@
             color: var(--success);
         }
 
+        .stat-icon.yellow {
+            background: var(--warning-subtle);
+            color: var(--warning);
+        }
+
+        .stat-icon.pink {
+            background: var(--pink-subtle);
+            color: var(--pink);
+        }
+
+        .stat-icon.purple {
+            background: var(--purple-subtle);
+            color: var(--purple);
+        }
+
         .stat-value {
             font-size: 32px;
             font-weight: 800;
@@ -376,6 +392,7 @@
             border-radius: var(--radius-lg);
             padding: 24px;
             transition: var(--transition);
+            cursor: pointer;
         }
 
         .business-card:hover {
@@ -888,6 +905,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                         Painel Admin
+                    </a>
+                    <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics') ? 'active' : '' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Analytics
                     </a>
                     <a href="{{ route('admin.companies') }}" class="nav-item {{ request()->routeIs('admin.companies*') ? 'active' : '' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

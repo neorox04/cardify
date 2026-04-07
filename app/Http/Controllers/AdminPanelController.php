@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\BusinessCard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Carbon\Carbon;
 
 class AdminPanelController extends Controller
 {
@@ -34,6 +36,121 @@ class AdminPanelController extends Controller
             'recentUsers',
             'recentCompanies',
             'topBusinessCards'
+        ));
+    }
+
+    /**
+     * Display analytics dashboard with all platform metrics.
+     */
+    public function analytics(): View
+    {
+        $now = Carbon::now();
+        $startOfMonth = $now->copy()->startOfMonth();
+        $startOfLastMonth = $now->copy()->subMonth()->startOfMonth();
+        $endOfLastMonth = $now->copy()->subMonth()->endOfMonth();
+
+        // ── USERS ────────────────────────────────────────────
+        $totalUsers = User::count();
+        $activeUsers = User::where('is_active', true)->count();
+        $inactiveUsers = $totalUsers - $activeUsers;
+        $newUsersThisMonth = User::where('created_at', '>=', $startOfMonth)->count();
+        $newUsersLastMonth = User::whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
+        $userGrowthPct = $newUsersLastMonth > 0
+            ? round((($newUsersThisMonth - $newUsersLastMonth) / $newUsersLastMonth) * 100, 1)
+            : ($newUsersThisMonth > 0 ? 100 : 0);
+
+        $usersByType = User::selectRaw('type, COUNT(*) as total')
+            ->groupBy('type')
+            ->pluck('total', 'type')
+            ->toArray();
+
+        // ── BUSINESS CARDS ───────────────────────────────────
+        $totalCards = BusinessCard::count();
+        $newCardsThisMonth = BusinessCard::where('created_at', '>=', $startOfMonth)->count();
+        $avgCardsPerUser = $totalUsers > 0 ? round($totalCards / $totalUsers, 1) : 0;
+        $totalViews = BusinessCard::sum('views_count');
+        $totalQrScans = BusinessCard::sum('qr_scans');
+        $totalContacts = BusinessCard::sum('contacts_saved');
+
+        // ── COMPANIES ────────────────────────────────────────
+        $totalCompanies = Company::count();
+        $activeCompanies = Company::where('is_active', true)->count();
+
+        // ── SUBSCRIPTIONS ────────────────────────────────────
+        $subscriptions = DB::table('subscriptions');
+
+        $totalActive = (clone $subscriptions)->where('stripe_status', 'active')->count();
+        $totalCancelled = (clone $subscriptions)->where('stripe_status', 'canceled')->count();
+        $totalTrialing = (clone $subscriptions)->where('stripe_status', 'trialing')->count();
+        $totalPastDue = (clone $subscriptions)->where('stripe_status', 'past_due')->count();
+
+        $churnedThisMonth = DB::table('subscriptions')
+            ->where('stripe_status', 'canceled')
+            ->where('updated_at', '>=', $startOfMonth)
+            ->count();
+
+        $activeAtStartOfMonth = DB::table('subscriptions')
+            ->where('created_at', '<', $startOfMonth)
+            ->whereIn('stripe_status', ['active', 'canceled', 'past_due'])
+            ->count();
+
+        $churnRate = $activeAtStartOfMonth > 0
+            ? round(($churnedThisMonth / $activeAtStartOfMonth) * 100, 1)
+            : 0;
+
+        // Monthly vs Annual breakdown
+        $monthlySubCount = DB::table('subscriptions')
+            ->where('stripe_status', 'active')
+            ->where(function ($q) {
+                $q->where('type', 'like', '%monthly%')
+                  ->orWhere('type', 'like', '%mensal%')
+                  ->orWhere('stripe_price', 'like', '%month%');
+            })->count();
+        $annualSubCount = $totalActive - $monthlySubCount;
+
+        // MRR calculation (monthly * price + annual / 12)
+        $monthlyPrice = 10; // €10/mês
+        $annualPrice = 84;  // €84/ano
+        $mrr = ($monthlySubCount * $monthlyPrice) + ($annualSubCount * ($annualPrice / 12));
+        $arr = $mrr * 12;
+
+        // ── GROWTH CHARTS (last 12 months) ───────────────────
+        $userGrowth = [];
+        $subGrowth = [];
+        $cardGrowth = [];
+
+        for ($i = 11; $i >= 0; $i--) {
+            $month = $now->copy()->subMonths($i);
+            $key = $month->format('Y-m');
+            $monthStart = $month->copy()->startOfMonth();
+            $monthEnd = $month->copy()->endOfMonth();
+
+            $userGrowth[$key] = User::whereBetween('created_at', [$monthStart, $monthEnd])->count();
+            $subGrowth[$key] = DB::table('subscriptions')
+                ->whereBetween('created_at', [$monthStart, $monthEnd])->count();
+            $cardGrowth[$key] = BusinessCard::whereBetween('created_at', [$monthStart, $monthEnd])->count();
+        }
+
+        // ── TABLES ────────────────────────────────────────────
+        $topCards = BusinessCard::orderBy('views_count', 'desc')
+            ->take(10)
+            ->with('user')
+            ->get();
+
+        $recentUsers = User::latest()->take(8)->get();
+
+        return view('admin.analytics', compact(
+            'mrr', 'arr', 'totalActive', 'monthlySubCount', 'annualSubCount',
+            'churnRate', 'churnedThisMonth',
+            'totalUsers', 'activeUsers', 'inactiveUsers',
+            'newUsersThisMonth', 'userGrowthPct',
+            'totalCards', 'avgCardsPerUser', 'newCardsThisMonth',
+            'totalViews', 'totalQrScans', 'totalContacts',
+            'totalCompanies', 'activeCompanies',
+            'totalCancelled', 'totalTrialing', 'totalPastDue',
+            'usersByType',
+            'userGrowth', 'subGrowth', 'cardGrowth',
+            'topCards', 'recentUsers'
         ));
     }
 
