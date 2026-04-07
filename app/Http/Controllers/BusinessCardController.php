@@ -186,6 +186,7 @@ class BusinessCardController extends Controller
      */
     public function saveContact(BusinessCard $businessCard)
     {
+        $businessCard->increment('qr_scans');
         return view('business-cards.save-contact', compact('businessCard'));
     }
 
@@ -194,40 +195,33 @@ class BusinessCardController extends Controller
      */
     public function downloadVCard(BusinessCard $businessCard)
     {
+        $businessCard->increment('contacts_saved');
         $vcard = "BEGIN:VCARD\r\n";
         $vcard .= "VERSION:3.0\r\n";
         $vcard .= "FN:{$businessCard->full_name}\r\n";
-        
         // Split name properly
         $nameParts = explode(' ', $businessCard->full_name);
         $firstName = $nameParts[0] ?? '';
         $lastName = count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : '';
         $vcard .= "N:{$lastName};{$firstName};;;\r\n";
-        
         if ($businessCard->position) {
             $vcard .= "TITLE:{$businessCard->position}\r\n";
         }
-        
         if ($businessCard->company) {
             $vcard .= "ORG:{$businessCard->company->name}\r\n";
         }
-        
         if ($businessCard->email) {
             $vcard .= "EMAIL;TYPE=WORK:{$businessCard->email}\r\n";
         }
-        
         if ($businessCard->phone) {
             $vcard .= "TEL;TYPE=WORK:{$businessCard->phone}\r\n";
         }
-        
         if ($businessCard->mobile) {
             $vcard .= "TEL;TYPE=CELL:{$businessCard->mobile}\r\n";
         }
-        
         if ($businessCard->website) {
             $vcard .= "URL:{$businessCard->website}\r\n";
         }
-        
         if ($businessCard->linkedin_url) {
             $vcard .= "X-SOCIALPROFILE;TYPE=linkedin:{$businessCard->linkedin_url}\r\n";
         }
