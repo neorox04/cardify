@@ -3,11 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\CompanyDashboardController;
 use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\BusinessCardController;
 use App\Http\Controllers\CompanyInviteController;
+use App\Http\Controllers\WebhookController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+
+// Stripe webhook (fora do middleware de auth)
+Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
 // Public routes
 Route::get('/', function () {
@@ -31,14 +37,38 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+// Email Verification routes
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [AuthController::class, 'showVerifyEmail'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->route('dashboard')->with('success', 'Email verificado com sucesso! Bem-vindo ao Cardify!');
+    })->middleware('signed')->name('verification.verify');
+    Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+});
+
+// Password Reset routes
+Route::middleware('guest')->group(function () {
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+});
+
 // Public business card view
 Route::get('/card/{slug}', [BusinessCardController::class, 'publicCard'])->name('card.public');
 Route::get('/card/{businessCard}/vcard', [BusinessCardController::class, 'downloadVCard'])->name('card.vcard');
 Route::get('/card/{businessCard}/save', [BusinessCardController::class, 'saveContact'])->name('card.save');
 
 // Authentication required routes
-Route::middleware(['auth', 'active.user'])->group(function () {
+Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
     
+    // Subscription plans & checkout
+    Route::get('/planos', [SubscriptionController::class, 'showPlans'])->name('subscriptions.plans');
+    Route::post('/checkout', [SubscriptionController::class, 'checkout'])->name('subscriptions.checkout');
+    Route::get('/checkout/success', [SubscriptionController::class, 'success'])->name('subscriptions.success');
+    Route::get('/checkout/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+
     // Main Dashboard (redirects based on user type)
     Route::get('/dashboard', function () {
         $user = Auth::user();
