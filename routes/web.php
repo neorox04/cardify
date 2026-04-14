@@ -47,6 +47,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+    // Status check for polling (no verified middleware — used by the verify-email page)
+    Route::get('/email/verified-status', function () {
+        return response()->json(['verified' => auth()->user()->hasVerifiedEmail()]);
+    })->name('verification.status');
 });
 
 // Password Reset routes
