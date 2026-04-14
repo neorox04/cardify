@@ -23,6 +23,7 @@ class Company extends Model
         'industry',
         'size',
         'founded_year',
+        'nif',
         'is_active',
     ];
 

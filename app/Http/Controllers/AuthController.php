@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Mail\WelcomeEmail;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -75,33 +76,75 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+        $isCompany = $request->input('account_type') === 'company';
+
+        $rules = [
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-        ], [
-            'name.required' => 'O nome é obrigatório.',
-            'name.max' => 'O nome não pode ter mais de 255 caracteres.',
-            'email.required' => 'O email é obrigatório.',
-            'email.email' => 'Por favor, insira um email válido.',
-            'email.unique' => 'Este email já está sendo usado.',
-            'password.required' => 'A senha é obrigatória.',
-            'password.min' => 'A senha deve ter pelo menos 6 caracteres.',
-            'password.confirmed' => 'A confirmação da senha não confere.',
+        ];
+
+        if ($isCompany) {
+            $rules['company_name'] = 'required|string|max:255';
+            $rules['nif']          = 'nullable|string|max:20';
+            $rules['logo']         = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+            $rules['industry']     = 'nullable|string|max:100';
+            $rules['website']      = 'nullable|url|max:255';
+        }
+
+        $request->validate($rules, [
+            'name.required'         => 'O nome é obrigatório.',
+            'email.required'        => 'O email é obrigatório.',
+            'email.email'           => 'Por favor, insira um email válido.',
+            'email.unique'          => 'Este email já está a ser usado.',
+            'password.required'     => 'A password é obrigatória.',
+            'password.min'          => 'A password deve ter pelo menos 6 caracteres.',
+            'password.confirmed'    => 'A confirmação da password não confere.',
+            'company_name.required' => 'O nome da empresa é obrigatório.',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'user_type' => 'user',
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'password'  => Hash::make($request->password),
+            'type'      => $isCompany ? 'company_admin' : 'user',
             'is_active' => true,
         ]);
+
+        // Se empresa: criar Company e ligar o utilizador como admin
+        if ($isCompany) {
+            $slug    = Str::slug($request->company_name);
+            $baseSlug = $slug;
+            $counter  = 1;
+            while (Company::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . $counter++;
+            }
+
+            $logoPath = null;
+            if ($request->hasFile('logo')) {
+                $logoPath = $request->file('logo')->store('logos', 'public');
+            }
+
+            $company = Company::create([
+                'name'      => $request->company_name,
+                'slug'      => $slug,
+                'email'     => $request->email,
+                'nif'       => $request->nif,
+                'logo'      => $logoPath,
+                'industry'  => $request->industry,
+                'website'   => $request->website,
+                'is_active' => true,
+            ]);
+
+            $company->users()->attach($user->id, [
+                'role'     => 'Administrador',
+                'is_admin' => true,
+            ]);
+        }
 
         Auth::login($user);
         $request->session()->regenerate();
 
-        // Enviar email de boas-vindas e verificação
         Mail::to($user)->send(new WelcomeEmail($user));
         $user->sendEmailVerificationNotification();
 
