@@ -161,6 +161,38 @@
             margin-top: 20px;
         }
         form { margin: 0; }
+        .btn-check {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(99,102,241,0.35);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .btn-check:hover { background: rgba(99,102,241,0.08); border-color: var(--accent); }
+        .polling-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 16px;
+        }
+        .dot {
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
     </style>
 </head>
 <body>
@@ -199,6 +231,10 @@
 
             <hr class="divider">
 
+            <a href="{{ route('verification.notice') }}" class="btn-check">
+                Já verifiquei o email — Continuar
+            </a>
+
             <form method="POST" action="{{ route('verification.send') }}">
                 @csrf
                 <button type="submit" class="btn">Reenviar Email de Verificação</button>
@@ -210,7 +246,26 @@
             </form>
 
             <p class="note">Não encontras o email? Verifica a pasta de spam ou lixo.</p>
+
+            <div class="polling-badge">
+                <span class="dot"></span>
+                A verificar automaticamente...
+            </div>
         </div>
     </div>
+
+    <script>
+        // Deteta verificação feita noutro dispositivo — polling a cada 4s
+        setInterval(function () {
+            fetch('{{ route('verification.status') }}', {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(function (data) {
+                if (data.verified) window.location.href = '{{ route('dashboard') }}';
+            })
+            .catch(function () {});
+        }, 4000);
+    </script>
 </body>
 </html>
