@@ -1,10 +1,11 @@
-const CACHE_NAME = 'cardify-v1';
+const CACHE_NAME = 'cardify-v2';
 const STATIC_ASSETS = [
-  '/',
   '/manifest.json',
   '/icon.svg',
   '/favicon.ico',
 ];
+
+const STATIC_ASSET_PATTERN = /\.(ico|svg|png|jpg|jpeg|webp|woff2?|css|js)$/i;
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -26,10 +27,21 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith(self.location.origin)) return;
 
+  const isDocumentRequest = event.request.mode === 'navigate'
+    || event.request.destination === 'document'
+    || (event.request.headers.get('accept') || '').includes('text/html');
+
+  if (isDocumentRequest) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(cached => {
       const network = fetch(event.request).then(response => {
-        if (response.ok && event.request.url.match(/\.(ico|svg|png|jpg|webp|woff2?)$/)) {
+        if (response.ok && STATIC_ASSET_PATTERN.test(event.request.url)) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }

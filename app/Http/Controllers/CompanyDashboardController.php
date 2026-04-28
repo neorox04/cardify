@@ -33,7 +33,11 @@ class CompanyDashboardController extends Controller
             $totalViews += $company->businessCards->sum('views_count');
         }
 
-        return view('company.dashboard', compact('companies', 'totalEmployees', 'totalBusinessCards', 'totalViews'));
+        $subscription   = $user->subscription('default');
+        $currentSeats   = $subscription ? ($subscription->quantity ?? 0) : 0;
+        $usedSeats      = $totalEmployees;
+
+        return view('company.dashboard', compact('companies', 'totalEmployees', 'totalBusinessCards', 'totalViews', 'subscription', 'currentSeats', 'usedSeats'));
     }
 
     /**

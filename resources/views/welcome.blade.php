@@ -1189,15 +1189,10 @@
     <nav id="navbar">
         <div class="nav-inner">
             <a href="/" class="logo">
-                <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                    <defs>
-                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#06b6d4"/>
-                            <stop offset="100%" style="stop-color:#6366f1"/>
-                        </linearGradient>
-                    </defs>
-                    <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14c2.5 0 4.5-0.5 6.5-1.5" stroke="url(#logoGradient)" stroke-width="3" stroke-linecap="round" fill="none"/>
-                    <path d="M22 8l4 4-4 4" stroke="url(#logoGradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="7" fill="#070915"/>
+                    <path d="M20.8 21.2C17.99 24.01 13.43 24.01 10.62 21.2C7.81 18.39 7.81 13.83 10.62 11.02C13.43 8.21 17.99 8.21 20.8 11.02" stroke="#F2F2EE" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M13.85 13.45L17.65 16L13.85 18.55" stroke="#B08CFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 Cardifys
             </a>
@@ -1701,15 +1696,10 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <div class="logo">
-                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
-                            <defs>
-                                <linearGradient id="logoGradientFooter" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#06b6d4"/>
-                                    <stop offset="100%" style="stop-color:#6366f1"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14c2.5 0 4.5-0.5 6.5-1.5" stroke="url(#logoGradientFooter)" stroke-width="3" stroke-linecap="round" fill="none"/>
-                            <path d="M22 8l4 4-4 4" stroke="url(#logoGradientFooter)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="32" height="32" rx="7" fill="#070915"/>
+                            <path d="M20.8 21.2C17.99 24.01 13.43 24.01 10.62 21.2C7.81 18.39 7.81 13.83 10.62 11.02C13.43 8.21 17.99 8.21 20.8 11.02" stroke="#F2F2EE" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M13.85 13.45L17.65 16L13.85 18.55" stroke="#B08CFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         Cardifys
                     </div>

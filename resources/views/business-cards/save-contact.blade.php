@@ -71,17 +71,20 @@
         .profile-photo {
             width: 100px;
             height: 100px;
-            border-radius: 50%;
+            border-radius: 24px;
             object-fit: cover;
-            border: 3px solid var(--primary);
+            border: 3px solid #070915;
+            box-shadow: 0 0 0 1px #b08cff80, 0 12px 32px rgba(176, 140, 255, 0.16);
             margin-bottom: 20px;
         }
 
         .profile-placeholder {
             width: 100px;
             height: 100px;
-            border-radius: 50%;
-            background: var(--primary);
+            border-radius: 24px;
+            background: #070915;
+            border: 3px solid #070915;
+            box-shadow: 0 0 0 1px #b08cff80, 0 12px 32px rgba(176, 140, 255, 0.16);
             display: flex;
             align-items: center;
             justify-content: center;

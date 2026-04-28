@@ -17,8 +17,18 @@ Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
 // Public routes
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome2');
 })->name('home');
+
+Route::get('/welcome2', function () {
+    return view('welcome2');
+})->name('welcome2');
+
+Route::get('/furzy', function () {
+    return view('furzy');
+})->name('furzy');
+
+Route::get('/planos', [SubscriptionController::class, 'showPlans'])->name('subscriptions.plans');
 
 // Authentication routes
 Route::middleware('guest')->group(function () {
@@ -64,8 +74,7 @@ Route::get('/card/{businessCard}/save', [BusinessCardController::class, 'saveCon
 // Authentication required routes
 Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
     
-    // Subscription plans & checkout
-    Route::get('/planos', [SubscriptionController::class, 'showPlans'])->name('subscriptions.plans');
+    // Subscription checkout & billing
     Route::post('/checkout', [SubscriptionController::class, 'checkout'])->name('subscriptions.checkout');
     Route::get('/checkout/success', [SubscriptionController::class, 'success'])->name('subscriptions.success');
     Route::get('/checkout/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');

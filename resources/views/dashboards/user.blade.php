@@ -138,83 +138,74 @@
 </div>
 
 <style>
-    .stat-icon.purple {
-        background: #F3E8FF;
-        color: #9333EA;
-    }
-
     .companies-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 14px;
     }
 
     .company-card {
         display: flex;
         align-items: center;
-        gap: 16px;
-        padding: 20px;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
+        gap: 14px;
+        padding: 18px;
+        background: oklch(0.18 0.014 290 / 0.65);
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius-xl);
         text-decoration: none;
         color: inherit;
         transition: var(--transition);
+        backdrop-filter: blur(10px);
     }
 
     .company-card:hover {
-        border-color: var(--accent);
-        background: var(--bg-elevated);
+        border-color: oklch(0.72 0.19 300 / 0.30);
         transform: translateY(-2px);
     }
 
     .company-avatar {
-        width: 52px;
-        height: 52px;
-        border-radius: var(--radius-md);
-        background: var(--accent-subtle);
-        color: var(--accent);
+        width: 46px; height: 46px;
+        border-radius: 13px;
+        background: var(--purple-soft);
+        color: var(--purple);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 700;
         flex-shrink: 0;
+        border: 1px solid oklch(0.72 0.19 300 / 0.22);
     }
 
-    .company-info {
-        flex: 1;
-        min-width: 0;
-    }
+    .company-info { flex: 1; min-width: 0; }
 
     .company-name {
-        font-size: 16px;
+        font-size: 14.5px;
         font-weight: 600;
-        color: var(--text-primary);
-        margin: 0 0 4px 0;
+        color: var(--ink);
+        margin: 0 0 3px;
+        letter-spacing: -0.01em;
     }
 
     .company-role {
-        font-size: 14px;
-        color: var(--accent);
-        margin: 0 0 4px 0;
+        font-size: 12.5px;
+        color: var(--purple);
+        margin: 0 0 4px;
+        font-weight: 500;
     }
 
     .company-industry {
-        font-size: 12px;
-        color: var(--text-tertiary);
-        background: var(--bg-secondary);
+        display: inline-block;
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        color: var(--ink-mute);
+        background: oklch(0.22 0.016 290 / 0.6);
         padding: 2px 8px;
-        border-radius: 4px;
+        border-radius: 6px;
+        border: 1px solid var(--line-soft);
     }
 
-    .company-arrow {
-        color: var(--text-tertiary);
-        flex-shrink: 0;
-    }
-
-    .company-card:hover .company-arrow {
-        color: var(--accent);
-    }
+    .company-arrow { color: var(--ink-mute); flex-shrink: 0; }
+    .company-card:hover .company-arrow { color: var(--purple); }
 </style>
 @endsection

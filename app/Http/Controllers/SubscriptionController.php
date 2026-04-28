@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +35,7 @@ class SubscriptionController extends Controller
     // Cria uma sessão Stripe Checkout para o plano selecionado
     public function checkout(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user  = Auth::user();
         $price = $request->input('price');
         $seats = max(1, (int) $request->input('seats', 1));
@@ -66,6 +66,7 @@ class SubscriptionController extends Controller
     // Página de gestão de seats (empresa)
     public function seats()
     {
+        /** @var \App\Models\User $user */
         $user        = Auth::user();
         $company     = $user->companies()->wherePivot('is_admin', true)->firstOrFail();
         $subscription = $user->subscription('default');
@@ -117,6 +118,7 @@ class SubscriptionController extends Controller
             'deactivate_users' => 'nullable|json',
         ]);
 
+        /** @var \App\Models\User $user */
         $user         = Auth::user();
         $newSeats     = (int) $request->input('new_seats');
         $toDeactivate = json_decode($request->input('deactivate_users', '[]'), true);

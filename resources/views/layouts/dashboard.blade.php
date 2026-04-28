@@ -1,408 +1,467 @@
 <!DOCTYPE html>
-<html lang="pt" data-theme="dark">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard') - Cardify</title>
+    <title>@yield('title', 'Dashboard') — Cardifys</title>
     <link rel="icon" type="image/png" href="/icon-192.png">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#9b6dff">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Cardify">
+    <meta name="apple-mobile-web-app-title" content="Cardifys">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #09090b;
-            --bg-secondary: #18181b;
-            --bg-tertiary: #27272a;
-            --bg-elevated: #3f3f46;
-            --text-primary: #fafafa;
-            --text-secondary: #a1a1aa;
-            --text-tertiary: #71717a;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 255, 255, 0.15);
-            --accent: #6366f1;
-            --accent-hover: #818cf8;
-            --accent-subtle: rgba(99, 102, 241, 0.1);
-            --gradient-1: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
-            --success: #10b981;
-            --success-subtle: rgba(16, 185, 129, 0.1);
-            --error: #ef4444;
-            --error-subtle: rgba(239, 68, 68, 0.1);
-            --warning: #f59e0b;
-            --warning-subtle: rgba(245, 158, 11, 0.1);
-            --pink: #EC4899;
-            --pink-subtle: rgba(236, 72, 153, 0.1);
-            --purple: #8b5cf6;
-            --purple-subtle: rgba(139, 92, 246, 0.1);
+            --bg:           oklch(0.15 0.012 290);
+            --bg-2:         oklch(0.19 0.015 290);
+            --bg-3:         oklch(0.23 0.018 290);
+            --ink:          oklch(0.97 0.010 290);
+            --ink-dim:      oklch(0.72 0.015 290);
+            --ink-mute:     oklch(0.52 0.012 290);
+            --line:         oklch(0.28 0.018 290 / 0.70);
+            --line-soft:    oklch(0.28 0.018 290 / 0.35);
+            --purple:       oklch(0.72 0.19  300);
+            --purple-deep:  oklch(0.52 0.19  300);
+            --purple-soft:  oklch(0.72 0.19  300 / 0.12);
+            --lavender:     oklch(0.82 0.14  330);
+            --amber:        oklch(0.82 0.12   85);
+            --green:        oklch(0.78 0.17  160);
+            --red:          oklch(0.65 0.22   25);
+            --green-soft:   oklch(0.78 0.17  160 / 0.14);
+            --red-soft:     oklch(0.65 0.22   25 / 0.14);
+            --amber-soft:   oklch(0.82 0.12   85 / 0.14);
+            --lavender-soft:oklch(0.82 0.14  330 / 0.12);
+
+            /* Aliases usados pelas páginas filha */
+            --bg-primary:    var(--bg);
+            --bg-secondary:  var(--bg-2);
+            --bg-tertiary:   var(--bg-3);
+            --bg-elevated:   oklch(0.27 0.020 290);
+            --text-primary:  var(--ink);
+            --text-secondary:var(--ink-dim);
+            --text-tertiary: var(--ink-mute);
+            --border:        var(--line-soft);
+            --border-hover:  var(--line);
+            --accent:        var(--purple);
+            --accent-hover:  var(--lavender);
+            --accent-subtle: var(--purple-soft);
+            --success:       var(--green);
+            --success-subtle:var(--green-soft);
+            --error:         var(--red);
+            --error-subtle:  var(--red-soft);
+            --warning:       var(--amber);
+            --warning-subtle:var(--amber-soft);
+            --pink:          var(--lavender);
+            --pink-subtle:   var(--lavender-soft);
+            --purple-subtle: var(--purple-soft);
+
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
-            --radius-xl: 20px;
+            --radius-xl: 22px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        [data-theme="light"] {
-            --bg-primary: #fafafa;
-            --bg-secondary: #f0f0f3;
-            --bg-tertiary: #e8e8ec;
-            --bg-elevated: #ffffff;
-            --text-primary: #09090b;
-            --text-secondary: #52525b;
-            --text-tertiary: #71717a;
-            --border: rgba(0, 0, 0, 0.08);
-            --border-hover: rgba(0, 0, 0, 0.15);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        html, body { background: var(--bg); color: var(--ink); }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+            font-feature-settings: "ss01", "cv11";
             -webkit-font-smoothing: antialiased;
-            line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        /* Sidebar */
+        body::before {
+            content: "";
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 55% 45% at 90% 15%, oklch(0.72 0.19 300 / 0.07), transparent 60%),
+                radial-gradient(ellipse 40% 40% at  5% 85%, oklch(0.82 0.14 330 / 0.04), transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: "";
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(to right,  var(--line-soft) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--line-soft) 1px, transparent 1px);
+            background-size: 72px 72px;
+            background-position: -1px -1px;
+            mask-image: radial-gradient(ellipse 60% 100% at 20% center, rgba(0,0,0,0.35), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.35;
+        }
+
+        /* ─── Layout ──────────────────────────────────────── */
         .dashboard-wrapper {
             display: flex;
             min-height: 100vh;
+            position: relative;
+            z-index: 1;
         }
 
+        /* ─── Sidebar ─────────────────────────────────────── */
         .sidebar {
-            width: 260px;
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border);
-            padding: 24px;
+            width: 252px;
+            background: oklch(0.17 0.013 290 / 0.90);
+            border-right: 1px solid var(--line-soft);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 22px 14px;
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            top: 0; left: 0; bottom: 0;
             z-index: 100;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .sidebar-brand {
-            margin-bottom: 32px;
-        }
+        /* Brand */
+        .sidebar-brand { margin-bottom: 28px; padding: 0 10px; }
 
         .logo {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 10px;
-            font-size: 22px;
-            font-weight: 800;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
             text-decoration: none;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--ink);
         }
 
-        .sidebar-nav {
-            flex: 1;
+        .logo .mark {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            background: radial-gradient(circle at 30% 30%, var(--purple), var(--purple-deep));
+            position: relative;
+            flex-shrink: 0;
+            box-shadow: 0 0 16px oklch(0.72 0.19 300 / 0.38);
         }
 
-        .nav-section {
-            margin-bottom: 24px;
+        .logo .mark::after {
+            content: "";
+            position: absolute; inset: 6px;
+            border-radius: 4px;
+            border: 1.5px solid oklch(0.15 0.012 290);
+            border-top-color: transparent;
+            border-right-color: transparent;
         }
+
+        /* Nav */
+        .sidebar-nav { flex: 1; overflow-y: auto; }
+
+        .nav-section { margin-bottom: 22px; }
 
         .nav-section-title {
-            font-size: 11px;
-            font-weight: 700;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-tertiary);
-            margin-bottom: 12px;
-            padding: 0 12px;
+            color: var(--ink-mute);
+            margin-bottom: 6px;
+            padding: 0 10px;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: var(--radius-md);
-            color: var(--text-secondary);
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            color: var(--ink-dim);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 500;
             transition: var(--transition);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+            position: relative;
         }
 
-        .nav-item svg {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
-        }
+        .nav-item svg { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.75; }
 
         .nav-item:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
+            background: oklch(0.72 0.19 300 / 0.06);
+            color: var(--ink);
         }
 
+        .nav-item:hover svg { opacity: 1; }
+
         .nav-item.active {
-            background: var(--accent-subtle);
-            color: var(--accent);
+            background: oklch(0.72 0.19 300 / 0.11);
+            border-color: oklch(0.72 0.19 300 / 0.22);
+            color: var(--purple);
+        }
+
+        .nav-item.active svg { opacity: 1; }
+
+        .nav-item.active::before {
+            content: "";
+            position: absolute;
+            left: -14px; top: 50%;
+            width: 3px; height: 16px;
+            background: var(--purple);
+            border-radius: 0 2px 2px 0;
+            transform: translateY(-50%);
+            box-shadow: 1px 0 8px oklch(0.72 0.19 300 / 0.5);
         }
 
         .nav-badge {
             margin-left: auto;
-            background: var(--accent);
-            color: white;
-            font-size: 11px;
+            background: var(--purple);
+            color: oklch(0.15 0.02 290);
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
             font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 10px;
-            min-width: 20px;
-            text-align: center;
+            padding: 1px 7px;
+            border-radius: 999px;
         }
 
+        /* Sidebar footer */
         .sidebar-footer {
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
+            padding-top: 16px;
+            border-top: 1px solid var(--line-soft);
         }
 
         .user-card {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: var(--radius-md);
-            background: var(--bg-tertiary);
+            gap: 10px;
+            padding: 10px;
+            border-radius: 12px;
+            background: oklch(0.21 0.016 290 / 0.55);
+            border: 1px solid var(--line-soft);
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 34px; height: 34px;
             border-radius: 50%;
-            background: var(--gradient-1);
-            color: white;
+            background: linear-gradient(135deg, var(--purple), var(--lavender));
+            color: oklch(0.15 0.02 290);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 13px;
             flex-shrink: 0;
         }
 
-        .user-info {
-            flex: 1;
-            min-width: 0;
-        }
+        .user-info { flex: 1; min-width: 0; }
 
         .user-name {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: var(--text-primary);
+            color: var(--ink);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .user-email {
-            font-size: 12px;
-            color: var(--text-tertiary);
+            font-family: 'Geist Mono', monospace;
+            font-size: 10.5px;
+            color: var(--ink-mute);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 260px;
-            padding: 32px 40px;
-        }
+        .logout-form { margin-top: 8px; }
 
-        /* Top Bar */
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-
-        .topbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .theme-toggle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px solid var(--border);
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            cursor: pointer;
+        .btn-logout {
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 7px;
+            width: 100%;
+            padding: 8px 14px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid var(--line-soft);
+            color: var(--ink-mute);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
             transition: var(--transition);
+            text-decoration: none;
         }
 
-        .theme-toggle:hover {
-            border-color: var(--border-hover);
-            color: var(--text-primary);
+        .btn-logout:hover {
+            background: oklch(0.65 0.22 25 / 0.09);
+            border-color: oklch(0.65 0.22 25 / 0.35);
+            color: var(--red);
         }
 
-        .theme-toggle svg {
-            width: 18px;
-            height: 18px;
+        .btn-logout svg { width: 15px; height: 15px; }
+
+        /* ─── Main content ────────────────────────────────── */
+        .main-content {
+            flex: 1;
+            margin-left: 252px;
+            padding: 32px 40px;
+            min-height: 100vh;
         }
 
-        .theme-toggle .sun { display: none; }
-        .theme-toggle .moon { display: block; }
-        [data-theme="light"] .theme-toggle .sun { display: block; }
-        [data-theme="light"] .theme-toggle .moon { display: none; }
+        /* Topbar */
+        .topbar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 24px;
+            min-height: 1px;
+        }
 
-        /* Page Header */
+        /* Page header */
         .dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 32px;
-            gap: 24px;
+            margin-bottom: 28px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .page-title {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--text-primary);
-            letter-spacing: -1px;
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--ink);
+            letter-spacing: -0.025em;
+            line-height: 1.1;
             margin-bottom: 4px;
         }
 
-        .page-subtitle {
-            font-size: 15px;
-            color: var(--text-secondary);
+        .page-subtitle { font-size: 14px; color: var(--ink-dim); }
+
+        /* ─── Alerts ──────────────────────────────────────── */
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
         }
 
-        /* Stats */
+        .alert svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+        .alert-success {
+            background: var(--green-soft);
+            color: var(--green);
+            border: 1px solid oklch(0.78 0.17 160 / 0.28);
+        }
+
+        .alert-error {
+            background: var(--red-soft);
+            color: var(--red);
+            border: 1px solid oklch(0.65 0.22 25 / 0.28);
+        }
+
+        /* ─── Stats grid ──────────────────────────────────── */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
         }
 
         .stat-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
+            background: oklch(0.18 0.014 290 / 0.65);
+            border: 1px solid var(--line-soft);
+            border-radius: var(--radius-xl);
+            padding: 20px 22px;
             display: flex;
             align-items: center;
             gap: 16px;
-            transition: var(--transition);
+            transition: border-color .25s, transform .25s;
+            backdrop-filter: blur(10px);
         }
 
         .stat-card:hover {
-            border-color: var(--border-hover);
+            border-color: oklch(0.72 0.19 300 / 0.30);
+            transform: translateY(-2px);
         }
 
         .stat-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: var(--radius-md);
+            width: 46px; height: 46px;
+            border-radius: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
         }
 
-        .stat-icon.blue {
-            background: var(--accent-subtle);
-            color: var(--accent);
-        }
+        .stat-icon svg { width: 20px; height: 20px; }
 
-        .stat-icon.green {
-            background: var(--success-subtle);
-            color: var(--success);
-        }
-
-        .stat-icon.yellow {
-            background: var(--warning-subtle);
-            color: var(--warning);
-        }
-
-        .stat-icon.pink {
-            background: var(--pink-subtle);
-            color: var(--pink);
-        }
-
-        .stat-icon.purple {
-            background: var(--purple-subtle);
-            color: var(--purple);
-        }
+        /* Colour variants */
+        .stat-icon.blue,
+        .stat-icon.purple { background: var(--purple-soft);   color: var(--purple);  }
+        .stat-icon.green  { background: var(--green-soft);    color: var(--green);   }
+        .stat-icon.yellow { background: var(--amber-soft);    color: var(--amber);   }
+        .stat-icon.pink   { background: var(--lavender-soft); color: var(--lavender);}
 
         .stat-value {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--text-primary);
-            letter-spacing: -1px;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--ink);
+            letter-spacing: -0.03em;
             line-height: 1;
+            font-feature-settings: "tnum";
         }
 
-        .stat-label {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
+        .stat-label { font-size: 13px; color: var(--ink-dim); margin-top: 3px; }
 
-        /* Content Section */
-        .content-section {
-            margin-bottom: 40px;
-        }
+        /* ─── Content sections ────────────────────────────── */
+        .content-section { margin-bottom: 28px; }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: -0.5px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            letter-spacing: -0.015em;
         }
 
-        /* Cards Grid */
+        /* ─── Cards grid ──────────────────────────────────── */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
         }
 
         .business-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            transition: var(--transition);
+            background: oklch(0.18 0.014 290 / 0.65);
+            border: 1px solid var(--line-soft);
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            transition: border-color .25s, transform .25s;
+            backdrop-filter: blur(10px);
             cursor: pointer;
         }
 
         .business-card:hover {
-            border-color: var(--border-hover);
+            border-color: oklch(0.72 0.19 300 / 0.30);
             transform: translateY(-2px);
         }
 
@@ -410,218 +469,190 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 12px;
-            gap: 12px;
+            margin-bottom: 8px;
+            gap: 8px;
         }
 
         .card-header h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: -0.5px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink);
+            letter-spacing: -0.01em;
         }
 
         .card-badge {
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 12px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
             font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
-        .card-badge.active {
-            background: var(--success-subtle);
-            color: var(--success);
-        }
+        .card-badge.active   { background: var(--green-soft);  color: var(--green); border: 1px solid oklch(0.78 0.17 160 / 0.22); }
+        .card-badge.inactive { background: var(--red-soft);    color: var(--red);   border: 1px solid oklch(0.65 0.22 25  / 0.22); }
 
-        .card-badge.inactive {
-            background: var(--error-subtle);
-            color: var(--error);
-        }
-
-        .card-subtitle {
-            font-size: 15px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .card-company {
-            font-size: 14px;
-            color: var(--text-tertiary);
-            margin-bottom: 16px;
-        }
+        .card-subtitle  { font-size: 13.5px; color: var(--ink-dim);  margin-bottom: 3px; }
+        .card-company   { font-family: 'Geist Mono', monospace; font-size: 11.5px; color: var(--ink-mute); margin-bottom: 12px; }
 
         .card-stats {
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-            margin-bottom: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line-soft);
+            margin-bottom: 12px;
         }
 
         .card-stat {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 14px;
-            color: var(--text-secondary);
+            font-size: 12.5px;
+            color: var(--ink-dim);
         }
 
-        .card-stat svg {
-            width: 16px;
-            height: 16px;
-        }
+        .card-stat svg { width: 13px; height: 13px; }
 
         .card-actions {
             display: flex;
-            gap: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
+            gap: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line-soft);
         }
 
         .btn-link {
-            color: var(--accent);
+            color: var(--purple);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            transition: var(--transition);
+            transition: color .2s;
         }
 
-        .btn-link:hover {
-            color: var(--accent-hover);
-        }
+        .btn-link:hover { color: var(--lavender); }
 
-        /* Buttons */
+        /* ─── Buttons ─────────────────────────────────────── */
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 14px;
+            gap: 7px;
+            padding: 9px 18px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            font-size: 13.5px;
             font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
             font-family: inherit;
+            cursor: pointer;
+            transition: transform .15s ease, background .2s, box-shadow .2s, border-color .2s;
+            text-decoration: none;
+            line-height: 1;
         }
 
-        .btn svg {
-            width: 18px;
-            height: 18px;
-        }
+        .btn svg { width: 15px; height: 15px; }
 
         .btn-primary {
-            background: var(--accent);
-            color: white;
+            background: var(--purple);
+            color: oklch(0.15 0.02 290);
+            box-shadow: 0 6px 20px oklch(0.72 0.19 300 / 0.25);
         }
 
         .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 28px oklch(0.72 0.19 300 / 0.38);
         }
 
         .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
+            background: oklch(0.22 0.016 290 / 0.65);
+            color: var(--ink);
+            border-color: var(--line-soft);
+            backdrop-filter: blur(8px);
         }
 
         .btn-secondary:hover {
-            background: var(--bg-elevated);
-            border-color: var(--border-hover);
+            background: oklch(0.26 0.018 290 / 0.75);
+            border-color: var(--line);
         }
 
         .btn-danger {
-            background: var(--error-subtle);
-            color: var(--error);
+            background: var(--red-soft);
+            color: var(--red);
+            border-color: oklch(0.65 0.22 25 / 0.22);
         }
 
         .btn-danger:hover {
-            background: var(--error);
-            color: white;
+            background: var(--red);
+            color: #fff;
+            border-color: transparent;
         }
 
-        /* Forms */
-        .form-container {
-            max-width: 800px;
-        }
+        /* ─── Forms ───────────────────────────────────────── */
+        .form-container { max-width: 780px; }
 
         .form-section {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 32px;
-            margin-bottom: 24px;
+            background: oklch(0.18 0.014 290 / 0.65);
+            border: 1px solid var(--line-soft);
+            border-radius: var(--radius-xl);
+            padding: 26px;
+            margin-bottom: 18px;
+            backdrop-filter: blur(10px);
         }
 
         .form-section-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 24px;
-            letter-spacing: -0.5px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 18px;
+            letter-spacing: -0.01em;
         }
 
         .form-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 14px; }
 
         .form-label {
             display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 8px;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10.5px;
+            font-weight: 500;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            color: var(--ink-mute);
+            margin-bottom: 7px;
         }
 
         .form-input {
             width: 100%;
-            padding: 14px 16px;
-            font-size: 15px;
+            padding: 11px 13px;
+            font-size: 14px;
             font-family: inherit;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
+            background: oklch(0.13 0.010 290 / 0.75);
+            border: 1px solid var(--line-soft);
             border-radius: var(--radius-md);
-            color: var(--text-primary);
+            color: var(--ink);
             transition: var(--transition);
         }
 
-        .form-input::placeholder {
-            color: var(--text-tertiary);
-        }
-
-        .form-input:hover {
-            border-color: var(--border-hover);
-        }
-
-        .form-input:focus {
+        .form-input::placeholder { color: var(--ink-mute); }
+        .form-input:hover  { border-color: var(--line); }
+        .form-input:focus  {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px oklch(0.72 0.19 300 / 0.14);
         }
-
-        .form-input.error {
-            border-color: var(--error);
-        }
+        .form-input.error  { border-color: var(--red); }
 
         .error-message {
-            color: var(--error);
-            font-size: 13px;
-            margin-top: 8px;
+            color: var(--red);
+            font-size: 12px;
+            margin-top: 5px;
             font-weight: 500;
         }
 
-        textarea.form-input {
-            resize: vertical;
-            min-height: 120px;
-        }
+        textarea.form-input { resize: vertical; min-height: 100px; }
 
         .checkbox-label {
             display: flex;
@@ -629,408 +660,336 @@
             gap: 10px;
             cursor: pointer;
             font-size: 14px;
-            color: var(--text-secondary);
+            color: var(--ink-dim);
         }
 
         .checkbox-label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 15px; height: 15px;
             cursor: pointer;
-            accent-color: var(--accent);
+            accent-color: var(--purple);
         }
 
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            padding-top: 24px;
-        }
+        .form-actions { display: flex; gap: 10px; padding-top: 18px; }
 
-        /* Empty State */
+        /* ─── Empty state ─────────────────────────────────── */
         .empty-state {
             text-align: center;
-            padding: 80px 40px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
+            padding: 64px 40px;
+            background: oklch(0.18 0.014 290 / 0.65);
+            border: 1px solid var(--line-soft);
+            border-radius: var(--radius-xl);
+            backdrop-filter: blur(10px);
         }
 
-        .empty-state svg {
-            margin-bottom: 24px;
-            color: var(--text-tertiary);
-        }
+        .empty-state svg      { margin-bottom: 18px; color: var(--ink-mute); }
+        .empty-state h3       { font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+        .empty-state p        { font-size: 14px; color: var(--ink-dim); margin-bottom: 22px; }
 
-        .empty-state h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .empty-state p {
-            font-size: 15px;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-        }
-
-        /* Detail Views */
+        /* ─── Detail view ─────────────────────────────────── */
         .card-detail {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 32px;
-            max-width: 800px;
+            background: oklch(0.18 0.014 290 / 0.65);
+            border: 1px solid var(--line-soft);
+            border-radius: var(--radius-xl);
+            padding: 26px;
+            max-width: 780px;
+            backdrop-filter: blur(10px);
         }
 
         .detail-section {
-            padding-bottom: 24px;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--line-soft);
         }
-
-        .detail-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
+        .detail-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
         .detail-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 16px;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10.5px;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-mute);
+            margin-bottom: 14px;
         }
 
-        .detail-list {
-            display: grid;
-            gap: 12px;
-        }
+        .detail-list  { display: grid; gap: 10px; }
 
-        .detail-item {
-            display: grid;
-            grid-template-columns: 140px 1fr;
-            gap: 16px;
-        }
+        .detail-item  { display: grid; grid-template-columns: 130px 1fr; gap: 12px; }
+        .detail-item dt { font-size: 13px; font-weight: 500; color: var(--ink-mute); }
+        .detail-item dd { font-size: 13px; color: var(--ink); }
 
-        .detail-item dt {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-tertiary);
-        }
-
-        .detail-item dd {
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-
-        /* Tables */
+        /* ─── Tables ──────────────────────────────────────── */
         .table-container {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
+            background: oklch(0.18 0.014 290 / 0.65);
+            border: 1px solid var(--line-soft);
+            border-radius: var(--radius-xl);
             overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        .data-table { width: 100%; border-collapse: collapse; }
 
         .data-table thead {
-            background: var(--bg-tertiary);
+            background: oklch(0.21 0.016 290 / 0.55);
+            border-bottom: 1px solid var(--line-soft);
         }
 
         .data-table th {
             text-align: left;
-            padding: 16px;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-tertiary);
+            padding: 12px 16px;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--ink-mute);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.12em;
         }
 
         .data-table td {
-            padding: 16px;
-            font-size: 14px;
-            color: var(--text-primary);
-            border-top: 1px solid var(--border);
+            padding: 13px 16px;
+            font-size: 13px;
+            color: var(--ink);
+            border-top: 1px solid var(--line-soft);
         }
 
-        .data-table tbody tr:hover {
-            background: var(--bg-tertiary);
-        }
+        .data-table tbody tr { transition: background .15s; }
+        .data-table tbody tr:hover { background: oklch(0.72 0.19 300 / 0.05); }
 
-        /* Success/Error Messages */
-        .alert {
-            padding: 16px 20px;
-            border-radius: var(--radius-md);
-            margin-bottom: 24px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .alert-success {
-            background: var(--success-subtle);
-            color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .alert-error {
-            background: var(--error-subtle);
-            color: var(--error);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        /* Mobile Sidebar Toggle */
+        /* ─── Mobile sidebar ──────────────────────────────── */
         .mobile-toggle {
             display: none;
             position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
+            bottom: 24px; right: 24px;
+            width: 50px; height: 50px;
             border-radius: 50%;
-            background: var(--accent);
-            color: white;
+            background: var(--purple);
+            color: oklch(0.15 0.02 290);
             border: none;
             cursor: pointer;
             z-index: 200;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 18px oklch(0.72 0.19 300 / 0.4);
+            align-items: center;
+            justify-content: center;
         }
 
-        .mobile-toggle svg {
-            width: 24px;
-            height: 24px;
-        }
+        .mobile-toggle svg { width: 20px; height: 20px; }
 
-        /* Responsive */
+        /* ─── Responsive ──────────────────────────────────── */
         @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 20px; }
+            .mobile-toggle { display: flex; }
+            .page-title { font-size: 22px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .cards-grid { grid-template-columns: 1fr; }
+        }
 
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 24px;
-            }
-
-            .mobile-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .page-title {
-                font-size: 26px;
-            }
-
-            .dashboard-header {
-                flex-direction: column;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 640px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .dashboard-header { flex-direction: column; align-items: flex-start; }
         }
     </style>
     @stack('styles')
 </head>
 <body>
-    <div class="dashboard-wrapper">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-brand">
-                <a href="/" class="logo">
-                    <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#06b6d4"/>
-                                <stop offset="100%" style="stop-color:#6366f1"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14c2.5 0 4.5-0.5 6.5-1.5" stroke="url(#logoGradient)" stroke-width="3" stroke-linecap="round" fill="none"/>
-                        <path d="M22 8l4 4-4 4" stroke="url(#logoGradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<div class="dashboard-wrapper">
+
+    <!-- ── Sidebar ──────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-brand">
+            <a href="{{ route('home') }}" class="logo">
+                <div class="mark"></div>
+                Cardifys
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <div class="nav-section">
+                <div class="nav-section-title">Menu</div>
+
+                <a href="{{ route('dashboard') }}"
+                   class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
-                    Cardify
+                    Dashboard
+                </a>
+
+                <a href="{{ route('business-cards.index') }}"
+                   class="nav-item {{ request()->routeIs('business-cards.*') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <rect x="2" y="5" width="20" height="14" rx="3" stroke="currentColor" stroke-width="1.8" fill="none"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2 10h20"/>
+                    </svg>
+                    Cartões
                 </a>
             </div>
 
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <div class="nav-section-title">Menu</div>
-                    <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                        </svg>
-                        Dashboard
-                    </a>
-                    <a href="{{ route('business-cards.index') }}" class="nav-item {{ request()->routeIs('business-cards.*') ? 'active' : '' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                        Cartões
-                    </a>
-                </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Conta</div>
 
-                <div class="nav-section">
-                    <div class="nav-section-title">Conta</div>
-                    <a href="{{ route('user.profile') }}" class="nav-item {{ request()->routeIs('user.profile') ? 'active' : '' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        Perfil
-                    </a>
-                    <a href="{{ route('user.invites') }}" class="nav-item {{ request()->routeIs('user.invites') ? 'active' : '' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        Convites
-                        @php
-                            $pendingInvitesCount = \App\Models\CompanyInvite::forEmail(auth()->user()->email)->pending()->count();
-                        @endphp
-                        @if($pendingInvitesCount > 0)
-                            <span class="nav-badge">{{ $pendingInvitesCount }}</span>
-                        @endif
-                    </a>
-                </div>
+                <a href="{{ route('user.profile') }}"
+                   class="nav-item {{ request()->routeIs('user.profile') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    Perfil
+                </a>
 
-                @if(Auth::user()->isSuperAdmin())
-                <div class="nav-section">
-                    <div class="nav-section-title">Administração</div>
-                    <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                        Painel Admin
-                    </a>
-                    <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics') ? 'active' : '' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Analytics
-                    </a>
-                    <a href="{{ route('admin.companies') }}" class="nav-item {{ request()->routeIs('admin.companies*') ? 'active' : '' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                        Empresas
-                    </a>
-                    <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        Utilizadores
-                    </a>
-                    <a href="{{ route('admin.business-cards') }}" class="nav-item {{ request()->routeIs('admin.business-cards') ? 'active' : '' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                        Todos os Cartões
-                    </a>
-                </div>
-                @endif
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-card">
-                    <div class="user-avatar">
-                        {{ substr(Auth::user()->name, 0, 1) }}
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name">{{ Auth::user()->name }}</div>
-                        <div class="user-email">{{ Auth::user()->email }}</div>
-                    </div>
-                </div>
-                <form method="POST" action="{{ route('logout') }}" style="margin-top: 12px;">
-                    @csrf
-                    <button type="submit" class="btn btn-secondary" style="width: 100%; justify-content: center;">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                        Terminar Sessão
-                    </button>
-                </form>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <div></div>
-                <div class="topbar-actions">
-                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-                        <svg class="sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        <svg class="moon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </button>
-                </div>
+                <a href="{{ route('user.invites') }}"
+                   class="nav-item {{ request()->routeIs('user.invites') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    Convites
+                    @php
+                        $pendingInvitesCount = \App\Models\CompanyInvite::forEmail(auth()->user()->email)->pending()->count();
+                    @endphp
+                    @if($pendingInvitesCount > 0)
+                        <span class="nav-badge">{{ $pendingInvitesCount }}</span>
+                    @endif
+                </a>
             </div>
 
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
+            @if(Auth::user()->isCompanyAdmin())
+            <div class="nav-section">
+                <div class="nav-section-title">Empresa</div>
+
+                <a href="{{ route('company.dashboard') }}"
+                   class="nav-item {{ request()->routeIs('company.*') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    Painel Empresa
+                </a>
+
+                <a href="{{ route('subscriptions.seats') }}"
+                   class="nav-item {{ request()->routeIs('subscriptions.seats*') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Colaboradores
+                </a>
+            </div>
             @endif
 
-            @if(session('error'))
-                <div class="alert alert-error">
-                    {{ session('error') }}
-                </div>
+            @if(Auth::user()->isSuperAdmin())
+            <div class="nav-section">
+                <div class="nav-section-title">Administração</div>
+
+                <a href="{{ route('admin.dashboard') }}"
+                   class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Admin
+                </a>
+
+                <a href="{{ route('admin.analytics') }}"
+                   class="nav-item {{ request()->routeIs('admin.analytics') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Analytics
+                </a>
+
+                <a href="{{ route('admin.companies') }}"
+                   class="nav-item {{ request()->routeIs('admin.companies*') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    Empresas
+                </a>
+
+                <a href="{{ route('admin.users') }}"
+                   class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    Utilizadores
+                </a>
+
+                <a href="{{ route('admin.business-cards') }}"
+                   class="nav-item {{ request()->routeIs('admin.business-cards') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <rect x="2" y="5" width="20" height="14" rx="3" stroke="currentColor" stroke-width="1.8" fill="none"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2 10h20"/>
+                    </svg>
+                    Todos os Cartões
+                </a>
+            </div>
             @endif
 
-            @yield('content')
-        </main>
-    </div>
+        </nav>
 
-    <!-- Mobile Toggle -->
-    <button class="mobile-toggle" id="mobile-toggle">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-    </button>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ Auth::user()->name }}</div>
+                    <div class="user-email">{{ Auth::user()->email }}</div>
+                </div>
+            </div>
+            <form method="POST" action="{{ route('logout') }}" class="logout-form">
+                @csrf
+                <button type="submit" class="btn-logout">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Terminar Sessão
+                </button>
+            </form>
+        </div>
 
-    <script>
-        // Theme toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        html.setAttribute('data-theme', savedTheme);
-        
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
+    </aside>
 
-        // Mobile sidebar toggle
-        const mobileToggle = document.getElementById('mobile-toggle');
-        const sidebar = document.getElementById('sidebar');
-        
-        mobileToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-        });
-    </script>
-    @stack('scripts')
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js').catch(() => {});
-            });
-        }
-    </script>
+    <!-- ── Main content ──────────────────────────────────── -->
+    <main class="main-content">
+
+        <div class="topbar"></div>
+
+        @if(session('success'))
+            <div class="alert alert-success">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-error">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @yield('content')
+
+    </main>
+</div>
+
+<!-- Mobile toggle -->
+<button class="mobile-toggle" id="mobile-toggle" aria-label="Abrir menu">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+</button>
+
+<script>
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const sidebar      = document.getElementById('sidebar');
+    mobileToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+    document.addEventListener('click', e => {
+        if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target))
+            sidebar.classList.remove('open');
+    });
+</script>
+@stack('scripts')
+<script>
+    if ('serviceWorker' in navigator)
+        window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js').catch(() => {}));
+</script>
 </body>
 </html>

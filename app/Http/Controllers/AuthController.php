@@ -169,13 +169,14 @@ class AuthController extends Controller
     private function redirectBasedOnRole()
     {
         $user = Auth::user();
+        $name = explode(' ', $user->name)[0];
         
         if ($user->isSuperAdmin()) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('admin.dashboard')->with('success', "Bem-vindo de volta, {$name}!");
         } elseif ($user->isCompanyAdmin()) {
-            return redirect()->route('company.dashboard');
+            return redirect()->route('company.dashboard')->with('success', "Bem-vindo de volta, {$name}!");
         } else {
-            return redirect()->route('dashboard');
+            return redirect()->route('dashboard')->with('success', "Bem-vindo de volta, {$name}!");
         }
     }
 

@@ -88,18 +88,21 @@
         .profile-photo {
             width: 90px;
             height: 90px;
-            border-radius: 50%;
+            border-radius: 20px;
             margin: 0 auto 18px;
             object-fit: cover;
-            border: 3px solid var(--border);
+            border: 3px solid #070915;
+            box-shadow: 0 0 0 1px #b08cff80, 0 8px 24px rgba(176, 140, 255, 0.12);
         }
 
         .profile-placeholder {
             width: 90px;
             height: 90px;
-            border-radius: 50%;
+            border-radius: 20px;
             margin: 0 auto 18px;
-            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            background: #070915;
+            border: 3px solid #070915;
+            box-shadow: 0 0 0 1px #b08cff80, 0 8px 24px rgba(176, 140, 255, 0.12);
             display: flex;
             align-items: center;
             justify-content: center;
