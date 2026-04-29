@@ -144,19 +144,8 @@
         .logo .mark {
             width: 28px; height: 28px;
             border-radius: 8px;
-            background: radial-gradient(circle at 30% 30%, var(--purple), var(--purple-deep));
-            position: relative;
             flex-shrink: 0;
             box-shadow: 0 0 16px oklch(0.72 0.19 300 / 0.38);
-        }
-
-        .logo .mark::after {
-            content: "";
-            position: absolute; inset: 6px;
-            border-radius: 4px;
-            border: 1.5px solid oklch(0.15 0.012 290);
-            border-top-color: transparent;
-            border-right-color: transparent;
         }
 
         /* Nav */
@@ -800,7 +789,7 @@
 
         <div class="sidebar-brand">
             <a href="{{ route('home') }}" class="logo">
-                <div class="mark"></div>
+                <img src="/icon.svg" alt="Cardify" class="mark">
                 Cardifys
             </a>
         </div>
