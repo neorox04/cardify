@@ -6,9 +6,8 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #faf9f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-    #__bundler_loading { position: fixed; bottom: 20px; right: 20px; font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; color: #666; background: #fff; padding: 8px 14px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); z-index: 10000; }
-    #__bundler_thumbnail { position: fixed; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #faf9f5; z-index: 9999; }
-    #__bundler_thumbnail svg { width: 100%; height: 100%; object-fit: contain; }
+    #__bundler_loading { display: none; }
+    #__bundler_thumbnail { position: fixed; inset: 0; background: #faf9f5; z-index: 9999; }
     #__bundler_placeholder { color: #999; font-size: 14px; }
   </style>
   <noscript>
@@ -19,30 +18,7 @@
   </noscript>
 </head>
 <body>
-  <div id="__bundler_thumbnail">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-    <defs>
-      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#9b6dff"></stop>
-        <stop offset="100%" stop-color="#5a2eb8"></stop>
-      </linearGradient>
-    </defs>
-    <rect width="200" height="200" fill="url(#bg)"></rect>
-    <g transform="translate(60,60)" fill="#fff">
-      <rect x="0" y="0" width="80" height="80" rx="10" fill="#0a0f0c"></rect>
-      <g fill="#fff" transform="translate(10,10)">
-        <rect x="0" y="0" width="18" height="18"></rect><rect x="3" y="3" width="12" height="12" fill="#0a0f0c"></rect><rect x="6" y="6" width="6" height="6"></rect>
-        <rect x="42" y="0" width="18" height="18"></rect><rect x="45" y="3" width="12" height="12" fill="#0a0f0c"></rect><rect x="48" y="6" width="6" height="6"></rect>
-        <rect x="0" y="42" width="18" height="18"></rect><rect x="3" y="45" width="12" height="12" fill="#0a0f0c"></rect><rect x="6" y="48" width="6" height="6"></rect>
-        <rect x="24" y="6" width="6" height="6"></rect><rect x="33" y="0" width="6" height="6"></rect><rect x="24" y="15" width="9" height="6"></rect>
-        <rect x="24" y="24" width="6" height="6"></rect><rect x="33" y="27" width="6" height="6"></rect><rect x="42" y="24" width="6" height="6"></rect>
-        <rect x="24" y="33" width="9" height="6"></rect><rect x="42" y="33" width="6" height="6"></rect><rect x="51" y="33" width="9" height="6"></rect>
-        <rect x="24" y="42" width="6" height="6"></rect><rect x="42" y="42" width="6" height="6"></rect><rect x="51" y="48" width="9" height="6"></rect>
-        <rect x="33" y="51" width="6" height="6"></rect><rect x="48" y="51" width="6" height="6"></rect>
-      </g>
-    </g>
-  </svg>
-</div>
+  <div id="__bundler_thumbnail"></div>
   <div id="__bundler_loading">Unpacking...</div>
 
   <script>
