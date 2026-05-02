@@ -301,19 +301,19 @@
 
         <article class="card">
             <div class="label">Empresas</div>
-            <div class="price">50€ <small>setup + 1€/colaborador/mês</small></div>
-            <p class="desc">Gestão centralizada para equipas com branding corporativo unificado em todos os cartões.</p>
+            <div class="price">9.50€ <small>/seat/mês</small></div>
+            <p class="desc">Volume pricing automático — quanto maior a equipa, menor o custo por seat. Desde 4€/seat para grandes equipas.</p>
 
             <ul class="list">
                 <li><span class="ok">✓</span>Tudo do plano Individual</li>
-                <li><span class="ok">✓</span>Colaboradores ilimitados</li>
+                <li><span class="ok">✓</span>Seats escaláveis</li>
                 <li><span class="ok">✓</span>Painel de administração</li>
                 <li><span class="ok">✓</span>Branding corporativo</li>
                 <li><span class="ok">✓</span>Suporte prioritário</li>
                 <li><span class="ok">✓</span>Acesso à API</li>
             </ul>
 
-            <a href="{{ route('enterprise') }}" class="cta secondary">Falar connosco</a>
+            <a href="{{ route('enterprise') }}" class="cta secondary">Ver preços por equipa →</a>
         </article>
     </section>
 
