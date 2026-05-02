@@ -313,7 +313,7 @@
                 <li><span class="ok">✓</span>Acesso à API</li>
             </ul>
 
-            <a href="mailto:hello@cardifys.com" class="cta secondary">Falar connosco</a>
+            <a href="{{ route('enterprise') }}" class="cta secondary">Falar connosco</a>
         </article>
     </section>
 

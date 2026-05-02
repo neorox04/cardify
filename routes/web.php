@@ -29,6 +29,8 @@ Route::get('/furzy', function () {
 })->name('furzy');
 
 Route::get('/planos', [SubscriptionController::class, 'showPlans'])->name('subscriptions.plans');
+Route::get('/empresas', [SubscriptionController::class, 'enterprisePage'])->name('enterprise');
+Route::post('/empresas/contacto', [SubscriptionController::class, 'enterpriseContact'])->name('enterprise.contact');
 
 // Authentication routes
 Route::middleware('guest')->group(function () {
