@@ -75,7 +75,7 @@
             <div class="impact-rows">
                 <div class="impact-row"><span>Novo tier</span><span class="impact-val" id="up-tier"></span></div>
                 <div class="impact-row"><span>Novo MRR</span><span class="impact-val" id="up-mrr"></span></div>
-                <div class="impact-row"><span>Cobrado hoje (<span id="up-days">{{ $daysRemaining }}</span> dias restantes)</span><span class="impact-val green" id="up-proration"></span></div>
+                <div class="impact-row"><span>Cobrado hoje (<span id="up-days">{{ $daysRemaining }}</span> <span id="up-days-label">{{ $daysRemaining === 1 ? 'dia restante' : 'dias restantes' }}</span>)</span><span class="impact-val green" id="up-proration"></span></div>
             </div>
         </div>
 
