@@ -10,7 +10,6 @@ use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\BusinessCardController;
 use App\Http\Controllers\CompanyInviteController;
 use App\Http\Controllers\WebhookController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 // Stripe webhook (fora do middleware de auth)
 Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook']);
@@ -47,10 +46,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 // Email Verification routes
 Route::middleware('auth')->group(function () {
     Route::get('/email/verify', [AuthController::class, 'showVerifyEmail'])->name('verification.notice');
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-        return redirect()->route('dashboard')->with('success', 'Email verificado com sucesso! Bem-vindo ao Cardify!');
-    })->middleware('signed')->name('verification.verify');
     Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
@@ -59,6 +54,28 @@ Route::middleware('auth')->group(function () {
         return response()->json(['verified' => auth()->user()->hasVerifiedEmail()]);
     })->name('verification.status');
 });
+
+// Verification link — sem auth: funciona em qualquer dispositivo, mesmo sem sessão ativa
+Route::get('/email/verify/{id}/{hash}', function (Illuminate\Http\Request $request, $id, $hash) {
+    $user = App\Models\User::findOrFail($id);
+
+    if (!hash_equals(sha1($user->getEmailForVerification()), (string) $hash)) {
+        abort(403);
+    }
+
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+        event(new Illuminate\Auth\Events\Verified($user));
+    }
+
+    // Autenticar no dispositivo atual se ainda não estiver logado
+    if (!auth()->check()) {
+        auth()->login($user);
+        $request->session()->regenerate();
+    }
+
+    return redirect()->route('dashboard')->with('success', 'Email verificado com sucesso! Bem-vindo ao Cardify!');
+})->middleware('signed')->name('verification.verify');
 
 // Password Reset routes
 Route::middleware('guest')->group(function () {
