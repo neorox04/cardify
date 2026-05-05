@@ -18,26 +18,25 @@ class CompanyDashboardController extends Controller
     /**
      * Display the company dashboard.
      */
-    public function index(): View
+    public function index()
     {
-        $user = Auth::user();
-        $companies = $user->companies()->with(['businessCards', 'users'])->get();
-        
-        $totalEmployees = 0;
-        $totalBusinessCards = 0;
-        $totalViews = 0;
-        
-        foreach ($companies as $company) {
-            $totalEmployees += $company->users->count();
-            $totalBusinessCards += $company->businessCards->count();
-            $totalViews += $company->businessCards->sum('views_count');
+        $user    = Auth::user();
+        $company = $user->companies()->first();
+
+        if ($company) {
+            return redirect()->route('company.show', $company);
         }
 
-        $subscription   = $user->subscription('default');
-        $currentSeats   = $subscription ? ($subscription->quantity ?? 0) : 0;
-        $usedSeats      = $totalEmployees;
-
-        return view('company.dashboard', compact('companies', 'totalEmployees', 'totalBusinessCards', 'totalViews', 'subscription', 'currentSeats', 'usedSeats'));
+        // Edge case: admin sem empresa ainda (deve criar uma)
+        return view('company.dashboard', [
+            'companies'          => collect(),
+            'totalEmployees'     => 0,
+            'totalBusinessCards' => 0,
+            'totalViews'         => 0,
+            'subscription'       => null,
+            'currentSeats'       => 0,
+            'usedSeats'          => 0,
+        ]);
     }
 
     /**
