@@ -140,7 +140,9 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
         Route::get('/{company}/edit', [CompanyDashboardController::class, 'edit'])->name('edit');
         Route::put('/{company}', [CompanyDashboardController::class, 'update'])->name('update');
         Route::get('/{company}/employees', [CompanyDashboardController::class, 'employees'])->name('employees');
-        
+        Route::get('/{company}/import/template', [CompanyDashboardController::class, 'downloadTemplate'])->name('import.template');
+        Route::post('/{company}/import', [CompanyDashboardController::class, 'importCards'])->name('import');
+
         // Company invites
         Route::get('/{company}/invites', [CompanyInviteController::class, 'create'])->name('invites');
         Route::post('/{company}/invites', [CompanyInviteController::class, 'store'])->name('invites.store');
