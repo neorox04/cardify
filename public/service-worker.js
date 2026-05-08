@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cardify-v2';
+const CACHE_NAME = 'cardifys-v1';
 const STATIC_ASSETS = [
   '/manifest.json',
   '/icon.svg',
