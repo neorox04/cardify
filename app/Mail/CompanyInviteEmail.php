@@ -23,7 +23,7 @@ class CompanyInviteEmail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: "Foste convidado para {$this->company->name} no Cardify");
+        return new Envelope(subject: "Foste convidado para {$this->company->name} no Cardifys");
     }
 
     public function content(): Content

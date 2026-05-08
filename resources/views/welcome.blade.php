@@ -16,7 +16,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Cardify">
+    <meta name="apple-mobile-web-app-title" content="Cardifys">
     <style>
         :root {
             --bg-primary: #0a0a0b;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifica o teu Email - Cardify</title>
+    <title>Verifica o teu Email - Cardifys</title>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -207,7 +207,7 @@
                     <circle cx="7" cy="14" r="1.5" fill="#6366f1" fill-opacity="0.8"/>
                 </svg>
             </div>
-            <span class="logo-text">Cardify</span>
+            <span class="logo-text">Cardifys</span>
         </a>
 
         <div class="card">
