@@ -243,7 +243,7 @@
         </a>
 
         <div class="powered-by">
-            Criado com <a href="{{ route('home') }}">Cardify</a>
+            Criado com <a href="{{ route('home') }}">Cardifys</a>
         </div>
     </div>
 
