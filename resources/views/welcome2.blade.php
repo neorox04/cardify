@@ -108,10 +108,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     // (synthesizing one if the source HTML omitted it) but may carry
     // attributes through, so match the full opening tag. slice() rather than
     // replace() keeps us clear of $-pattern substitution in resourceScript.
+    const faviconLinks =
+      '<link rel="icon" type="image/svg+xml" href="/icon.svg">' +
+      '<link rel="icon" type="image/x-icon" href="/favicon.ico">' +
+      '<link rel="apple-touch-icon" href="/apple-touch-icon.png">' +
+      '<link rel="manifest" href="/manifest.json">';
     const headOpen = template.match(/<head[^>]*>/i);
     if (headOpen) {
       const i = headOpen.index + headOpen[0].length;
-      template = template.slice(0, i) + resourceScript + template.slice(i);
+      template = template.slice(0, i) + faviconLinks + resourceScript + template.slice(i);
     }
 
     // Parse the template and swap the root element. Scripts inserted via
