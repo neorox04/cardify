@@ -1,10 +1,10 @@
 {
-  "name": "Cardify",
-  "short_name": "Cardify",
+  "name": "Cardifys",
+  "short_name": "Cardifys",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#09090b",
-  "theme_color": "#6366f1",
+  "background_color": "#070915",
+  "theme_color": "#B08CFF",
   "description": "Cartões de visita digitais profissionais.",
   "orientation": "any",
   "categories": ["business", "productivity"],
@@ -13,19 +13,19 @@
       "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     },
     {
       "src": "/icon.svg",
