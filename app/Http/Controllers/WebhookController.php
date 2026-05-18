@@ -16,8 +16,6 @@ class WebhookController extends CashierWebhookController
      */
     protected function handleCheckoutSessionCompleted(array $payload): void
     {
-        parent::handleCheckoutSessionCompleted($payload);
-
         $customerId = $payload['data']['object']['customer'] ?? null;
 
         if (!$customerId) {
