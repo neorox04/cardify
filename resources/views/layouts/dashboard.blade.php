@@ -837,7 +837,7 @@
                     </svg>
                     Convites
                     @php
-                        $pendingInvitesCount = \App\Models\CompanyInvite::forEmail(auth()->user()->email)->pending()->count();
+                        $pendingInvitesCount = Auth::check() ? \App\Models\CompanyInvite::forEmail(auth()->user()->email)->pending()->count() : 0;
                     @endphp
                     @if($pendingInvitesCount > 0)
                         <span class="nav-badge">{{ $pendingInvitesCount }}</span>
@@ -845,7 +845,7 @@
                 </a>
             </div>
 
-            @if(Auth::user()->isCompanyAdmin())
+            @if(Auth::check() && Auth::user()->isCompanyAdmin())
             <div class="nav-section">
                 <div class="nav-section-title">Empresa</div>
 
@@ -867,7 +867,7 @@
             </div>
             @endif
 
-            @if(Auth::user()->isSuperAdmin())
+            @if(Auth::check() && Auth::user()->isSuperAdmin())
             <div class="nav-section">
                 <div class="nav-section-title">Administração</div>
 
@@ -917,6 +917,7 @@
         </nav>
 
         <div class="sidebar-footer">
+            @auth
             <div class="user-card">
                 <div class="user-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
                 <div class="user-info">
@@ -924,6 +925,7 @@
                     <div class="user-email">{{ Auth::user()->email }}</div>
                 </div>
             </div>
+            @endauth
             <form method="POST" action="{{ route('logout') }}" class="logout-form">
                 @csrf
                 <button type="submit" class="btn-logout">

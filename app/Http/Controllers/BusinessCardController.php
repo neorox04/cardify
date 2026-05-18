@@ -29,10 +29,14 @@ class BusinessCardController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|\Illuminate\Http\RedirectResponse
     {
+        if (!Auth::user()->subscribed('default')) {
+            return redirect()->route('subscriptions.plans');
+        }
+
         $companies = Auth::user()->companies;
-        
+
         return view('business-cards.create', compact('companies'));
     }
 
@@ -42,7 +46,7 @@ class BusinessCardController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'full_name' => 'required|string|max:255',
+            'full_name' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
             'position' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
@@ -64,9 +68,10 @@ class BusinessCardController extends Controller
 
         $businessCardData = $request->except(['avatar', 'cover_image']);
         $businessCardData['user_id'] = Auth::id();
+        $businessCardData['full_name'] = $request->input('full_name') ?: Auth::user()->name;
         
         // Generate unique slug
-        $baseSlug = Str::slug($request->full_name);
+        $baseSlug = Str::slug($businessCardData['full_name']);
         $slug = $baseSlug;
         $count = 1;
         while (BusinessCard::where('slug', $slug)->exists()) {

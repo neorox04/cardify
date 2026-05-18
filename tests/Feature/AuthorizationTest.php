@@ -35,11 +35,11 @@ class AuthorizationTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    public function test_guest_cannot_access_planos_page(): void
+    public function test_guest_can_access_planos_page(): void
     {
         $response = $this->get('/planos');
 
-        $response->assertRedirect('/login');
+        $response->assertStatus(200);
     }
 
     // -------------------------------------------------------------------------

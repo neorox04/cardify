@@ -19,14 +19,8 @@ Route::get('/', function () {
     return view('welcome2');
 })->name('home');
 
-Route::get('/welcome2', function () {
-    return view('welcome2');
-})->name('welcome2');
-
-Route::get('/furzy', function () {
-    return view('furzy');
-})->name('furzy');
-
+Route::get('/privacidade', fn() => view('privacidade'))->name('privacidade');
+Route::get('/termos', fn() => view('termos'))->name('termos');
 Route::get('/planos', [SubscriptionController::class, 'showPlans'])->name('subscriptions.plans');
 Route::get('/empresas', [SubscriptionController::class, 'enterprisePage'])->name('enterprise');
 Route::post('/empresas/contacto', [SubscriptionController::class, 'enterpriseContact'])->name('enterprise.contact');
@@ -74,7 +68,7 @@ Route::get('/email/verify/{id}/{hash}', function (Illuminate\Http\Request $reque
         $request->session()->regenerate();
     }
 
-    return redirect()->route('dashboard')->with('success', 'Email verificado com sucesso! Bem-vindo ao Cardify!');
+    return redirect()->route('dashboard')->with('success', 'Email verificado com sucesso! Bem-vindo ao Cardifys!');
 })->middleware('signed')->name('verification.verify');
 
 // Password Reset routes
