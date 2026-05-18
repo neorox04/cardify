@@ -16,6 +16,8 @@ class WebhookController extends CashierWebhookController
      */
     protected function handleCheckoutSessionCompleted(array $payload): void
     {
+        // Cashier's base WebhookController does not define handleCheckoutSessionCompleted,
+        // so no parent:: call here — this method is ours alone.
         $customerId = $payload['data']['object']['customer'] ?? null;
 
         if (!$customerId) {

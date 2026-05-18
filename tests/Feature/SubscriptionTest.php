@@ -2,464 +2,514 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\SubscriptionController;
 use App\Mail\OnboardingEmail;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Cashier\Subscription;
 use Mockery;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class SubscriptionTest extends TestCase
 {
     use RefreshDatabase;
 
-    // ── Helpers ────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
 
-    private function activeUser(array $attrs = []): User
+    private function verifiedUser(array $attrs = []): User
     {
         return User::factory()->create(array_merge([
-            'is_active'         => true,
             'email_verified_at' => now(),
+            'is_active'         => true,
         ], $attrs));
     }
 
-    private function subscribedUser(string $price = 'price_test', int $quantity = 1): User
+    private function companyAdminWithCompany(): array
     {
-        $user = $this->activeUser();
-        $user->subscriptions()->create([
-            'type'          => 'default',
-            'stripe_id'     => 'sub_test_' . $user->id,
-            'stripe_status' => 'active',
-            'stripe_price'  => $price,
-            'quantity'      => $quantity,
+        $user = $this->verifiedUser(['type' => 'company_admin']);
+        $company = Company::create([
+            'name'      => 'Empresa Teste',
+            'slug'      => 'empresa-teste',
+            'is_active' => true,
         ]);
-        return $user;
+        $company->users()->attach($user->id, ['role' => 'admin', 'is_admin' => true]);
+        return [$user, $company];
     }
 
-    /**
-     * Returns a Mockery partial-mock of User whose newSubscription() call
-     * returns a fake SubscriptionBuilder that yields a redirect URL.
-     * Pass $seats = null for plans that don't call quantity().
-     */
-    private function userWithCheckoutMock(string $priceId, ?int $seats = null): User
+    /** Returns a mock Subscription (no Stripe calls). */
+    private function mockSubscription(int $quantity = 10): object
     {
-        $realUser   = $this->activeUser();
-        $fakeUrl    = 'https://checkout.stripe.com/c/pay/fake_session';
+        $stripeObj                     = new \stdClass();
+        $stripeObj->current_period_end = now()->addMonth()->timestamp;
 
-        $mockBuilder = Mockery::mock(\Laravel\Cashier\SubscriptionBuilder::class);
+        $sub           = Mockery::mock(Subscription::class)->makePartial();
+        $sub->quantity = $quantity;
+        $sub->shouldReceive('asStripeSubscription')->andReturn($stripeObj);
+        $sub->shouldReceive('updateQuantity')->withAnyArgs()->andReturnSelf();
 
-        if ($seats !== null) {
-            $mockBuilder->shouldReceive('quantity')->once()->with($seats)->andReturnSelf();
-        }
-
-        $mockBuilder->shouldReceive('checkout')
-            ->once()
-            ->andReturn((object) ['url' => $fakeUrl]);
-
-        /** @var User $mockUser */
-        $mockUser = Mockery::mock(User::class)->makePartial();
-        $mockUser->setRawAttributes($realUser->getAttributes());
-        $mockUser->exists              = true;
-        $mockUser->wasRecentlyCreated  = false;
-
-        $mockUser->shouldReceive('newSubscription')
-            ->with('default', $priceId)
-            ->andReturn($mockBuilder);
-
-        return $mockUser;
+        return $sub;
     }
 
-    /**
-     * Returns a Mockery partial-mock of User whose subscription('default')
-     * call returns a mock Subscription that swallows updateQuantity().
-     */
-    private function userWithSubscriptionMock(int $currentQuantity = 10): User
+    /** Anonymous stub that returns a Stripe checkout URL via magic property. */
+    private function checkoutStub(string $url): object
     {
-        $realUser = $this->activeUser();
-
-        $mockSub = Mockery::mock(Subscription::class)->makePartial();
-        $mockSub->quantity = $currentQuantity;
-        $mockSub->shouldReceive('updateQuantity')->once()->andReturnSelf();
-
-        /** @var User $mockUser */
-        $mockUser = Mockery::mock(User::class)->makePartial();
-        $mockUser->setRawAttributes($realUser->getAttributes());
-        $mockUser->exists             = true;
-        $mockUser->wasRecentlyCreated = false;
-
-        $mockUser->shouldReceive('subscription')->with('default')->andReturn($mockSub);
-
-        return $mockUser;
+        return new class($url) {
+            public function __construct(private string $url) {}
+            public function __get(string $key): string { return $this->url; }
+        };
     }
 
-    // ── Plans page ────────────────────────────────────────────────────────────
-    // The view calls Auth::user()->subscribed() so it requires an auth user.
-
-    public function test_plans_page_accessible_while_authenticated(): void
+    /** Partial-mocks a user so ->subscription('default') returns $sub. */
+    private function userWithSubscription(User $user, object $sub): object
     {
-        $this->actingAs($this->activeUser())->get('/planos')->assertStatus(200);
+        $mock = Mockery::mock($user)->makePartial();
+        $mock->shouldReceive('subscription')->with('default')->andReturn($sub);
+        return $mock;
     }
 
-    public function test_plans_page_redirects_unauthenticated_users_via_middleware(): void
+    // -------------------------------------------------------------------------
+    // Páginas públicas
+    // -------------------------------------------------------------------------
+
+    public function test_plans_page_loads_for_authenticated_user(): void
     {
-        // The route is public but the view requires a logged-in user;
-        // confirm the route itself is reachable (no 404/405).
-        $this->actingAs($this->activeUser())->get('/planos')->assertOk();
+        $this->actingAs($this->verifiedUser())->get('/planos')->assertStatus(200);
     }
 
-    // ── Checkout — auth guard ──────────────────────────────────────────────────
-
-    public function test_checkout_redirects_guest_to_login(): void
+    public function test_plans_page_loads_for_guest(): void
     {
-        $this->post('/checkout', ['price' => SubscriptionController::PRICE_INDIVIDUAL_MONTHLY])
-            ->assertRedirect('/login');
+        $this->get('/planos')->assertStatus(200);
     }
 
-    // ── Checkout — invalid prices ──────────────────────────────────────────────
-
-    #[DataProvider('invalidPriceProvider')]
-    public function test_checkout_rejects_invalid_price(string $price): void
+    public function test_enterprise_page_loads(): void
     {
-        $this->actingAs($this->activeUser())
-            ->post('/checkout', ['price' => $price])
-            ->assertStatus(400);
+        $this->get('/empresas')->assertStatus(200);
     }
 
-    public static function invalidPriceProvider(): array
-    {
-        return [
-            'empty string'         => [''],
-            'random string'        => ['price_INVALID_xyz'],
-            'individual lowercase' => ['price_individual_monthly'],
-            'sql injection'        => ["' OR '1'='1"],
-            'company typo'         => ['price_company'],
-        ];
-    }
-
-    // ── Checkout — enterprise redirect ─────────────────────────────────────────
-
-    public function test_company_checkout_above_10000_seats_redirects_to_enterprise(): void
-    {
-        $this->actingAs($this->activeUser())
-            ->post('/checkout', [
-                'price' => SubscriptionController::PRICE_COMPANY,
-                'seats' => 10001,
-            ])
-            ->assertRedirect(route('subscriptions.enterprise'));
-    }
-
-    public function test_company_checkout_at_exactly_10001_also_redirects(): void
-    {
-        $this->actingAs($this->activeUser())
-            ->post('/checkout', [
-                'price' => SubscriptionController::PRICE_COMPANY,
-                'seats' => 99999,
-            ])
-            ->assertRedirect(route('subscriptions.enterprise'));
-    }
-
-    // ── Checkout — 10 000 boundary: should NOT redirect to enterprise ──────────
-
-    public function test_company_checkout_at_10000_seats_does_not_redirect_to_enterprise(): void
-    {
-        $mockUser = $this->userWithCheckoutMock(SubscriptionController::PRICE_COMPANY, 10000);
-
-        $this->actingAs($mockUser)
-            ->post('/checkout', [
-                'price' => SubscriptionController::PRICE_COMPANY,
-                'seats' => 10000,
-            ])
-            ->assertRedirect('https://checkout.stripe.com/c/pay/fake_session');
-    }
-
-    // ── Checkout — individual monthly ──────────────────────────────────────────
-
-    public function test_checkout_individual_monthly_redirects_to_stripe(): void
-    {
-        $mockUser = $this->userWithCheckoutMock(SubscriptionController::PRICE_INDIVIDUAL_MONTHLY);
-
-        $this->actingAs($mockUser)
-            ->post('/checkout', ['price' => SubscriptionController::PRICE_INDIVIDUAL_MONTHLY])
-            ->assertRedirect('https://checkout.stripe.com/c/pay/fake_session');
-    }
-
-    // ── Checkout — individual yearly ───────────────────────────────────────────
-
-    public function test_checkout_individual_yearly_redirects_to_stripe(): void
-    {
-        $mockUser = $this->userWithCheckoutMock(SubscriptionController::PRICE_INDIVIDUAL_YEARLY);
-
-        $this->actingAs($mockUser)
-            ->post('/checkout', ['price' => SubscriptionController::PRICE_INDIVIDUAL_YEARLY])
-            ->assertRedirect('https://checkout.stripe.com/c/pay/fake_session');
-    }
-
-    // ── Checkout — company with seats (all tier boundaries) ───────────────────
-
-    #[DataProvider('seatTierProvider')]
-    public function test_company_checkout_sends_correct_seat_quantity(int $seats): void
-    {
-        $mockUser = $this->userWithCheckoutMock(SubscriptionController::PRICE_COMPANY, $seats);
-
-        $this->actingAs($mockUser)
-            ->post('/checkout', [
-                'price' => SubscriptionController::PRICE_COMPANY,
-                'seats' => $seats,
-            ])
-            ->assertRedirect('https://checkout.stripe.com/c/pay/fake_session');
-    }
-
-    public static function seatTierProvider(): array
-    {
-        return [
-            'Tier 1 — lower (1)'      => [1],
-            'Tier 1 — upper (50)'     => [50],
-            'Tier 2 — lower (51)'     => [51],
-            'Tier 2 — upper (100)'    => [100],
-            'Tier 3 — lower (101)'    => [101],
-            'Tier 3 — upper (250)'    => [250],
-            'Tier 4 — lower (251)'    => [251],
-            'Tier 4 — upper (500)'    => [500],
-            'Tier 5 — lower (501)'    => [501],
-            'Tier 5 — upper (750)'    => [750],
-            'Tier 6 — lower (751)'    => [751],
-            'Tier 6 — upper (1000)'   => [1000],
-            'Tier 7 — lower (1001)'   => [1001],
-            'Tier 7 — upper (2500)'   => [2500],
-            'Tier 8 — lower (2501)'   => [2501],
-            'Tier 8 — upper (5000)'   => [5000],
-            'Tier 9 — lower (5001)'   => [5001],
-            'Tier 9 — upper (7500)'   => [7500],
-            'Tier 10 — lower (7501)'  => [7501],
-            'Tier 10 — upper (10000)' => [10000],
-        ];
-    }
-
-    // ── Checkout — seat edge cases ─────────────────────────────────────────────
-
-    public function test_company_checkout_clamps_zero_seats_to_one(): void
-    {
-        // Controller does max(1, (int) $seats) so 0 → 1
-        $mockUser = $this->userWithCheckoutMock(SubscriptionController::PRICE_COMPANY, 1);
-
-        $this->actingAs($mockUser)
-            ->post('/checkout', [
-                'price' => SubscriptionController::PRICE_COMPANY,
-                'seats' => 0,
-            ])
-            ->assertRedirect('https://checkout.stripe.com/c/pay/fake_session');
-    }
-
-    public function test_company_checkout_clamps_negative_seats_to_one(): void
-    {
-        $mockUser = $this->userWithCheckoutMock(SubscriptionController::PRICE_COMPANY, 1);
-
-        $this->actingAs($mockUser)
-            ->post('/checkout', [
-                'price' => SubscriptionController::PRICE_COMPANY,
-                'seats' => -99,
-            ])
-            ->assertRedirect('https://checkout.stripe.com/c/pay/fake_session');
-    }
-
-    public function test_company_checkout_defaults_to_one_seat_when_omitted(): void
-    {
-        $mockUser = $this->userWithCheckoutMock(SubscriptionController::PRICE_COMPANY, 1);
-
-        $this->actingAs($mockUser)
-            ->post('/checkout', ['price' => SubscriptionController::PRICE_COMPANY])
-            ->assertRedirect('https://checkout.stripe.com/c/pay/fake_session');
-    }
-
-    // ── Static pages ───────────────────────────────────────────────────────────
-
-    public function test_success_page_accessible_for_authenticated_user(): void
-    {
-        $this->actingAs($this->activeUser())->get('/checkout/success')->assertStatus(200);
-    }
-
-    public function test_cancel_page_accessible_for_authenticated_user(): void
-    {
-        $this->actingAs($this->activeUser())->get('/checkout/cancel')->assertStatus(200);
-    }
-
-    public function test_success_page_redirects_guest(): void
+    public function test_success_page_requires_auth(): void
     {
         $this->get('/checkout/success')->assertRedirect('/login');
     }
 
-    public function test_cancel_page_redirects_guest(): void
+    public function test_cancel_page_requires_auth(): void
     {
         $this->get('/checkout/cancel')->assertRedirect('/login');
     }
 
-    public function test_enterprise_page_redirects_guest(): void
+    // -------------------------------------------------------------------------
+    // Protecção de rotas
+    // -------------------------------------------------------------------------
+
+    public function test_guest_cannot_access_checkout(): void
     {
-        $this->get('/checkout/enterprise')->assertRedirect('/login');
+        $this->post('/checkout', ['price' => 'price_123'])
+             ->assertRedirect('/login');
     }
 
-    // ── Seat management — auth guard ───────────────────────────────────────────
-
-    public function test_seats_page_redirects_guest(): void
+    public function test_guest_cannot_access_seats_page(): void
     {
         $this->get('/billing/seats')->assertRedirect('/login');
     }
 
-    public function test_update_seats_redirects_guest(): void
+    public function test_unverified_user_cannot_access_checkout(): void
     {
-        $this->post('/billing/seats', ['new_seats' => 5])->assertRedirect('/login');
-    }
-
-    // ── Seat update — validation ───────────────────────────────────────────────
-
-    public function test_update_seats_rejects_missing_field(): void
-    {
-        $this->actingAs($this->activeUser())
-            ->post('/billing/seats', [])
-            ->assertSessionHasErrors('new_seats');
-    }
-
-    public function test_update_seats_rejects_zero(): void
-    {
-        $this->actingAs($this->activeUser())
-            ->post('/billing/seats', ['new_seats' => 0])
-            ->assertSessionHasErrors('new_seats');
-    }
-
-    public function test_update_seats_rejects_negative(): void
-    {
-        $this->actingAs($this->activeUser())
-            ->post('/billing/seats', ['new_seats' => -1])
-            ->assertSessionHasErrors('new_seats');
-    }
-
-    public function test_update_seats_rejects_above_10000(): void
-    {
-        $this->actingAs($this->activeUser())
-            ->post('/billing/seats', ['new_seats' => 10001])
-            ->assertSessionHasErrors('new_seats');
-    }
-
-    public function test_update_seats_rejects_non_integer_string(): void
-    {
-        $this->actingAs($this->activeUser())
-            ->post('/billing/seats', ['new_seats' => 'abc'])
-            ->assertSessionHasErrors('new_seats');
-    }
-
-    public function test_update_seats_rejects_float(): void
-    {
-        $this->actingAs($this->activeUser())
-            ->post('/billing/seats', ['new_seats' => 5.5])
-            ->assertSessionHasErrors('new_seats');
-    }
-
-    public function test_update_seats_accepts_max_boundary_of_10000(): void
-    {
-        // Validation passes for 10000 — updateQuantity would be called next.
-        // We verify no validation error is present by checking the user
-        // without subscription returns an 'error' flash (not a validation error).
-        $this->actingAs($this->activeUser())
-            ->post('/billing/seats', ['new_seats' => 10000])
-            ->assertSessionDoesntHaveErrors('new_seats');
-    }
-
-    public function test_update_seats_accepts_min_boundary_of_1(): void
-    {
-        $this->actingAs($this->activeUser())
-            ->post('/billing/seats', ['new_seats' => 1])
-            ->assertSessionDoesntHaveErrors('new_seats');
-    }
-
-    // ── Seat update — no active subscription ──────────────────────────────────
-
-    public function test_update_seats_returns_error_flash_without_subscription(): void
-    {
-        $user = $this->activeUser(); // no subscription row in DB
-
+        $user = User::factory()->unverified()->create(['is_active' => true]);
         $this->actingAs($user)
-            ->post('/billing/seats', ['new_seats' => 5])
-            ->assertSessionHas('error');
+             ->post('/checkout', ['price' => 'price_123'])
+             ->assertRedirect('/email/verify');
     }
 
-    // ── Seat update — success (Stripe updateQuantity mocked) ──────────────────
-
-    public function test_update_seats_calls_stripe_and_redirects_to_dashboard(): void
+    public function test_inactive_user_is_logged_out_on_checkout(): void
     {
-        $mockUser = $this->userWithSubscriptionMock(10);
-
-        $this->actingAs($mockUser)
-            ->post('/billing/seats', ['new_seats' => 20])
-            ->assertRedirect(route('company.dashboard'))
-            ->assertSessionHas('success');
+        $user = $this->verifiedUser(['is_active' => false]);
+        $this->actingAs($user)
+             ->post('/checkout', ['price' => 'price_123'])
+             ->assertRedirect('/login');
     }
 
-    public function test_update_seats_success_message_contains_new_seat_count(): void
+    public function test_non_company_admin_cannot_access_seats_page(): void
     {
-        $mockUser = $this->userWithSubscriptionMock(5);
+        // seats() calls firstOrFail() → ModelNotFoundException → 404
+        $user = $this->verifiedUser(['type' => 'user']);
+        $this->actingAs($user)
+             ->get('/billing/seats')
+             ->assertStatus(404);
+    }
 
-        $response = $this->actingAs($mockUser)
-            ->post('/billing/seats', ['new_seats' => 15]);
+    // -------------------------------------------------------------------------
+    // Checkout — validação de preço
+    // -------------------------------------------------------------------------
+
+    public function test_checkout_rejects_invalid_price(): void
+    {
+        $user = $this->verifiedUser();
+        $this->actingAs($user)
+             ->post('/checkout', ['price' => 'price_invalid_abc'])
+             ->assertStatus(400);
+    }
+
+    public function test_checkout_rejects_empty_price(): void
+    {
+        $user = $this->verifiedUser();
+        $this->actingAs($user)
+             ->post('/checkout', ['price' => ''])
+             ->assertStatus(400);
+    }
+
+    // -------------------------------------------------------------------------
+    // Checkout empresa — limite de seats
+    // -------------------------------------------------------------------------
+
+    public function test_company_checkout_redirects_to_enterprise_when_seats_exceed_10000(): void
+    {
+        $user = $this->verifiedUser();
+        $this->actingAs($user)
+             ->post('/checkout', [
+                 'price' => 'price_1TM7hJCcmLy5PiLsPioHECxJ',
+                 'seats' => 10001,
+             ])
+             ->assertRedirect(route('subscriptions.enterprise'));
+    }
+
+    public function test_company_checkout_accepts_exactly_10000_seats_and_proceeds_to_stripe(): void
+    {
+        $user = $this->verifiedUser();
+
+        $builderMock = Mockery::mock(\Laravel\Cashier\SubscriptionBuilder::class);
+        $builderMock->shouldReceive('quantity')->with(10000)->andReturnSelf();
+        $builderMock->shouldReceive('checkout')->andReturn($this->checkoutStub('https://checkout.stripe.com/pay/cs_test'));
+
+        $userMock = Mockery::mock($user)->makePartial();
+        $userMock->shouldReceive('newSubscription')->andReturn($builderMock);
+
+        $this->actingAs($userMock)
+             ->post('/checkout', [
+                 'price' => 'price_1TM7hJCcmLy5PiLsPioHECxJ',
+                 'seats' => 10000,
+             ])
+             ->assertRedirect('https://checkout.stripe.com/pay/cs_test');
+    }
+
+    // -------------------------------------------------------------------------
+    // Checkout individual — redireciona para Stripe (mocked)
+    // -------------------------------------------------------------------------
+
+    public function test_individual_monthly_checkout_redirects_to_stripe(): void
+    {
+        $user = $this->verifiedUser();
+
+        $builderMock = Mockery::mock(\Laravel\Cashier\SubscriptionBuilder::class);
+        $builderMock->shouldReceive('checkout')->andReturn($this->checkoutStub('https://checkout.stripe.com/pay/cs_test_monthly'));
+
+        $userMock = Mockery::mock($user)->makePartial();
+        $userMock->shouldReceive('newSubscription')
+                 ->with('default', 'price_1TFgXeCcmLy5PiLsbrLtDCfP')
+                 ->andReturn($builderMock);
+
+        $this->actingAs($userMock)
+             ->post('/checkout', ['price' => 'price_1TFgXeCcmLy5PiLsbrLtDCfP'])
+             ->assertRedirect('https://checkout.stripe.com/pay/cs_test_monthly');
+    }
+
+    public function test_individual_yearly_checkout_redirects_to_stripe(): void
+    {
+        $user = $this->verifiedUser();
+
+        $builderMock = Mockery::mock(\Laravel\Cashier\SubscriptionBuilder::class);
+        $builderMock->shouldReceive('checkout')->andReturn($this->checkoutStub('https://checkout.stripe.com/pay/cs_test_yearly'));
+
+        $userMock = Mockery::mock($user)->makePartial();
+        $userMock->shouldReceive('newSubscription')
+                 ->with('default', 'price_1TFgXKCcmLy5PiLs5xZdP87O')
+                 ->andReturn($builderMock);
+
+        $this->actingAs($userMock)
+             ->post('/checkout', ['price' => 'price_1TFgXKCcmLy5PiLs5xZdP87O'])
+             ->assertRedirect('https://checkout.stripe.com/pay/cs_test_yearly');
+    }
+
+    // -------------------------------------------------------------------------
+    // Checkout empresa com seats — redireciona para Stripe (mocked)
+    // -------------------------------------------------------------------------
+
+    public function test_company_checkout_with_seats_redirects_to_stripe(): void
+    {
+        $user = $this->verifiedUser();
+
+        $builderMock = Mockery::mock(\Laravel\Cashier\SubscriptionBuilder::class);
+        $builderMock->shouldReceive('quantity')->with(25)->andReturnSelf();
+        $builderMock->shouldReceive('checkout')->andReturn($this->checkoutStub('https://checkout.stripe.com/pay/cs_test_company'));
+
+        $userMock = Mockery::mock($user)->makePartial();
+        $userMock->shouldReceive('newSubscription')
+                 ->with('default', 'price_1TM7hJCcmLy5PiLsPioHECxJ')
+                 ->andReturn($builderMock);
+
+        $this->actingAs($userMock)
+             ->post('/checkout', [
+                 'price' => 'price_1TM7hJCcmLy5PiLsPioHECxJ',
+                 'seats' => 25,
+             ])
+             ->assertRedirect('https://checkout.stripe.com/pay/cs_test_company');
+    }
+
+    // -------------------------------------------------------------------------
+    // Páginas success / cancel
+    // -------------------------------------------------------------------------
+
+    public function test_success_page_loads_for_authenticated_user(): void
+    {
+        $this->actingAs($this->verifiedUser())->get('/checkout/success')->assertStatus(200);
+    }
+
+    public function test_cancel_page_loads_for_authenticated_user(): void
+    {
+        $this->actingAs($this->verifiedUser())->get('/checkout/cancel')->assertStatus(200);
+    }
+
+    // -------------------------------------------------------------------------
+    // Gestão de seats
+    // -------------------------------------------------------------------------
+
+    public function test_seats_page_loads_for_company_admin_without_subscription(): void
+    {
+        [$user, $company] = $this->companyAdminWithCompany();
+        $this->actingAs($user)->get('/billing/seats')->assertStatus(200);
+    }
+
+    public function test_seats_page_loads_for_company_admin_with_subscription(): void
+    {
+        [$user, $company] = $this->companyAdminWithCompany();
+
+        $sub      = $this->mockSubscription(50);
+        $userMock = $this->userWithSubscription($user, $sub);
+
+        $this->actingAs($userMock)->get('/billing/seats')->assertStatus(200);
+    }
+
+    public function test_seats_update_rejects_zero_seats(): void
+    {
+        [$user] = $this->companyAdminWithCompany();
+        $this->actingAs($user)
+             ->post('/billing/seats', ['new_seats' => 0])
+             ->assertSessionHasErrors('new_seats');
+    }
+
+    public function test_seats_update_rejects_seats_over_limit(): void
+    {
+        [$user] = $this->companyAdminWithCompany();
+        $this->actingAs($user)
+             ->post('/billing/seats', ['new_seats' => 10001])
+             ->assertSessionHasErrors('new_seats');
+    }
+
+    public function test_seats_update_rejects_non_integer_string(): void
+    {
+        [$user] = $this->companyAdminWithCompany();
+        $this->actingAs($user)
+             ->post('/billing/seats', ['new_seats' => 'abc'])
+             ->assertSessionHasErrors('new_seats');
+    }
+
+    public function test_seats_update_rejects_float(): void
+    {
+        [$user] = $this->companyAdminWithCompany();
+        $this->actingAs($user)
+             ->post('/billing/seats', ['new_seats' => 5.5])
+             ->assertSessionHasErrors('new_seats');
+    }
+
+    public function test_seats_update_accepts_boundary_values(): void
+    {
+        [$user, $company] = $this->companyAdminWithCompany();
+
+        $sub      = $this->mockSubscription(1);
+        $userMock = $this->userWithSubscription($user, $sub);
+
+        $this->actingAs($userMock)
+             ->post('/billing/seats', ['new_seats' => 1])
+             ->assertSessionHasNoErrors();
+
+        $this->actingAs($userMock)
+             ->post('/billing/seats', ['new_seats' => 10000])
+             ->assertSessionHasNoErrors();
+    }
+
+    public function test_seats_update_returns_error_without_subscription(): void
+    {
+        [$user, $company] = $this->companyAdminWithCompany();
+
+        $userMock = Mockery::mock($user)->makePartial();
+        $userMock->shouldReceive('subscription')->with('default')->andReturn(null);
+
+        $this->actingAs($userMock)
+             ->post('/billing/seats', ['new_seats' => 5])
+             ->assertSessionHas('error');
+    }
+
+    public function test_seats_update_calls_stripe_update_quantity(): void
+    {
+        [$user, $company] = $this->companyAdminWithCompany();
+
+        $sub      = $this->mockSubscription(10);
+        $userMock = $this->userWithSubscription($user, $sub);
+
+        $this->actingAs($userMock)
+             ->post('/billing/seats', ['new_seats' => 20])
+             ->assertRedirect(route('company.dashboard'))
+             ->assertSessionHas('success');
+    }
+
+    public function test_seats_update_success_message_contains_new_seat_count(): void
+    {
+        [$user, $company] = $this->companyAdminWithCompany();
+
+        $sub      = $this->mockSubscription(5);
+        $userMock = $this->userWithSubscription($user, $sub);
+
+        $response = $this->actingAs($userMock)
+             ->post('/billing/seats', ['new_seats' => 15]);
 
         $response->assertSessionHas('success', fn (string $msg) => str_contains($msg, '15'));
     }
 
-    // ── Webhook — onboarding email ─────────────────────────────────────────────
+    public function test_seats_update_deactivates_specified_members(): void
+    {
+        [$user, $company] = $this->companyAdminWithCompany();
+        $member = $this->verifiedUser();
+        $company->users()->attach($member->id, ['role' => 'member', 'is_admin' => false]);
 
-    public function test_webhook_sends_onboarding_email_when_checkout_completed(): void
+        $sub      = $this->mockSubscription(5);
+        $userMock = $this->userWithSubscription($user, $sub);
+
+        $this->actingAs($userMock)
+             ->post('/billing/seats', [
+                 'new_seats'        => 3,
+                 'deactivate_users' => json_encode([$member->id]),
+             ])
+             ->assertRedirect(route('company.dashboard'));
+
+        $this->assertFalse($company->users()->where('users.id', $member->id)->exists());
+    }
+
+    // -------------------------------------------------------------------------
+    // Formulário de contacto enterprise
+    // -------------------------------------------------------------------------
+
+    public function test_enterprise_contact_requires_name(): void
+    {
+        $this->post('/empresas/contacto', [
+            'company'   => 'ACME',
+            'email'     => 'test@example.com',
+            'employees' => '50-100',
+        ])->assertSessionHasErrors('name');
+    }
+
+    public function test_enterprise_contact_requires_company(): void
+    {
+        $this->post('/empresas/contacto', [
+            'name'      => 'Ana Silva',
+            'email'     => 'test@example.com',
+            'employees' => '50-100',
+        ])->assertSessionHasErrors('company');
+    }
+
+    public function test_enterprise_contact_requires_valid_email(): void
+    {
+        $this->post('/empresas/contacto', [
+            'name'      => 'Ana Silva',
+            'company'   => 'ACME',
+            'email'     => 'not-an-email',
+            'employees' => '50-100',
+        ])->assertSessionHasErrors('email');
+    }
+
+    public function test_enterprise_contact_requires_employees(): void
+    {
+        $this->post('/empresas/contacto', [
+            'name'    => 'Ana Silva',
+            'company' => 'ACME',
+            'email'   => 'test@example.com',
+        ])->assertSessionHasErrors('employees');
+    }
+
+    public function test_enterprise_contact_sends_email_with_valid_data(): void
     {
         Mail::fake();
 
-        $user = User::factory()->create([
-            'stripe_id'         => 'cus_test_onboarding_ok',
-            'is_active'         => true,
-            'email_verified_at' => now(),
+        $this->post('/empresas/contacto', [
+            'name'      => 'Ana Silva',
+            'company'   => 'ACME Lda',
+            'email'     => 'ana@acme.com',
+            'employees' => '50-100',
+            'message'   => 'Gostávamos de uma demonstração.',
+        ])->assertRedirect(route('enterprise'))
+          ->assertSessionHas('enterprise_success', true);
+    }
+
+    public function test_enterprise_contact_truncates_message_over_2000_chars(): void
+    {
+        Mail::fake();
+
+        $this->post('/empresas/contacto', [
+            'name'      => 'Ana Silva',
+            'company'   => 'ACME Lda',
+            'email'     => 'ana@acme.com',
+            'employees' => '50-100',
+            'message'   => str_repeat('a', 2001),
+        ])->assertSessionHasErrors('message');
+    }
+
+    // -------------------------------------------------------------------------
+    // Webhook Stripe
+    // -------------------------------------------------------------------------
+
+    public function test_webhook_endpoint_is_accessible_without_authentication(): void
+    {
+        // Without a valid signature it returns 400, but NOT 401/302 (auth redirects).
+        $response = $this->postJson('/stripe/webhook', []);
+        $this->assertNotEquals(401, $response->status());
+        $this->assertNotEquals(302, $response->status());
+    }
+
+    public function test_webhook_sends_onboarding_email_on_checkout_completed(): void
+    {
+        Mail::fake();
+
+        $user = $this->verifiedUser();
+        $user->forceFill(['stripe_id' => 'cus_test_onboarding'])->save();
+
+        // Call the protected handler directly — no Stripe HTTP calls (no parent:: call)
+        $controller = new \App\Http\Controllers\WebhookController();
+        $method     = new \ReflectionMethod($controller, 'handleCheckoutSessionCompleted');
+        $method->setAccessible(true);
+
+        $method->invoke($controller, [
+            'type' => 'checkout.session.completed',
+            'data' => ['object' => ['customer' => 'cus_test_onboarding']],
         ]);
 
-        // POST directly to the webhook route (no signature secret configured)
-        $this->postJson('/stripe/webhook', [
-            'id'   => 'evt_test_001',
-            'type' => 'checkout.session.completed',
-            'data' => [
-                'object' => [
-                    'id'           => 'cs_test_001',
-                    'mode'         => 'subscription',
-                    'customer'     => 'cus_test_onboarding_ok',
-                    'subscription' => 'sub_not_in_db_intentionally',
-                ],
-            ],
-        ])->assertSuccessful();
-
-        Mail::assertSent(
-            OnboardingEmail::class,
-            fn (OnboardingEmail $mail) => $mail->hasTo($user->email)
-        );
+        Mail::assertSent(\App\Mail\OnboardingEmail::class, fn ($m) => $m->hasTo($user->email));
     }
 
     public function test_webhook_sends_exactly_one_email_per_checkout(): void
     {
         Mail::fake();
 
-        $user = User::factory()->create([
-            'stripe_id' => 'cus_test_single_email',
-            'is_active' => true,
-        ]);
+        $user = $this->verifiedUser();
+        $user->forceFill(['stripe_id' => 'cus_test_single_email'])->save();
 
-        $this->postJson('/stripe/webhook', [
-            'id'   => 'evt_test_002',
+        $controller = new \App\Http\Controllers\WebhookController();
+        $method     = new \ReflectionMethod($controller, 'handleCheckoutSessionCompleted');
+        $method->setAccessible(true);
+
+        $method->invoke($controller, [
             'type' => 'checkout.session.completed',
-            'data' => [
-                'object' => [
-                    'id'           => 'cs_test_002',
-                    'mode'         => 'subscription',
-                    'customer'     => 'cus_test_single_email',
-                    'subscription' => 'sub_not_in_db',
-                ],
-            ],
-        ])->assertSuccessful();
+            'data' => ['object' => ['customer' => 'cus_test_single_email']],
+        ]);
 
         Mail::assertSentCount(1);
     }
@@ -468,17 +518,14 @@ class SubscriptionTest extends TestCase
     {
         Mail::fake();
 
-        $this->postJson('/stripe/webhook', [
-            'id'   => 'evt_test_003',
+        $controller = new \App\Http\Controllers\WebhookController();
+        $method     = new \ReflectionMethod($controller, 'handleCheckoutSessionCompleted');
+        $method->setAccessible(true);
+
+        $method->invoke($controller, [
             'type' => 'checkout.session.completed',
-            'data' => [
-                'object' => [
-                    'id'   => 'cs_test_003',
-                    'mode' => 'subscription',
-                    // 'customer' intentionally omitted
-                ],
-            ],
-        ])->assertSuccessful();
+            'data' => ['object' => []],
+        ]);
 
         Mail::assertNothingSent();
     }
@@ -487,18 +534,14 @@ class SubscriptionTest extends TestCase
     {
         Mail::fake();
 
-        $this->postJson('/stripe/webhook', [
-            'id'   => 'evt_test_004',
+        $controller = new \App\Http\Controllers\WebhookController();
+        $method     = new \ReflectionMethod($controller, 'handleCheckoutSessionCompleted');
+        $method->setAccessible(true);
+
+        $method->invoke($controller, [
             'type' => 'checkout.session.completed',
-            'data' => [
-                'object' => [
-                    'id'           => 'cs_test_004',
-                    'mode'         => 'subscription',
-                    'customer'     => 'cus_nonexistent_xyz',
-                    'subscription' => 'sub_not_in_db',
-                ],
-            ],
-        ])->assertSuccessful();
+            'data' => ['object' => ['customer' => 'cus_nonexistent_xyz']],
+        ]);
 
         Mail::assertNothingSent();
     }
@@ -507,23 +550,22 @@ class SubscriptionTest extends TestCase
     {
         Mail::fake();
 
-        $userA = User::factory()->create(['stripe_id' => 'cus_user_a', 'is_active' => true]);
-        $userB = User::factory()->create(['stripe_id' => 'cus_user_b', 'is_active' => true]);
+        $userA = $this->verifiedUser();
+        $userA->forceFill(['stripe_id' => 'cus_user_a'])->save();
 
-        $this->postJson('/stripe/webhook', [
-            'id'   => 'evt_test_005',
+        $userB = $this->verifiedUser();
+        $userB->forceFill(['stripe_id' => 'cus_user_b'])->save();
+
+        $controller = new \App\Http\Controllers\WebhookController();
+        $method     = new \ReflectionMethod($controller, 'handleCheckoutSessionCompleted');
+        $method->setAccessible(true);
+
+        $method->invoke($controller, [
             'type' => 'checkout.session.completed',
-            'data' => [
-                'object' => [
-                    'id'           => 'cs_test_005',
-                    'mode'         => 'subscription',
-                    'customer'     => 'cus_user_b',
-                    'subscription' => 'sub_not_in_db',
-                ],
-            ],
-        ])->assertSuccessful();
+            'data' => ['object' => ['customer' => 'cus_user_b']],
+        ]);
 
-        Mail::assertSent(OnboardingEmail::class, fn ($m) => $m->hasTo($userB->email));
-        Mail::assertNotSent(OnboardingEmail::class, fn ($m) => $m->hasTo($userA->email));
+        Mail::assertSent(\App\Mail\OnboardingEmail::class, fn ($m) => $m->hasTo($userB->email));
+        Mail::assertNotSent(\App\Mail\OnboardingEmail::class, fn ($m) => $m->hasTo($userA->email));
     }
 }

@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') — Cardifys</title>
-    <link rel="icon" type="image/png" href="/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#9b6dff">
     <meta name="mobile-web-app-capable" content="yes">
@@ -144,19 +146,8 @@
         .logo .mark {
             width: 28px; height: 28px;
             border-radius: 8px;
-            background: radial-gradient(circle at 30% 30%, var(--purple), var(--purple-deep));
-            position: relative;
             flex-shrink: 0;
             box-shadow: 0 0 16px oklch(0.72 0.19 300 / 0.38);
-        }
-
-        .logo .mark::after {
-            content: "";
-            position: absolute; inset: 6px;
-            border-radius: 4px;
-            border: 1.5px solid oklch(0.15 0.012 290);
-            border-top-color: transparent;
-            border-right-color: transparent;
         }
 
         /* Nav */
@@ -800,7 +791,7 @@
 
         <div class="sidebar-brand">
             <a href="{{ route('home') }}" class="logo">
-                <div class="mark"></div>
+                <img src="/icon.svg" alt="Cardifys" class="mark">
                 Cardifys
             </a>
         </div>
@@ -846,7 +837,7 @@
                     </svg>
                     Convites
                     @php
-                        $pendingInvitesCount = \App\Models\CompanyInvite::forEmail(auth()->user()->email)->pending()->count();
+                        $pendingInvitesCount = Auth::check() ? \App\Models\CompanyInvite::forEmail(auth()->user()->email)->pending()->count() : 0;
                     @endphp
                     @if($pendingInvitesCount > 0)
                         <span class="nav-badge">{{ $pendingInvitesCount }}</span>
@@ -854,7 +845,7 @@
                 </a>
             </div>
 
-            @if(Auth::user()->isCompanyAdmin())
+            @if(Auth::check() && Auth::user()->isCompanyAdmin())
             <div class="nav-section">
                 <div class="nav-section-title">Empresa</div>
 
@@ -876,7 +867,7 @@
             </div>
             @endif
 
-            @if(Auth::user()->isSuperAdmin())
+            @if(Auth::check() && Auth::user()->isSuperAdmin())
             <div class="nav-section">
                 <div class="nav-section-title">Administração</div>
 
@@ -926,6 +917,7 @@
         </nav>
 
         <div class="sidebar-footer">
+            @auth
             <div class="user-card">
                 <div class="user-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
                 <div class="user-info">
@@ -933,6 +925,7 @@
                     <div class="user-email">{{ Auth::user()->email }}</div>
                 </div>
             </div>
+            @endauth
             <form method="POST" action="{{ route('logout') }}" class="logout-form">
                 @csrf
                 <button type="submit" class="btn-logout">

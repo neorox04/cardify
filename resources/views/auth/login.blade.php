@@ -6,6 +6,8 @@
     <title>Entrar — Cardifys</title>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#7c3aed">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -206,50 +208,6 @@
             margin-bottom: 24px;
         }
 
-        /* Google — dark */
-        .btn-google {
-            width: 100%;
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.07);
-            border: 1.5px solid rgba(255,255,255,0.11);
-            border-radius: 10px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            color: #f0ecff;
-            cursor: pointer;
-            transition: background 0.15s, border-color 0.15s;
-            margin-bottom: 16px;
-        }
-        .btn-google:hover {
-            background: rgba(255,255,255,0.11);
-            border-color: rgba(255,255,255,0.18);
-        }
-
-        /* OR */
-        .or-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .or-row::before, .or-row::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(255,255,255,0.09);
-        }
-        .or-row span {
-            font-size: 12px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.25);
-            letter-spacing: 0.05em;
-        }
-
         /* Success banner */
         .banner-ok {
             display: flex;
@@ -441,18 +399,6 @@
             <h2 class="fc-title">Welcome back.</h2>
             <p class="fc-sub">Sign in to your account to continue.</p>
 
-            <button type="button" class="btn-google">
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                <span id="google-txt">Continue with Google</span>
-            </button>
-
-            <div class="or-row"><span id="or-txt">or</span></div>
-
             @if (session('success'))
                 <div class="banner-ok">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
@@ -528,8 +474,6 @@
         pt: {
             fcTitle:    'Bem-vindo de volta.',
             fcSub:      'Inicia sessão para continuar.',
-            googleBtn:  'Continuar com o Google',
-            orTxt:      'ou',
             lblEmail:   'Email',
             lblPass:    'Palavra-passe',
             forgot:     'Esqueceu-se?',
@@ -545,8 +489,6 @@
         en: {
             fcTitle:    'Welcome back.',
             fcSub:      'Sign in to your account to continue.',
-            googleBtn:  'Continue with Google',
-            orTxt:      'or',
             lblEmail:   'Email',
             lblPass:    'Password',
             forgot:     'Forgot?',
@@ -604,8 +546,6 @@
 
         document.querySelector('.fc-title').textContent        = t.fcTitle;
         document.querySelector('.fc-sub').textContent          = t.fcSub;
-        document.getElementById('google-txt').textContent      = t.googleBtn;
-        document.getElementById('or-txt').textContent          = t.orTxt;
         document.getElementById('lbl-email').textContent       = t.lblEmail;
         document.getElementById('lbl-pass').textContent        = t.lblPass;
         document.getElementById('lbl-forgot').textContent      = t.forgot;

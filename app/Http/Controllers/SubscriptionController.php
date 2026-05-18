@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Cashier\Cashier;
 
 class SubscriptionController extends Controller
@@ -139,6 +140,43 @@ class SubscriptionController extends Controller
 
         return redirect()->route('company.dashboard')
             ->with('success', "Plano atualizado para {$newSeats} seats com sucesso!");
+    }
+
+    // Página enterprise pública
+    public function enterprisePage()
+    {
+        return view('subscriptions.enterprise-public');
+    }
+
+    // Formulário de contacto enterprise
+    public function enterpriseContact(Request $request)
+    {
+        $data = $request->validate([
+            'name'      => 'required|string|max:120',
+            'company'   => 'required|string|max:120',
+            'email'     => 'required|email|max:200',
+            'employees' => 'required|string',
+            'message'   => 'nullable|string|max:2000',
+        ]);
+
+        try {
+            $body = "Novo pedido de demonstração — Plano Empresas\n\n"
+                . "Nome: {$data['name']}\n"
+                . "Empresa: {$data['company']}\n"
+                . "Email: {$data['email']}\n"
+                . "Colaboradores: {$data['employees']}\n"
+                . "Mensagem: " . ($data['message'] ?? '—');
+
+            Mail::raw($body, function ($msg) use ($data) {
+                $msg->to('hello@cardifys.com')
+                    ->replyTo($data['email'], $data['name'])
+                    ->subject("Demo Empresas — {$data['company']}");
+            });
+
+            return redirect()->route('enterprise')->with('enterprise_success', true);
+        } catch (\Exception $e) {
+            return redirect()->route('enterprise')->with('enterprise_error', true);
+        }
     }
 
     // Página enterprise (10.000+ seats)

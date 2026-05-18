@@ -3,7 +3,7 @@
 @section('content')
     <span class="badge">Convite</span>
     <h1>Foste convidado para uma empresa</h1>
-    <p><strong style="color:#fafafa">{{ $inviter->name }}</strong> convidou-te para te juntares à empresa <strong style="color:#fafafa">{{ $company->name }}</strong> no Cardify.</p>
+    <p><strong style="color:#fafafa">{{ $inviter->name }}</strong> convidou-te para te juntares à empresa <strong style="color:#fafafa">{{ $company->name }}</strong> no Cardifys.</p>
 
     @if($invite->role)
         <div class="info-box">
@@ -15,7 +15,7 @@
         $inviteUrl = url('/user/invites');
     @endphp
 
-    <p>Para aceitar ou recusar este convite, entra na tua conta Cardify e vai à secção de convites.</p>
+    <p>Para aceitar ou recusar este convite, entra na tua conta Cardifys e vai à secção de convites.</p>
 
     <div class="btn-center">
         <a href="{{ $inviteUrl }}" class="btn">Ver Convite</a>
@@ -25,7 +25,7 @@
 
     <p style="font-size:13px; color:#52525b">
         Este convite expira em <strong style="color:#71717a">{{ $invite->expires_at->format('d/m/Y \à\s H:i') }}</strong>.
-        Se não tens conta no Cardify, podes criar uma gratuitamente em
+        Se não tens conta no Cardifys, podes criar uma gratuitamente em
         <a href="{{ url('/register') }}" style="color:#6366f1">cardify.app</a>.
     </p>
 @endsection

@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planos — Cardifys</title>
-    <link rel="icon" type="image/png" href="/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#9b6dff">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -301,19 +303,19 @@
 
         <article class="card">
             <div class="label">Empresas</div>
-            <div class="price">50€ <small>setup + 1€/colaborador/mês</small></div>
-            <p class="desc">Gestão centralizada para equipas com branding corporativo unificado em todos os cartões.</p>
+            <div class="price">9.50€ <small>/seat/mês</small></div>
+            <p class="desc">Volume pricing automático — quanto maior a equipa, menor o custo por seat. Desde 4€/seat para grandes equipas.</p>
 
             <ul class="list">
                 <li><span class="ok">✓</span>Tudo do plano Individual</li>
-                <li><span class="ok">✓</span>Colaboradores ilimitados</li>
+                <li><span class="ok">✓</span>Seats escaláveis</li>
                 <li><span class="ok">✓</span>Painel de administração</li>
                 <li><span class="ok">✓</span>Branding corporativo</li>
                 <li><span class="ok">✓</span>Suporte prioritário</li>
                 <li><span class="ok">✓</span>Acesso à API</li>
             </ul>
 
-            <a href="mailto:hello@cardifys.com" class="cta secondary">Falar connosco</a>
+            <a href="{{ route('enterprise') }}" class="cta secondary">Ver preços por equipa →</a>
         </article>
     </section>
 

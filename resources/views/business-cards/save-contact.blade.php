@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guardar Contacto - {{ $businessCard->full_name }}</title>
-    <link rel="icon" type="image/png" href="/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#6366f1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -241,7 +243,7 @@
         </a>
 
         <div class="powered-by">
-            Criado com <a href="{{ route('home') }}">Cardify</a>
+            Criado com <a href="{{ route('home') }}">Cardifys</a>
         </div>
     </div>
 

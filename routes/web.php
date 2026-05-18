@@ -10,7 +10,6 @@ use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\BusinessCardController;
 use App\Http\Controllers\CompanyInviteController;
 use App\Http\Controllers\WebhookController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 // Stripe webhook (fora do middleware de auth)
 Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook']);
@@ -20,15 +19,11 @@ Route::get('/', function () {
     return view('welcome2');
 })->name('home');
 
-Route::get('/welcome2', function () {
-    return view('welcome2');
-})->name('welcome2');
-
-Route::get('/furzy', function () {
-    return view('furzy');
-})->name('furzy');
-
+Route::get('/privacidade', fn() => view('privacidade'))->name('privacidade');
+Route::get('/termos', fn() => view('termos'))->name('termos');
 Route::get('/planos', [SubscriptionController::class, 'showPlans'])->name('subscriptions.plans');
+Route::get('/empresas', [SubscriptionController::class, 'enterprisePage'])->name('enterprise');
+Route::post('/empresas/contacto', [SubscriptionController::class, 'enterpriseContact'])->name('enterprise.contact');
 
 // Authentication routes
 Route::middleware('guest')->group(function () {
@@ -45,10 +40,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 // Email Verification routes
 Route::middleware('auth')->group(function () {
     Route::get('/email/verify', [AuthController::class, 'showVerifyEmail'])->name('verification.notice');
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-        return redirect()->route('dashboard')->with('success', 'Email verificado com sucesso! Bem-vindo ao Cardify!');
-    })->middleware('signed')->name('verification.verify');
     Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
@@ -57,6 +48,28 @@ Route::middleware('auth')->group(function () {
         return response()->json(['verified' => auth()->user()->hasVerifiedEmail()]);
     })->name('verification.status');
 });
+
+// Verification link — sem auth: funciona em qualquer dispositivo, mesmo sem sessão ativa
+Route::get('/email/verify/{id}/{hash}', function (Illuminate\Http\Request $request, $id, $hash) {
+    $user = App\Models\User::findOrFail($id);
+
+    if (!hash_equals(sha1($user->getEmailForVerification()), (string) $hash)) {
+        abort(403);
+    }
+
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+        event(new Illuminate\Auth\Events\Verified($user));
+    }
+
+    // Autenticar no dispositivo atual se ainda não estiver logado
+    if (!auth()->check()) {
+        auth()->login($user);
+        $request->session()->regenerate();
+    }
+
+    return redirect()->route('dashboard')->with('success', 'Email verificado com sucesso! Bem-vindo ao Cardifys!');
+})->middleware('signed')->name('verification.verify');
 
 // Password Reset routes
 Route::middleware('guest')->group(function () {
@@ -121,7 +134,9 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
         Route::get('/{company}/edit', [CompanyDashboardController::class, 'edit'])->name('edit');
         Route::put('/{company}', [CompanyDashboardController::class, 'update'])->name('update');
         Route::get('/{company}/employees', [CompanyDashboardController::class, 'employees'])->name('employees');
-        
+        Route::get('/{company}/import/template', [CompanyDashboardController::class, 'downloadTemplate'])->name('import.template');
+        Route::post('/{company}/import', [CompanyDashboardController::class, 'importCards'])->name('import');
+
         // Company invites
         Route::get('/{company}/invites', [CompanyInviteController::class, 'create'])->name('invites');
         Route::post('/{company}/invites', [CompanyInviteController::class, 'store'])->name('invites.store');

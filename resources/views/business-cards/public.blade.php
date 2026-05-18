@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $businessCard->full_name }} - Cardify</title>
+    <title>{{ $businessCard->full_name }} - Cardifys</title>
     <meta name="description" content="{{ $businessCard->position ? $businessCard->position . ' - ' : '' }}{{ $businessCard->company ? $businessCard->company->name : '' }}">
-    <link rel="icon" type="image/png" href="/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <meta name="theme-color" content="#6366f1">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Cardifys">
+    <meta name="theme-color" content="#B08CFF">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -477,7 +482,7 @@
         </div>
 
         <div class="powered-by">
-            Criado com <a href="{{ route('home') }}">Cardify</a>
+            Criado com <a href="{{ route('home') }}">Cardifys</a>
         </div>
     </div>
 </body>

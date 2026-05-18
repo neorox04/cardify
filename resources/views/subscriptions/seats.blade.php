@@ -53,7 +53,7 @@
             <div class="slider-row">
                 <button class="seat-btn" id="btn-minus" aria-label="Diminuir">−</button>
                 <div class="slider-track-wrap">
-                    <input type="range" class="seat-slider" id="seat-slider" min="1" max="9999" value="{{ $currentSeats }}">
+                    <input type="range" class="seat-slider" id="seat-slider" min="1" max="10000" value="{{ $currentSeats }}">
                 </div>
                 <button class="seat-btn" id="btn-plus" aria-label="Aumentar">+</button>
             </div>
@@ -75,7 +75,7 @@
             <div class="impact-rows">
                 <div class="impact-row"><span>Novo tier</span><span class="impact-val" id="up-tier"></span></div>
                 <div class="impact-row"><span>Novo MRR</span><span class="impact-val" id="up-mrr"></span></div>
-                <div class="impact-row"><span>Cobrado hoje (<span id="up-days">{{ $daysRemaining }}</span> dias restantes)</span><span class="impact-val green" id="up-proration"></span></div>
+                <div class="impact-row"><span>Cobrado hoje (<span id="up-days">{{ $daysRemaining }}</span> <span id="up-days-label">{{ $daysRemaining === 1 ? 'dia restante' : 'dias restantes' }}</span>)</span><span class="impact-val green" id="up-proration"></span></div>
             </div>
         </div>
 
@@ -665,14 +665,14 @@
     }
 
     function updateSlider(val) {
-        const pct = ((Math.min(val, 9999) / 9999) * 100).toFixed(2) + '%';
+        const pct = ((Math.min(val, 10000) / 10000) * 100).toFixed(2) + '%';
         document.getElementById('seat-slider').style.setProperty('--val', pct);
     }
 
     function syncSeats(val) {
-        val = Math.max(1, parseInt(val) || 1);
+        val = Math.max(1, Math.min(10000, parseInt(val) || 1));
         newSeats = val;
-        document.getElementById('seat-slider').value = Math.min(val, 9999);
+        document.getElementById('seat-slider').value = val;
         document.getElementById('seat-input').value  = val;
         updateSlider(val);
         renderImpact();

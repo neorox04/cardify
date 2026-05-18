@@ -17,7 +17,7 @@ class OnboardingEmail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Começa agora — o teu guia do Cardify');
+        return new Envelope(subject: 'Começa agora — o teu guia do Cardifys');
     }
 
     public function content(): Content

@@ -10,7 +10,7 @@ class ResetPasswordNotification extends ResetPassword
     protected function buildMailMessage($url): MailMessage
     {
         return (new MailMessage)
-            ->subject('Recupera a tua password — Cardify')
+            ->subject('Recupera a tua password — Cardifys')
             ->view('emails.reset-password', ['url' => $url]);
     }
 }

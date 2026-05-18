@@ -288,7 +288,7 @@
         </div>
         <div>
             <h1 class="page-title">Analytics</h1>
-            <p class="page-subtitle">Métricas em tempo real · Plataforma Cardify</p>
+            <p class="page-subtitle">Métricas em tempo real · Plataforma Cardifys</p>
         </div>
     </div>
     <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary" style="display:inline-flex;align-items:center;gap:8px;">

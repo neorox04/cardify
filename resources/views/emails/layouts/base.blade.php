@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ $subject ?? 'Cardify' }}</title>
+    <title>{{ $subject ?? 'Cardifys' }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -175,7 +175,7 @@
                         <circle cx="7" cy="14" r="1.5" fill="#6366f1" fill-opacity="0.8"/>
                     </svg>
                 </span>
-                <span class="logo-text">Cardify</span>
+                <span class="logo-text">Cardifys</span>
             </span>
         </div>
 
@@ -184,10 +184,10 @@
         </div>
 
         <div class="footer">
-            <p>Recebeste este email porque tens uma conta no <strong style="color:#71717a">Cardify</strong>.</p>
+            <p>Recebeste este email porque tens uma conta no <strong style="color:#71717a">Cardifys</strong>.</p>
             <p>Se não reconheces esta atividade, podes ignorar este email.</p>
             <p style="margin-top:12px">
-                &copy; {{ date('Y') }} Cardify &mdash; Cartões de Visita Digitais
+                &copy; {{ date('Y') }} Cardifys &mdash; Cartões de Visita Digitais
             </p>
         </div>
     </div>

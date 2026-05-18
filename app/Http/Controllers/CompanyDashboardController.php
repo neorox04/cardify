@@ -18,26 +18,25 @@ class CompanyDashboardController extends Controller
     /**
      * Display the company dashboard.
      */
-    public function index(): View
+    public function index()
     {
-        $user = Auth::user();
-        $companies = $user->companies()->with(['businessCards', 'users'])->get();
-        
-        $totalEmployees = 0;
-        $totalBusinessCards = 0;
-        $totalViews = 0;
-        
-        foreach ($companies as $company) {
-            $totalEmployees += $company->users->count();
-            $totalBusinessCards += $company->businessCards->count();
-            $totalViews += $company->businessCards->sum('views_count');
+        $user    = Auth::user();
+        $company = $user->companies()->first();
+
+        if ($company) {
+            return redirect()->route('company.show', $company);
         }
 
-        $subscription   = $user->subscription('default');
-        $currentSeats   = $subscription ? ($subscription->quantity ?? 0) : 0;
-        $usedSeats      = $totalEmployees;
-
-        return view('company.dashboard', compact('companies', 'totalEmployees', 'totalBusinessCards', 'totalViews', 'subscription', 'currentSeats', 'usedSeats'));
+        // Edge case: admin sem empresa ainda (deve criar uma)
+        return view('company.dashboard', [
+            'companies'          => collect(),
+            'totalEmployees'     => 0,
+            'totalBusinessCards' => 0,
+            'totalViews'         => 0,
+            'subscription'       => null,
+            'currentSeats'       => 0,
+            'usedSeats'          => 0,
+        ]);
     }
 
     /**
@@ -91,11 +90,119 @@ class CompanyDashboardController extends Controller
     public function show(Company $company): View
     {
         $this->authorize('view', $company);
-        
-        $businessCards = $company->businessCards()->with('user')->latest()->get();
-        $employees = $company->users()->get();
 
-        return view('company.show', compact('company', 'businessCards', 'employees'));
+        $user          = Auth::user();
+        $businessCards = $company->businessCards()->with('user')->latest()->get();
+        $employees     = $company->users()->withPivot(['role', 'is_admin'])->get();
+        $subscription  = $user->subscription('default');
+        $currentSeats  = $subscription ? ($subscription->quantity ?? 0) : 0;
+        $usedSeats     = $employees->count();
+
+        return view('company.show', compact(
+            'company', 'businessCards', 'employees',
+            'subscription', 'currentSeats', 'usedSeats'
+        ));
+    }
+
+    public function downloadTemplate(Company $company)
+    {
+        $this->authorize('update', $company);
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="cardify_template.csv"',
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $columns = [
+            'nome_completo', 'email', 'cargo', 'departamento',
+            'telefone', 'telemovel', 'website', 'bio',
+            'linkedin', 'twitter', 'instagram', 'facebook', 'github',
+        ];
+
+        $example = [
+            'Ana Silva', 'ana.silva@empresa.com', 'Diretora de Marketing', 'Marketing',
+            '+351 21 000 0000', '+351 912 000 000', 'https://empresa.com',
+            'Apaixonada por estratégia digital e crescimento de marca.',
+            'https://linkedin.com/in/anasilva', '', '', '', '',
+        ];
+
+        $callback = function () use ($columns, $example) {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // UTF-8 BOM for Excel
+            fputcsv($handle, $columns);
+            fputcsv($handle, $example);
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function importCards(Request $request, Company $company)
+    {
+        $this->authorize('update', $company);
+
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+
+        $file  = $request->file('csv_file');
+        $path  = $file->getRealPath();
+        $data  = array_map('str_getcsv', file($path));
+        $header = array_shift($data);
+
+        // Normalise header keys
+        $header = array_map(fn($h) => mb_strtolower(trim(preg_replace('/\s+/', '_', $h))), $header);
+
+        $map = [
+            'nome_completo' => 'full_name',
+            'email'         => 'email',
+            'cargo'         => 'position',
+            'departamento'  => 'department',
+            'telefone'      => 'phone',
+            'telemovel'     => 'mobile',
+            'website'       => 'website',
+            'bio'           => 'bio',
+            'linkedin'      => 'linkedin_url',
+            'twitter'       => 'twitter_url',
+            'instagram'     => 'instagram_url',
+            'facebook'      => 'facebook_url',
+            'github'        => 'github_url',
+        ];
+
+        $created = 0;
+        $skipped = 0;
+
+        foreach ($data as $row) {
+            if (count($row) !== count($header)) { $skipped++; continue; }
+            $row = array_combine($header, $row);
+
+            $fullName = trim($row['nome_completo'] ?? '');
+            if (!$fullName) { $skipped++; continue; }
+
+            $cardData = ['company_id' => $company->id, 'user_id' => Auth::id(), 'is_active' => true, 'is_public' => true, 'theme' => 'default'];
+            foreach ($map as $csvKey => $field) {
+                $val = trim($row[$csvKey] ?? '');
+                if ($val !== '') $cardData[$field] = $val;
+            }
+
+            // Unique slug from full name
+            $base = \Illuminate\Support\Str::slug($fullName);
+            $slug = $base;
+            $i    = 1;
+            while (\App\Models\BusinessCard::where('slug', $slug)->exists()) {
+                $slug = $base . '-' . $i++;
+            }
+            $cardData['slug']  = $slug;
+            $cardData['title'] = $fullName; // card title = person name
+
+            \App\Models\BusinessCard::create($cardData);
+            $created++;
+        }
+
+        return back()->with('import_success', "Importação concluída: {$created} cartões criados" . ($skipped ? ", {$skipped} linhas ignoradas." : '.'));
     }
 
     /**

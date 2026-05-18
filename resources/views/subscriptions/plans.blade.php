@@ -53,7 +53,7 @@
             <li><span class="check-icon">✓</span><span>Exportação vCard</span></li>
             <li><span class="check-icon">✓</span><span>Cancela a qualquer momento</span></li>
         </ul>
-        @if(Auth::user()->subscribed('default'))
+        @if(Auth::check() && Auth::user()->subscribed('default'))
             <a href="{{ route('dashboard') }}" class="plan-cta plan-cta-primary">
                 Plano Ativo
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

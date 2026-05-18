@@ -17,7 +17,7 @@ class WelcomeEmail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Bem-vindo ao Cardify! 🎉');
+        return new Envelope(subject: 'Bem-vindo ao Cardifys! 🎉');
     }
 
     public function content(): Content
