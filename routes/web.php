@@ -23,13 +23,6 @@ Route::get('/', function () {
 Route::get('/privacidade', fn() => view('privacidade'))->name('privacidade');
 Route::get('/termos', fn() => view('termos'))->name('termos');
 
-Route::get('/welcome2', function () {
-    return view('welcome2');
-})->name('welcome2');
-
-Route::get('/furzy', function () {
-    return view('furzy');
-})->name('furzy');
 
 Route::get('/planos', [SubscriptionController::class, 'showPlans'])->name('subscriptions.plans');
 
