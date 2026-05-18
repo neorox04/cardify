@@ -79,12 +79,9 @@ class SubscriptionTest extends TestCase
         $this->actingAs($this->verifiedUser())->get('/planos')->assertStatus(200);
     }
 
-    public function test_plans_page_crashes_for_guest_due_to_dashboard_layout(): void
+    public function test_plans_page_loads_for_guest(): void
     {
-        // Known bug: /planos uses layouts.dashboard which accesses Auth::user() unconditionally.
-        // A guest hitting /planos gets a 500. The fix is to either guard the layout or
-        // switch the public route to public-plans.blade.php.
-        $this->get('/planos')->assertStatus(500);
+        $this->get('/planos')->assertStatus(200);
     }
 
     public function test_enterprise_page_loads(): void
