@@ -9,15 +9,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('business_cards', function (Blueprint $table) {
-            $table->unsignedBigInteger('contacts_saved')->default(0)->after('views_count');
-            $table->unsignedBigInteger('qr_scans')->default(0)->after('contacts_saved');
+            if (!Schema::hasColumn('business_cards', 'contacts_saved')) {
+                $table->unsignedBigInteger('contacts_saved')->default(0)->after('views_count');
+            }
+            if (!Schema::hasColumn('business_cards', 'qr_scans')) {
+                $table->unsignedBigInteger('qr_scans')->default(0)->after('contacts_saved');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('business_cards', function (Blueprint $table) {
-            $table->dropColumn(['contacts_saved', 'qr_scans']);
+            $table->dropColumn(array_filter(
+                ['contacts_saved', 'qr_scans'],
+                fn($col) => Schema::hasColumn('business_cards', $col)
+            ));
         });
     }
 };
