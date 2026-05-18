@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $businessCard->full_name }} - Cardify</title>
+    <title>{{ $businessCard->full_name }} - Cardifys</title>
     <meta name="description" content="{{ $businessCard->position ? $businessCard->position . ' - ' : '' }}{{ $businessCard->company ? $businessCard->company->name : '' }}">
     <link rel="icon" type="image/png" href="/icon-192.png">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -477,7 +477,7 @@
         </div>
 
         <div class="powered-by">
-            Criado com <a href="{{ route('home') }}">Cardify</a>
+            Criado com <a href="{{ route('home') }}">Cardifys</a>
         </div>
     </div>
 </body>

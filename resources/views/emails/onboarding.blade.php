@@ -3,7 +3,7 @@
 @section('content')
     <span class="badge">Subscrição Ativa</span>
     <h1>Estás pronto para começar, {{ $user->name }}!</h1>
-    <p>A tua subscrição foi ativada com sucesso. Criámos este guia rápido para te ajudares a tirar o máximo partido do Cardify desde o primeiro dia.</p>
+    <p>A tua subscrição foi ativada com sucesso. Criámos este guia rápido para te ajudares a tirar o máximo partido do Cardifys desde o primeiro dia.</p>
 
     <hr class="divider">
 
@@ -54,7 +54,7 @@
             </td>
             <td valign="top" style="padding-left:12px">
                 <h2 style="margin-bottom:6px">Acompanha as estatísticas</h2>
-                <p style="margin:0">O Cardify regista as <strong style="color:#fafafa">visualizações</strong> do teu cartão e os <strong style="color:#fafafa">contactos guardados</strong>. Assim sabes exatamente quem mostrou interesse.</p>
+                <p style="margin:0">O Cardifys regista as <strong style="color:#fafafa">visualizações</strong> do teu cartão e os <strong style="color:#fafafa">contactos guardados</strong>. Assim sabes exatamente quem mostrou interesse.</p>
             </td>
         </tr>
     </table>

@@ -789,7 +789,7 @@
 
         <div class="sidebar-brand">
             <a href="{{ route('home') }}" class="logo">
-                <img src="/icon.svg" alt="Cardify" class="mark">
+                <img src="/icon.svg" alt="Cardifys" class="mark">
                 Cardifys
             </a>
         </div>

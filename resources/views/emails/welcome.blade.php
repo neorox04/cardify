@@ -3,8 +3,8 @@
 @section('content')
     <span class="badge">Bem-vindo</span>
     <h1>Olá, {{ $user->name }}! 👋</h1>
-    <p>A tua conta no <strong style="color:#fafafa">Cardify</strong> foi criada com sucesso. Estamos muito contentes por teres-te juntado a nós!</p>
-    <p>Com o Cardify podes criar e partilhar cartões de visita digitais profissionais, com QR code incluído, em segundos.</p>
+    <p>A tua conta no <strong style="color:#fafafa">Cardifys</strong> foi criada com sucesso. Estamos muito contentes por teres-te juntado a nós!</p>
+    <p>Com o Cardifys podes criar e partilhar cartões de visita digitais profissionais, com QR code incluído, em segundos.</p>
 
     <hr class="divider">
 

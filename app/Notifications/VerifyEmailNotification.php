@@ -10,7 +10,7 @@ class VerifyEmailNotification extends VerifyEmail
     protected function buildMailMessage($url): MailMessage
     {
         return (new MailMessage)
-            ->subject('Verifica o teu email — Cardify')
+            ->subject('Verifica o teu email — Cardifys')
             ->view('emails.verify-email', ['url' => $url]);
     }
 }

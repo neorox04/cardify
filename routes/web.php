@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/email/verify', [AuthController::class, 'showVerifyEmail'])->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
-        return redirect()->route('dashboard')->with('success', 'Email verificado com sucesso! Bem-vindo ao Cardify!');
+        return redirect()->route('dashboard')->with('success', 'Email verificado com sucesso! Bem-vindo ao Cardifys!');
     })->middleware('signed')->name('verification.verify');
     Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
         ->middleware('throttle:6,1')

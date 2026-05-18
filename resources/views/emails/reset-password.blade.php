@@ -3,7 +3,7 @@
 @section('content')
     <span class="badge">Segurança</span>
     <h1>Recupera a tua password</h1>
-    <p>Recebemos um pedido para redefinir a password da tua conta Cardify. Clica no botão abaixo para criar uma nova password.</p>
+    <p>Recebemos um pedido para redefinir a password da tua conta Cardifys. Clica no botão abaixo para criar uma nova password.</p>
     <p>Este link é válido durante <strong style="color:#fafafa">60 minutos</strong>. Depois disso, terás de fazer um novo pedido.</p>
 
     <div class="btn-center">
