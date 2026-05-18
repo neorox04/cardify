@@ -24,7 +24,6 @@ Route::get('/privacidade', fn() => view('privacidade'))->name('privacidade');
 Route::get('/termos', fn() => view('termos'))->name('termos');
 
 
-Route::get('/planos', [SubscriptionController::class, 'showPlans'])->name('subscriptions.plans');
 
 // Authentication routes
 Route::middleware('guest')->group(function () {
@@ -70,7 +69,8 @@ Route::get('/card/{businessCard}/save', [BusinessCardController::class, 'saveCon
 // Authentication required routes
 Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
     
-    // Subscription checkout & billing
+    // Subscription plans & checkout & billing
+    Route::get('/planos', [SubscriptionController::class, 'showPlans'])->name('subscriptions.plans');
     Route::post('/checkout', [SubscriptionController::class, 'checkout'])->name('subscriptions.checkout');
     Route::get('/checkout/success', [SubscriptionController::class, 'success'])->name('subscriptions.success');
     Route::get('/checkout/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
