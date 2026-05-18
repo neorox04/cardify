@@ -20,6 +20,9 @@ Route::get('/', function () {
     return view('welcome2');
 })->name('home');
 
+Route::get('/privacidade', fn() => view('privacidade'))->name('privacidade');
+Route::get('/termos', fn() => view('termos'))->name('termos');
+
 Route::get('/welcome2', function () {
     return view('welcome2');
 })->name('welcome2');
