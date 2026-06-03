@@ -92,15 +92,32 @@ class CompanyDashboardController extends Controller
         $this->authorize('view', $company);
 
         $user          = Auth::user();
-        $businessCards = $company->businessCards()->with('user')->latest()->get();
+        $businessCards = $company->businessCards()->with('user')->orderByDesc('views_count')->get();
         $employees     = $company->users()->withPivot(['role', 'is_admin'])->get();
         $subscription  = $user->subscription('default');
         $currentSeats  = $subscription ? ($subscription->quantity ?? 0) : 0;
         $usedSeats     = $employees->count();
 
+        $totalViews    = $businessCards->sum('views_count');
+        $maxViews      = $businessCards->max('views_count') ?: 1;
+        $topCards      = $businessCards->take(3);
+
+        $departmentStats = $businessCards
+            ->filter(fn($c) => filled($c->department))
+            ->groupBy('department')
+            ->map(fn($cards, $dept) => [
+                'name'       => $dept,
+                'card_count' => $cards->count(),
+                'views'      => $cards->sum('views_count'),
+                'avg_views'  => round($cards->avg('views_count')),
+            ])
+            ->sortByDesc('views')
+            ->values();
+
         return view('company.show', compact(
             'company', 'businessCards', 'employees',
-            'subscription', 'currentSeats', 'usedSeats'
+            'subscription', 'currentSeats', 'usedSeats',
+            'totalViews', 'maxViews', 'topCards', 'departmentStats'
         ));
     }
 

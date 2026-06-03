@@ -115,6 +115,69 @@
     </div>
 </div>
 
+{{-- ── ANALYTICS ── --}}
+@if($businessCards->isNotEmpty())
+<div class="analytics-grid" style="margin-bottom:28px;">
+
+    {{-- Top Performers --}}
+    <div class="analytics-panel">
+        <div class="analytics-panel-header">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Top Performers
+        </div>
+        @foreach($topCards as $i => $card)
+        @php $pct = $maxViews > 0 ? round(($card->views_count / $maxViews) * 100) : 0; @endphp
+        <div class="top-row">
+            <span class="top-rank rank-{{ $i + 1 }}">{{ $i + 1 }}</span>
+            <div class="top-info">
+                <div class="top-name">{{ $card->full_name ?? $card->title ?? '—' }}</div>
+                <div class="top-dept">{{ $card->department ?: $card->position ?: '—' }}</div>
+                <div class="top-bar-wrap">
+                    <div class="top-bar" style="width:{{ $pct }}%"></div>
+                </div>
+            </div>
+            <div class="top-views">
+                <span class="top-views-num">{{ number_format($card->views_count) }}</span>
+                <span class="top-views-label">views</span>
+            </div>
+        </div>
+        @endforeach
+        @if($businessCards->count() === 0)
+            <p class="analytics-empty">Ainda sem dados</p>
+        @endif
+    </div>
+
+    {{-- Por Departamento --}}
+    <div class="analytics-panel">
+        <div class="analytics-panel-header">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            Por Departamento
+        </div>
+        @if($departmentStats->isEmpty())
+            <p class="analytics-empty">Nenhum cartão tem departamento definido</p>
+        @else
+            <div class="dept-table">
+                <div class="dept-head">
+                    <span>Departamento</span>
+                    <span>Cartões</span>
+                    <span>Views</span>
+                    <span>Média</span>
+                </div>
+                @foreach($departmentStats as $dept)
+                <div class="dept-row">
+                    <span class="dept-name">{{ $dept['name'] }}</span>
+                    <span class="dept-val">{{ $dept['card_count'] }}</span>
+                    <span class="dept-val dept-views">{{ number_format($dept['views']) }}</span>
+                    <span class="dept-val">{{ number_format($dept['avg_views']) }}</span>
+                </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+
+</div>
+@endif
+
 {{-- ── IMPORT SECTION ── --}}
 <div class="content-section" style="margin-bottom:28px;">
     <div class="section-header">
@@ -202,7 +265,16 @@
                         </td>
                         <td class="td-muted">{{ $card->position ?: '—' }}</td>
                         <td class="td-muted">{{ $card->department ?: '—' }}</td>
-                        <td class="td-muted">{{ number_format($card->views_count) }}</td>
+                        <td>
+                            <div class="views-cell">
+                                <span class="views-num">{{ number_format($card->views_count) }}</span>
+                                @if($totalViews > 0)
+                                <div class="views-bar-wrap">
+                                    <div class="views-bar" style="width:{{ round(($card->views_count / $maxViews) * 100) }}%"></div>
+                                </div>
+                                @endif
+                            </div>
+                        </td>
                         <td>
                             <span class="badge {{ $card->is_active ? 'badge-active' : 'badge-inactive' }}">
                                 {{ $card->is_active ? 'Ativo' : 'Inativo' }}
@@ -299,6 +371,104 @@
 .badge-inactive { background: oklch(0.28 0.018 290 / 0.5); color: var(--ink-mute); border: 1px solid var(--line-soft); }
 
 .btn-sm { padding: 8px 14px; font-size: 13px; }
+
+/* ── Analytics grid ── */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+@media (max-width: 860px) { .analytics-grid { grid-template-columns: 1fr; } }
+
+.analytics-panel {
+    background: var(--bg-2);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-xl);
+    padding: 22px 24px;
+}
+
+.analytics-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-mute);
+    margin-bottom: 18px;
+    font-family: 'Geist Mono', monospace;
+}
+
+.analytics-panel-header svg { color: var(--purple); flex-shrink: 0; }
+.analytics-empty { font-size: 13px; color: var(--ink-mute); text-align: center; padding: 20px 0; }
+
+/* Top performers */
+.top-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line-soft);
+}
+.top-row:last-child { border-bottom: none; }
+
+.top-rank {
+    width: 24px; height: 24px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+    flex-shrink: 0;
+    font-family: 'Geist Mono', monospace;
+}
+.rank-1 { background: oklch(0.82 0.12 85 / 0.18); color: oklch(0.82 0.12 85); }
+.rank-2 { background: oklch(0.72 0.015 290 / 0.12); color: var(--ink-dim); }
+.rank-3 { background: oklch(0.65 0.10 40 / 0.14); color: oklch(0.65 0.10 40); }
+
+.top-info { flex: 1; min-width: 0; }
+.top-name { font-size: 13.5px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-dept { font-size: 12px; color: var(--ink-mute); margin-bottom: 6px; }
+.top-bar-wrap { height: 4px; background: var(--bg-3); border-radius: 2px; overflow: hidden; }
+.top-bar { height: 100%; background: var(--purple); border-radius: 2px; transition: width .4s; }
+
+.top-views { text-align: right; flex-shrink: 0; }
+.top-views-num { display: block; font-size: 15px; font-weight: 700; color: var(--ink); font-family: 'Geist Mono', monospace; }
+.top-views-label { font-size: 11px; color: var(--ink-mute); }
+
+/* Department table */
+.dept-table { display: flex; flex-direction: column; gap: 0; }
+.dept-head {
+    display: grid;
+    grid-template-columns: 1fr 52px 64px 52px;
+    gap: 8px;
+    padding: 0 0 10px 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-mute);
+    font-family: 'Geist Mono', monospace;
+}
+.dept-head span:not(:first-child) { text-align: right; }
+.dept-row {
+    display: grid;
+    grid-template-columns: 1fr 52px 64px 52px;
+    gap: 8px;
+    padding: 11px 0;
+    border-bottom: 1px solid oklch(0.28 0.018 290 / 0.10);
+    align-items: center;
+}
+.dept-row:last-child { border-bottom: none; }
+.dept-name { font-size: 13.5px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dept-val { font-size: 13px; color: var(--ink-dim); text-align: right; font-family: 'Geist Mono', monospace; }
+.dept-views { color: var(--purple); font-weight: 600; }
+
+/* Views bar in table */
+.views-cell { display: flex; flex-direction: column; gap: 4px; min-width: 80px; }
+.views-num { font-size: 13px; color: var(--ink-dim); font-family: 'Geist Mono', monospace; }
+.views-bar-wrap { height: 3px; background: var(--bg-3); border-radius: 2px; overflow: hidden; }
+.views-bar { height: 100%; background: var(--purple); border-radius: 2px; min-width: 2px; }
 </style>
 
 <script>
