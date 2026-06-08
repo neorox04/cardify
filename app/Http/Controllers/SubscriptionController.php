@@ -203,9 +203,13 @@ class SubscriptionController extends Controller
                 ->with('error', 'Não tens uma subscrição ativa.');
         }
 
-        $periodEnd = Carbon::createFromTimestamp(
-            $subscription->asStripeSubscription()->current_period_end
-        );
+        try {
+            $periodEnd = Carbon::createFromTimestamp(
+                $subscription->asStripeSubscription()->current_period_end
+            );
+        } catch (\Exception $e) {
+            $periodEnd = $subscription->ends_at ?? now()->addMonth();
+        }
 
         return view('subscriptions.cancel-confirm', compact('subscription', 'periodEnd'));
     }
@@ -232,8 +236,13 @@ class SubscriptionController extends Controller
     public function invoices()
     {
         /** @var \App\Models\User $user */
-        $user     = Auth::user();
-        $invoices = $user->invoices();
+        $user = Auth::user();
+
+        try {
+            $invoices = $user->invoices();
+        } catch (\Exception $e) {
+            $invoices = collect();
+        }
 
         return view('subscriptions.invoices', compact('invoices'));
     }
@@ -244,10 +253,14 @@ class SubscriptionController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        return $user->downloadInvoice($invoiceId, [
-            'vendor' => 'Cardifys',
-            'product' => 'Subscrição Cardifys',
-        ]);
+        try {
+            return $user->downloadInvoice($invoiceId, [
+                'vendor'  => 'Cardifys',
+                'product' => 'Subscrição Cardifys',
+            ]);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Não foi possível obter a fatura. Tenta novamente.');
+        }
     }
 
     // Página de cancelamento
