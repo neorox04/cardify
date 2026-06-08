@@ -153,6 +153,65 @@ class SubscriptionController extends Controller
         return view('subscriptions.success');
     }
 
+    // Página de confirmação de cancelamento
+    public function cancelSubscription()
+    {
+        /** @var \App\Models\User $user */
+        $user         = Auth::user();
+        $subscription = $user->subscription('default');
+
+        if (!$subscription || !$subscription->active()) {
+            return redirect()->route('subscriptions.plans')
+                ->with('error', 'Não tens uma subscrição ativa.');
+        }
+
+        $periodEnd = Carbon::createFromTimestamp(
+            $subscription->asStripeSubscription()->current_period_end
+        );
+
+        return view('subscriptions.cancel-confirm', compact('subscription', 'periodEnd'));
+    }
+
+    // Processa o cancelamento da subscrição
+    public function confirmCancelSubscription()
+    {
+        /** @var \App\Models\User $user */
+        $user         = Auth::user();
+        $subscription = $user->subscription('default');
+
+        if (!$subscription || !$subscription->active()) {
+            return redirect()->route('subscriptions.plans')
+                ->with('error', 'Não tens uma subscrição ativa.');
+        }
+
+        $subscription->cancel();
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Subscrição cancelada. Mantens acesso até ao fim do período atual.');
+    }
+
+    // Lista de faturas
+    public function invoices()
+    {
+        /** @var \App\Models\User $user */
+        $user     = Auth::user();
+        $invoices = $user->invoices();
+
+        return view('subscriptions.invoices', compact('invoices'));
+    }
+
+    // Download de uma fatura
+    public function downloadInvoice(string $invoiceId)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        return $user->downloadInvoice($invoiceId, [
+            'vendor' => 'Cardifys',
+            'product' => 'Subscrição Cardifys',
+        ]);
+    }
+
     // Página de cancelamento
     public function cancel()
     {
