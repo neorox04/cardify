@@ -94,6 +94,10 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
     Route::get('/checkout/enterprise', [SubscriptionController::class, 'enterprise'])->name('subscriptions.enterprise');
     Route::get('/billing/seats', [SubscriptionController::class, 'seats'])->name('subscriptions.seats');
     Route::post('/billing/seats', [SubscriptionController::class, 'updateSeats'])->name('subscriptions.seats.update');
+    Route::get('/billing/invoices', [SubscriptionController::class, 'invoices'])->name('subscriptions.invoices');
+    Route::get('/billing/invoices/{invoice}', [SubscriptionController::class, 'downloadInvoice'])->name('subscriptions.invoices.download');
+    Route::get('/billing/cancel', [SubscriptionController::class, 'cancelSubscription'])->name('subscriptions.cancel-confirm');
+    Route::post('/billing/cancel', [SubscriptionController::class, 'confirmCancelSubscription'])->name('subscriptions.cancel-confirm.post');
 
     // Main Dashboard (redirects based on user type)
     Route::get('/dashboard', function () {
