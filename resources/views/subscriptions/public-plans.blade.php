@@ -291,7 +291,7 @@
                 @else
                     <form method="POST" action="{{ route('subscriptions.checkout') }}">
                         @csrf
-                        <input type="hidden" name="price" id="price-input" value="price_1TFgXeCcmLy5PiLsbrLtDCfP">
+                        <input type="hidden" name="price" id="price-input" value="{{ config('services.stripe.prices.individual_monthly') }}">
                         <button type="submit" class="cta primary">Começar agora</button>
                     </form>
                 @endif
@@ -479,8 +479,8 @@
 </div>
 
 <script>
-    const monthlyPriceId = 'price_1TFgXeCcmLy5PiLsbrLtDCfP';
-    const yearlyPriceId = 'price_1TFgXKCcmLy5PiLs5xZdP87O';
+    const monthlyPriceId = '{{ config('services.stripe.prices.individual_monthly') }}';
+    const yearlyPriceId = '{{ config('services.stripe.prices.individual_yearly') }}';
 
     const buttons = document.querySelectorAll('[data-period]');
     const amount = document.getElementById('price-amount');

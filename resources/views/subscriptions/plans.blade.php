@@ -595,7 +595,7 @@
                 @else
                     <form method="POST" action="{{ route('subscriptions.checkout') }}" style="width:100%;">
                         @csrf
-                        <input type="hidden" name="price" id="ind-price-input" value="price_1TFgXeCcmLy5PiLsbrLtDCfP">
+                        <input type="hidden" name="price" id="ind-price-input" value="{{ config('services.stripe.prices.individual_monthly') }}">
                         <button type="submit" class="plan-cta plan-cta-primary">
                             Começar Agora
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
@@ -717,8 +717,8 @@
 
 <script>
     const toggleBtns = document.querySelectorAll('.toggle-btn');
-    const monthlyPrice = 'price_1TFgXeCcmLy5PiLsbrLtDCfP';
-    const yearlyPrice  = 'price_1TFgXKCcmLy5PiLs5xZdP87O';
+    const monthlyPrice = '{{ config('services.stripe.prices.individual_monthly') }}';
+    const yearlyPrice  = '{{ config('services.stripe.prices.individual_yearly') }}';
 
     toggleBtns.forEach(btn => {
         btn.addEventListener('click', () => {

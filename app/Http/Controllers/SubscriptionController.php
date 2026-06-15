@@ -10,9 +10,22 @@ use Laravel\Cashier\Cashier;
 
 class SubscriptionController extends Controller
 {
-    const PRICE_INDIVIDUAL_MONTHLY = 'price_1TFgXeCcmLy5PiLsbrLtDCfP';
-    const PRICE_INDIVIDUAL_YEARLY  = 'price_1TFgXKCcmLy5PiLs5xZdP87O';
-    const PRICE_COMPANY            = 'price_1TM7hJCcmLy5PiLsPioHECxJ';
+    // Price IDs vêm de config/services.php (env STRIPE_PRICE_*), com os
+    // IDs de teste como fallback. Permite trocar test → live só via env.
+    public static function priceIndividualMonthly(): string
+    {
+        return config('services.stripe.prices.individual_monthly');
+    }
+
+    public static function priceIndividualYearly(): string
+    {
+        return config('services.stripe.prices.individual_yearly');
+    }
+
+    public static function priceCompany(): string
+    {
+        return config('services.stripe.prices.company');
+    }
 
     const TIERS = [
         ['min' => 1,    'max' => 50,    'price' => 9.50],
@@ -41,12 +54,12 @@ class SubscriptionController extends Controller
         $price = $request->input('price');
         $seats = max(1, (int) $request->input('seats', 1));
 
-        $allowed = [self::PRICE_INDIVIDUAL_MONTHLY, self::PRICE_INDIVIDUAL_YEARLY, self::PRICE_COMPANY];
+        $allowed = [self::priceIndividualMonthly(), self::priceIndividualYearly(), self::priceCompany()];
         if (!in_array($price, $allowed)) {
             abort(400, 'Plano inválido');
         }
 
-        if ($price === self::PRICE_COMPANY && $seats > 10000) {
+        if ($price === self::priceCompany() && $seats > 10000) {
             return redirect()->route('subscriptions.enterprise');
         }
 
@@ -57,7 +70,7 @@ class SubscriptionController extends Controller
 
         $subscription = $user->newSubscription('default', $price);
 
-        if ($price === self::PRICE_COMPANY) {
+        if ($price === self::priceCompany()) {
             $subscription->quantity($seats);
         }
 

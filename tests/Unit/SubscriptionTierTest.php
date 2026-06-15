@@ -24,17 +24,17 @@ class SubscriptionTierTest extends TestCase
 
     public function test_price_constants_are_non_empty(): void
     {
-        $this->assertNotEmpty(SubscriptionController::PRICE_INDIVIDUAL_MONTHLY);
-        $this->assertNotEmpty(SubscriptionController::PRICE_INDIVIDUAL_YEARLY);
-        $this->assertNotEmpty(SubscriptionController::PRICE_COMPANY);
+        $this->assertNotEmpty(SubscriptionController::priceIndividualMonthly());
+        $this->assertNotEmpty(SubscriptionController::priceIndividualYearly());
+        $this->assertNotEmpty(SubscriptionController::priceCompany());
     }
 
     public function test_all_three_price_ids_are_distinct(): void
     {
         $ids = [
-            SubscriptionController::PRICE_INDIVIDUAL_MONTHLY,
-            SubscriptionController::PRICE_INDIVIDUAL_YEARLY,
-            SubscriptionController::PRICE_COMPANY,
+            SubscriptionController::priceIndividualMonthly(),
+            SubscriptionController::priceIndividualYearly(),
+            SubscriptionController::priceCompany(),
         ];
         $this->assertCount(3, array_unique($ids), 'All three price IDs must be distinct.');
     }
