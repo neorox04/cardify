@@ -31,12 +31,17 @@ document.addEventListener('DOMContentLoaded', async function() {
   const loading = document.getElementById('__bundler_loading');
   function setStatus(msg) { if (loading) loading.textContent = msg; }
 
+  const thumbnail = document.getElementById('__bundler_thumbnail');
+  const safetyTimer = setTimeout(() => { thumbnail?.remove(); }, 6000);
+
   try {
     const manifestEl = document.querySelector('script[type="__bundler/manifest"]');
     const templateEl = document.querySelector('script[type="__bundler/template"]');
     if (!manifestEl || !templateEl) {
       setStatus('Error: missing bundle data');
       console.error('[bundler] Missing script tags — manifestEl:', !!manifestEl, 'templateEl:', !!templateEl);
+      clearTimeout(safetyTimer);
+      thumbnail?.remove();
       return;
     }
 
@@ -214,6 +219,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   } catch (err) {
     setStatus('Error unpacking: ' + err.message);
     console.error('Bundle unpack error:', err);
+    clearTimeout(safetyTimer);
+    thumbnail?.remove();
   }
 });
 
