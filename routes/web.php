@@ -14,6 +14,11 @@ use App\Http\Controllers\WebhookController;
 // Stripe webhook (fora do middleware de auth)
 Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
+// Preview de páginas de erro (remover antes de deploy)
+if (app()->isLocal()) {
+    Route::get('/_errors/{code}', fn(int $code) => response()->view("errors.{$code}", [], $code));
+}
+
 // Public routes
 Route::get('/', function () {
     return view('welcome2');

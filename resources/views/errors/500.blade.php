@@ -3,171 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>500 — Erro no servidor · Cardifys</title>
+    <title>500 — Erro interno · Cardifys</title>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
             --bg:        oklch(0.15 0.012 290);
+            --bg-2:      oklch(0.19 0.015 290);
             --ink:       oklch(0.97 0.010 290);
             --ink-dim:   oklch(0.72 0.015 290);
+            --ink-mute:  oklch(0.52 0.012 290);
             --line-soft: oklch(0.28 0.018 290 / 0.35);
-            --purple:    oklch(0.72 0.19  300);
-            --amber:     oklch(0.82 0.12   85);
+            --purple:    oklch(0.72 0.19 300);
+            --red:       oklch(0.65 0.22 25);
+            --red-soft:  oklch(0.65 0.22 25 / 0.12);
+            --green-term: #4ade80;
         }
 
-        html, body {
-            height: 100%;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Geist', system-ui, sans-serif;
             background: var(--bg);
             color: var(--ink);
-            font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        body::before {
-            content: "";
-            position: fixed; inset: 0;
-            background:
-                radial-gradient(ellipse 50% 40% at 85% 15%, oklch(0.82 0.12 85 / 0.06), transparent 55%),
-                radial-gradient(ellipse 45% 45% at 15% 85%, oklch(0.72 0.19 300 / 0.05), transparent 55%);
-            pointer-events: none;
-        }
-
-        body::after {
-            content: "";
-            position: fixed; inset: 0;
-            background-image:
-                linear-gradient(to right,  var(--line-soft) 1px, transparent 1px),
-                linear-gradient(to bottom, var(--line-soft) 1px, transparent 1px);
-            background-size: 72px 72px;
-            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.2), transparent 70%);
-            pointer-events: none;
-            opacity: 0.3;
-        }
-
-        .page {
-            position: relative;
-            z-index: 1;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px 24px;
-            text-align: center;
+            overflow: hidden;
+            position: relative;
         }
 
-        .code {
-            font-family: 'Geist Mono', monospace;
-            font-size: clamp(100px, 20vw, 180px);
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: -0.04em;
-            background: linear-gradient(135deg, oklch(0.82 0.12 85), oklch(0.72 0.19 300));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            opacity: 0.16;
-            position: absolute;
+        body::before {
+            content: "";
+            position: fixed; inset: 0;
+            background: radial-gradient(ellipse 50% 50% at 50% 40%, oklch(0.65 0.22 25 / 0.05), transparent 65%);
             pointer-events: none;
-            user-select: none;
         }
 
-        .icon-wrap {
-            width: 80px;
-            height: 80px;
-            background: oklch(0.82 0.12 85 / 0.08);
-            border: 1px solid oklch(0.82 0.12 85 / 0.25);
-            border-radius: 22px;
+        /* ── Terminal ── */
+        .terminal {
+            width: 480px;
+            max-width: calc(100vw - 40px);
+            background: oklch(0.11 0.010 290);
+            border: 1px solid oklch(0.28 0.018 290 / 0.60);
+            border-radius: 14px;
+            box-shadow:
+                0 40px 80px oklch(0 0 0 / 0.55),
+                0 0 0 1px oklch(0 0 0 / 0.20);
+            overflow: hidden;
+            margin-bottom: 36px;
+        }
+
+        /* Title bar */
+        .terminal-bar {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 32px;
-            position: relative;
-            animation: shake 5s ease-in-out infinite;
+            gap: 8px;
+            padding: 12px 16px;
+            background: oklch(0.17 0.013 290);
+            border-bottom: 1px solid oklch(0.28 0.018 290 / 0.40);
         }
-
-        .icon-wrap svg { width: 36px; height: 36px; color: var(--amber); }
 
         .dot {
-            position: absolute;
+            width: 12px; height: 12px;
             border-radius: 50%;
-            animation: blink 1.4s ease-in-out infinite;
         }
-        .dot-1 { width: 8px; height: 8px; background: oklch(0.82 0.12 85 / 0.4); top: -4px; right: -4px; animation-delay: 0s; }
-        .dot-2 { width: 6px; height: 6px; background: oklch(0.72 0.19 300 / 0.4); bottom: -3px; left: -3px; animation-delay: 0.5s; }
+        .dot-red    { background: #ff5f57; }
+        .dot-yellow { background: #febc2e; }
+        .dot-green  { background: #28c840; }
 
-        @keyframes shake {
-            0%, 90%, 100% { transform: rotate(0deg); }
-            92%            { transform: rotate(-3deg); }
-            94%            { transform: rotate(3deg); }
-            96%            { transform: rotate(-2deg); }
-            98%            { transform: rotate(2deg); }
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-family: 'Geist Mono', monospace;
+            font-size: 12px;
+            color: var(--ink-mute);
+            margin-right: 36px;
+        }
+
+        /* Body */
+        .terminal-body {
+            padding: 20px 22px;
+            font-family: 'Geist Mono', monospace;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .line { display: flex; gap: 8px; }
+
+        .prompt { color: var(--green-term); font-weight: 600; }
+        .cmd    { color: var(--ink-dim); }
+        .out    { color: var(--ink-mute); padding-left: 0; }
+        .err    { color: var(--red); font-weight: 600; }
+        .warn   { color: oklch(0.82 0.12 85); }
+
+        .cursor-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--green-term);
+            animation: blink 1.1s step-end infinite;
+            vertical-align: text-bottom;
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50%       { opacity: 0.3; transform: scale(0.7); }
-        }
-
-        .terminal {
-            background: oklch(0.11 0.010 290);
-            border: 1px solid oklch(0.28 0.018 290 / 0.5);
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 32px;
-            font-family: 'Geist Mono', monospace;
-            font-size: 12px;
-            color: oklch(0.52 0.012 290);
-            text-align: left;
-            width: 100%;
-            max-width: 400px;
-            position: relative;
-        }
-
-        .terminal-dots {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
-        }
-
-        .terminal-dots span {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .terminal-dots .r { background: oklch(0.65 0.22 25 / 0.6); }
-        .terminal-dots .y { background: oklch(0.82 0.12 85 / 0.6); }
-        .terminal-dots .g { background: oklch(0.78 0.17 160 / 0.6); }
-
-        .terminal-line { line-height: 1.8; }
-        .terminal-line .prompt { color: oklch(0.72 0.19 300 / 0.7); }
-        .terminal-line .error  { color: oklch(0.82 0.12 85 / 0.8); }
-        .terminal-line .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 13px;
-            background: oklch(0.72 0.19 300 / 0.7);
-            vertical-align: middle;
-            animation: blink-cursor 1s step-end infinite;
-        }
-
-        @keyframes blink-cursor {
             0%, 100% { opacity: 1; }
             50%       { opacity: 0; }
         }
 
-        h1 {
-            font-size: clamp(22px, 4vw, 28px);
-            font-weight: 600;
-            letter-spacing: -0.02em;
+        /* ── Text ── */
+        .content { text-align: center; }
+
+        .code {
+            font-family: 'Geist Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--red);
             margin-bottom: 12px;
-            position: relative;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
         }
 
         p {
@@ -175,96 +146,53 @@
             color: var(--ink-dim);
             max-width: 360px;
             line-height: 1.6;
-            margin-bottom: 36px;
-            position: relative;
+            margin: 0 auto 28px;
         }
 
-        .actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-            position: relative;
+        .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 10px 20px; border-radius: 999px;
+            font-size: 14px; font-weight: 600; font-family: inherit;
+            text-decoration: none; transition: all 0.2s; border: none; cursor: pointer;
         }
-
-        .btn-primary {
-            padding: 11px 22px;
-            background: oklch(0.72 0.19 300 / 0.1);
-            border: 1px solid oklch(0.72 0.19 300 / 0.3);
-            border-radius: 10px;
-            color: oklch(0.72 0.19 300);
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover { background: oklch(0.72 0.19 300 / 0.18); }
-
-        .btn-ghost {
-            padding: 11px 22px;
-            background: transparent;
-            border: 1px solid oklch(0.28 0.018 290 / 0.5);
-            border-radius: 10px;
-            color: oklch(0.72 0.015 290);
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .btn-ghost:hover { border-color: oklch(0.28 0.018 290); color: var(--ink); }
-
-        .brand {
-            position: fixed;
-            top: 24px;
-            left: 28px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--ink);
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .brand img { width: 26px; height: 26px; border-radius: 7px; }
+        .btn-primary { background: var(--purple); color: oklch(0.12 0.01 290); }
+        .btn-primary:hover { background: oklch(0.78 0.19 300); transform: translateY(-1px); }
+        .btn-secondary { background: var(--bg-2); color: var(--ink-dim); border: 1px solid var(--line-soft); }
+        .btn-secondary:hover { color: var(--ink); }
     </style>
 </head>
 <body>
-    <a href="/" class="brand">
-        <img src="/icon.svg" alt="Cardifys">
-        Cardifys
-    </a>
-
-    <div class="page">
-        <span class="code">500</span>
-
-        <div class="icon-wrap">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
-            </svg>
-            <span class="dot dot-1"></span>
-            <span class="dot dot-2"></span>
+    <div class="terminal">
+        <div class="terminal-bar">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="terminal-title">cardifys — bash</span>
         </div>
-
-        <div class="terminal">
-            <div class="terminal-dots">
-                <span class="r"></span><span class="y"></span><span class="g"></span>
-            </div>
-            <div class="terminal-line"><span class="prompt">$ </span>cardifys --status</div>
-            <div class="terminal-line"><span class="error">✗ Internal server error (500)</span></div>
-            <div class="terminal-line"><span class="prompt">$ </span><span class="cursor"></span></div>
+        <div class="terminal-body">
+            <div class="line"><span class="prompt">~</span><span class="cmd">$ php artisan serve --port=8000</span></div>
+            <div class="line"><span class="out">Starting server on http://localhost:8000</span></div>
+            <div class="line"><span class="out">Press Ctrl+C to stop.</span></div>
+            <div class="line" style="margin-top:4px;"><span class="warn">⚠  Uncaught exception in Handler.php</span></div>
+            <div class="line"><span class="err">✗  HTTP 500 — Internal Server Error</span></div>
+            <div class="line"><span class="out">Stack trace logged to storage/logs/laravel.log</span></div>
+            <div class="line"><span class="out">The team has been notified. Hang tight.</span></div>
+            <div class="cursor-line"><span class="prompt">~</span><span class="cmd">$ </span><span class="cursor"></span></div>
         </div>
+    </div>
 
+    <div class="content">
+        <div class="code">Erro 500</div>
         <h1>Algo correu mal</h1>
-        <p>O servidor encontrou um erro inesperado. Já estamos a trabalhar nisso — tenta de novo em alguns instantes.</p>
-
+        <p>O servidor encontrou um problema inesperado. Já estamos a trabalhar nisso.</p>
         <div class="actions">
-            <button onclick="location.reload()" class="btn-ghost">Tentar novamente</button>
-            <a href="/" class="btn-primary">Voltar ao início</a>
+            <a href="/" class="btn btn-primary">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Voltar ao início
+            </a>
+            <a href="javascript:location.reload()" class="btn btn-secondary">Tentar novamente</a>
         </div>
     </div>
 </body>

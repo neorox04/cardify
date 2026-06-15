@@ -395,16 +395,36 @@
             background: var(--bg-2);
             border-color: oklch(0.72 0.19 300 / 0.30);
         }
-        .pricing-example-note {
-            margin-top: 12px;
-            text-align: center;
-            font-size: 12px;
-            color: var(--ink-mute);
-            background: var(--purple-soft);
-            padding: 8px 14px;
-            border-radius: var(--radius-lg);
+        /* Tier mini table */
+        .tier-mini {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 22px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid var(--line-soft);
         }
-        .pricing-example-note strong { color: var(--ink-dim); }
+        .tier-mini-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid oklch(0.28 0.018 290 / 0.10);
+            font-size: 13px;
+        }
+        .tier-mini-row:last-child { border-bottom: none; }
+        .tier-mini-range { color: var(--ink-dim); }
+        .tier-mini-price {
+            font-weight: 700;
+            color: var(--ink);
+            font-family: 'Geist Mono', monospace;
+        }
+        .tier-mini-unit {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--ink-mute);
+            margin-left: 2px;
+        }
 
         /* Comparison table */
         .content-section { margin-top: 32px; }
@@ -615,23 +635,42 @@
             <div class="card-label">Empresas</div>
             <div class="price-row">
                 <span class="price-currency">€</span>
-                <span class="price-amount">50</span>
-                <span class="price-period"> setup + €1/colaborador/mês</span>
+                <span class="price-amount" style="font-size:42px;">9.50</span>
+                <span class="price-period">/seat/mês</span>
             </div>
-            <p class="yearly-note">Setup único · escala com a tua equipa</p>
+            <p class="yearly-note">Volume pricing — quanto maior a equipa, menos pagas por seat</p>
             <p class="card-desc">Gestão centralizada para equipas. Branding corporativo consistente em toda a empresa.</p>
+
+            <div class="tier-mini">
+                <div class="tier-mini-row">
+                    <span class="tier-mini-range">1 – 50 seats</span>
+                    <span class="tier-mini-price">€9.50<span class="tier-mini-unit">/seat</span></span>
+                </div>
+                <div class="tier-mini-row">
+                    <span class="tier-mini-range">51 – 250 seats</span>
+                    <span class="tier-mini-price">€8.00 – 9.00<span class="tier-mini-unit">/seat</span></span>
+                </div>
+                <div class="tier-mini-row">
+                    <span class="tier-mini-range">251 – 1 000 seats</span>
+                    <span class="tier-mini-price">€6.00 – 7.00<span class="tier-mini-unit">/seat</span></span>
+                </div>
+                <div class="tier-mini-row">
+                    <span class="tier-mini-range">1 001 – 10 000 seats</span>
+                    <span class="tier-mini-price">€4.00 – 5.50<span class="tier-mini-unit">/seat</span></span>
+                </div>
+            </div>
+
             <ul class="feat-list">
                 <li><span class="check-icon">✓</span><span>Tudo do plano Individual</span></li>
-                <li><span class="check-icon">✓</span><span>Colaboradores <strong>ilimitados</strong></span></li>
                 <li><span class="check-icon">✓</span><span>Painel de administração central</span></li>
                 <li><span class="check-icon">✓</span><span>Branding e cores corporativas</span></li>
                 <li><span class="check-icon">✓</span><span>Dashboard de analytics por equipa</span></li>
                 <li><span class="check-icon">✓</span><span>Suporte prioritário</span></li>
-                <li><span class="check-icon">✓</span><span>Acesso à API</span></li>
-                <li><span class="check-icon">✓</span><span>Relatórios exportáveis (CSV, PDF)</span></li>
             </ul>
-            <a href="mailto:hello@cardifys.com" class="plan-cta plan-cta-secondary">Falar Connosco</a>
-            <p class="pricing-example-note">Ex: equipa de 20 pessoas = €50 + €20 = <strong>€70/mês</strong></p>
+            <a href="{{ route('enterprise') }}" class="plan-cta plan-cta-secondary">
+                Ver calculador de preços
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
         </div>
 
     </div>

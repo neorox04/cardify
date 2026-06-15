@@ -5,213 +5,189 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>403 — Acesso negado · Cardifys</title>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
             --bg:        oklch(0.15 0.012 290);
+            --bg-2:      oklch(0.19 0.015 290);
             --ink:       oklch(0.97 0.010 290);
             --ink-dim:   oklch(0.72 0.015 290);
+            --ink-mute:  oklch(0.52 0.012 290);
             --line-soft: oklch(0.28 0.018 290 / 0.35);
-            --purple:    oklch(0.72 0.19  300);
-            --red:       oklch(0.65 0.22   25);
+            --purple:    oklch(0.72 0.19 300);
+            --red:       oklch(0.65 0.22 25);
         }
 
-        html, body {
-            height: 100%;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Geist', system-ui, sans-serif;
             background: var(--bg);
             color: var(--ink);
-            font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        body::before {
-            content: "";
-            position: fixed; inset: 0;
-            background:
-                radial-gradient(ellipse 50% 40% at 80% 20%, oklch(0.65 0.22 25 / 0.06), transparent 55%),
-                radial-gradient(ellipse 45% 45% at 15% 80%, oklch(0.72 0.19 300 / 0.05), transparent 55%);
-            pointer-events: none;
-        }
-
-        body::after {
-            content: "";
-            position: fixed; inset: 0;
-            background-image:
-                linear-gradient(to right,  var(--line-soft) 1px, transparent 1px),
-                linear-gradient(to bottom, var(--line-soft) 1px, transparent 1px);
-            background-size: 72px 72px;
-            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.2), transparent 70%);
-            pointer-events: none;
-            opacity: 0.3;
-        }
-
-        .page {
-            position: relative;
-            z-index: 1;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px 24px;
-            text-align: center;
+            overflow: hidden;
+            position: relative;
         }
 
-        .code {
-            font-family: 'Geist Mono', monospace;
-            font-size: clamp(100px, 20vw, 180px);
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: -0.04em;
-            background: linear-gradient(135deg, oklch(0.65 0.22 25), oklch(0.72 0.19 300));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            opacity: 0.16;
-            position: absolute;
+        body::before {
+            content: "";
+            position: fixed; inset: 0;
+            background: radial-gradient(ellipse 50% 50% at 50% 40%, oklch(0.65 0.22 25 / 0.06), transparent 65%);
             pointer-events: none;
-            user-select: none;
+        }
+
+        /* ── Lock scene ── */
+        .scene {
+            position: relative;
+            margin-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .lock-wrap {
             position: relative;
-            margin-bottom: 36px;
-        }
-
-        .lock-outer {
-            width: 80px;
-            height: 80px;
-            background: oklch(0.65 0.22 25 / 0.08);
-            border: 1px solid oklch(0.65 0.22 25 / 0.25);
-            border-radius: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: jiggle 4s ease-in-out infinite;
-        }
-
-        .lock-outer svg { width: 36px; height: 36px; color: var(--red); }
-
-        .badge {
-            position: absolute;
-            top: -8px;
-            right: -10px;
-            background: oklch(0.65 0.22 25 / 0.15);
-            border: 1px solid oklch(0.65 0.22 25 / 0.4);
-            border-radius: 6px;
-            padding: 2px 6px;
-            font-family: 'Geist Mono', monospace;
-            font-size: 10px;
-            color: oklch(0.75 0.18 25);
-            font-weight: 500;
+            animation: jiggle 3.5s ease-in-out infinite;
         }
 
         @keyframes jiggle {
-            0%, 85%, 100% { transform: rotate(0deg); }
-            87% { transform: rotate(-5deg); }
-            89% { transform: rotate(5deg); }
-            91% { transform: rotate(-3deg); }
-            93% { transform: rotate(3deg); }
-            95% { transform: rotate(0deg); }
+            0%, 55%, 100%  { transform: rotate(0deg); }
+            57%            { transform: rotate(-8deg); }
+            59%            { transform: rotate(8deg); }
+            61%            { transform: rotate(-6deg); }
+            63%            { transform: rotate(6deg); }
+            65%            { transform: rotate(-3deg); }
+            67%            { transform: rotate(3deg); }
+            69%            { transform: rotate(0deg); }
         }
 
-        h1 {
-            font-size: clamp(22px, 4vw, 28px);
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            margin-bottom: 12px;
-            position: relative;
-        }
-
-        p {
-            font-size: 15px;
-            color: var(--ink-dim);
-            max-width: 360px;
-            line-height: 1.6;
-            margin-bottom: 36px;
-            position: relative;
-        }
-
-        .actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-            position: relative;
-        }
-
-        .btn-primary {
-            padding: 11px 22px;
-            background: oklch(0.72 0.19 300 / 0.1);
-            border: 1px solid oklch(0.72 0.19 300 / 0.3);
-            border-radius: 10px;
-            color: oklch(0.72 0.19 300);
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover { background: oklch(0.72 0.19 300 / 0.18); }
-
-        .btn-ghost {
-            padding: 11px 22px;
-            background: transparent;
-            border: 1px solid oklch(0.28 0.018 290 / 0.5);
-            border-radius: 10px;
-            color: oklch(0.72 0.015 290);
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .btn-ghost:hover { border-color: oklch(0.28 0.018 290); color: var(--ink); }
-
-        .brand {
-            position: fixed;
-            top: 24px;
-            left: 28px;
+        /* Lock SVG custom */
+        .lock-body {
+            width: 80px;
+            height: 70px;
+            background: linear-gradient(160deg, oklch(0.25 0.018 290), oklch(0.20 0.014 290));
+            border: 2px solid oklch(0.65 0.22 25 / 0.60);
+            border-radius: 14px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--ink);
-            font-size: 15px;
-            font-weight: 600;
+            justify-content: center;
+            box-shadow:
+                0 20px 40px oklch(0.65 0.22 25 / 0.15),
+                0 0 0 1px oklch(0.65 0.22 25 / 0.10);
+            position: relative;
         }
 
-        .brand img { width: 26px; height: 26px; border-radius: 7px; }
+        .lock-hole {
+            width: 20px; height: 20px;
+            background: oklch(0.65 0.22 25 / 0.20);
+            border: 2px solid oklch(0.65 0.22 25 / 0.50);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .lock-hole::after {
+            content: "";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, 0);
+            width: 3px;
+            height: 10px;
+            background: oklch(0.65 0.22 25 / 0.50);
+            border-radius: 0 0 2px 2px;
+        }
+
+        .lock-shackle {
+            position: absolute;
+            top: -32px; left: 50%;
+            transform: translateX(-50%);
+            width: 44px; height: 36px;
+            border: 6px solid oklch(0.65 0.22 25 / 0.70);
+            border-bottom: none;
+            border-radius: 22px 22px 0 0;
+        }
+
+        /* DENIED badge */
+        .denied-badge {
+            position: absolute;
+            bottom: -14px;
+            right: -20px;
+            background: var(--red);
+            color: white;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 2px solid var(--bg);
+            animation: badge-pop 3.5s ease-in-out infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes badge-pop {
+            0%, 54%, 72%, 100% { transform: scale(1); }
+            57%                { transform: scale(1.15); }
+            60%                { transform: scale(0.95); }
+            63%                { transform: scale(1.10); }
+            66%                { transform: scale(1); }
+        }
+
+        /* ── Text ── */
+        .content { text-align: center; }
+
+        .code {
+            font-family: 'Geist Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 12px;
+        }
+
+        h1 { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 10px; }
+
+        p { font-size: 15px; color: var(--ink-dim); max-width: 340px; line-height: 1.6; margin: 0 auto 28px; }
+
+        .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 10px 20px; border-radius: 999px;
+            font-size: 14px; font-weight: 600; font-family: inherit;
+            text-decoration: none; transition: all 0.2s; border: none; cursor: pointer;
+        }
+        .btn-primary { background: var(--purple); color: oklch(0.12 0.01 290); }
+        .btn-primary:hover { background: oklch(0.78 0.19 300); transform: translateY(-1px); }
+        .btn-secondary { background: var(--bg-2); color: var(--ink-dim); border: 1px solid var(--line-soft); }
+        .btn-secondary:hover { color: var(--ink); }
     </style>
 </head>
 <body>
-    <a href="/" class="brand">
-        <img src="/icon.svg" alt="Cardifys">
-        Cardifys
-    </a>
-
-    <div class="page">
-        <span class="code">403</span>
-
+    <div class="scene">
         <div class="lock-wrap">
-            <div class="lock-outer">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
-                </svg>
+            <div class="lock-shackle"></div>
+            <div class="lock-body">
+                <div class="lock-hole"></div>
             </div>
-            <span class="badge">DENIED</span>
+            <span class="denied-badge">ACCESS DENIED</span>
         </div>
+    </div>
 
-        <h1>Acesso não autorizado</h1>
-        <p>Não tens permissões para ver esta página. Se achares que é um engano, entra na tua conta.</p>
-
+    <div class="content">
+        <div class="code">Erro 403</div>
+        <h1>Acesso negado</h1>
+        <p>Não tens permissão para aceder a esta página. Se achares que é um erro, contacta o administrador.</p>
         <div class="actions">
-            <a href="{{ route('login') }}" class="btn-primary">Entrar na conta</a>
-            <a href="/" class="btn-ghost">Voltar ao início</a>
+            <a href="/" class="btn btn-primary">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Voltar ao início
+            </a>
+            <a href="javascript:history.back()" class="btn btn-secondary">Página anterior</a>
         </div>
     </div>
 </body>

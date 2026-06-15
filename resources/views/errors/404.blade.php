@@ -5,254 +5,202 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 — Página não encontrada · Cardifys</title>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
-            --bg:          oklch(0.15 0.012 290);
-            --ink:         oklch(0.97 0.010 290);
-            --ink-dim:     oklch(0.72 0.015 290);
-            --ink-mute:    oklch(0.52 0.012 290);
-            --line-soft:   oklch(0.28 0.018 290 / 0.35);
-            --purple:      oklch(0.72 0.19  300);
-            --purple-soft: oklch(0.72 0.19  300 / 0.12);
+            --bg:        oklch(0.15 0.012 290);
+            --bg-2:      oklch(0.19 0.015 290);
+            --ink:       oklch(0.97 0.010 290);
+            --ink-dim:   oklch(0.72 0.015 290);
+            --ink-mute:  oklch(0.52 0.012 290);
+            --line-soft: oklch(0.28 0.018 290 / 0.35);
+            --purple:    oklch(0.72 0.19 300);
+            --purple-soft: oklch(0.72 0.19 300 / 0.12);
         }
 
-        html, body {
-            height: 100%;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Geist', system-ui, sans-serif;
             background: var(--bg);
             color: var(--ink);
-            font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
-            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
         }
 
         body::before {
             content: "";
             position: fixed; inset: 0;
             background:
-                radial-gradient(ellipse 55% 45% at 80% 10%, oklch(0.72 0.19 300 / 0.08), transparent 60%),
-                radial-gradient(ellipse 40% 40% at 10% 90%, oklch(0.82 0.14 330 / 0.05), transparent 60%);
+                radial-gradient(ellipse 55% 45% at 80% 20%, oklch(0.72 0.19 300 / 0.06), transparent 60%),
+                radial-gradient(ellipse 40% 40% at 20% 80%, oklch(0.82 0.14 330 / 0.04), transparent 60%);
             pointer-events: none;
         }
 
-        body::after {
-            content: "";
-            position: fixed; inset: 0;
-            background-image:
-                linear-gradient(to right,  var(--line-soft) 1px, transparent 1px),
-                linear-gradient(to bottom, var(--line-soft) 1px, transparent 1px);
-            background-size: 72px 72px;
-            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.2), transparent 70%);
-            pointer-events: none;
-            opacity: 0.3;
-        }
-
-        .page {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 24px;
-            text-align: center;
-        }
-
-        .code {
-            font-family: 'Geist Mono', monospace;
-            font-size: clamp(100px, 20vw, 180px);
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: -0.04em;
-            background: linear-gradient(135deg, oklch(0.72 0.19 300), oklch(0.82 0.14 330));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            opacity: 0.18;
-            position: absolute;
-            pointer-events: none;
-            user-select: none;
-        }
-
-        .card-visual {
+        /* ── Card flutuante ── */
+        .scene {
             position: relative;
             margin-bottom: 40px;
         }
 
-        .floating-card {
-            width: 220px;
-            height: 132px;
-            background: oklch(0.19 0.015 290);
-            border: 1px solid oklch(0.28 0.018 290 / 0.6);
-            border-radius: 16px;
+        .card {
+            width: 260px;
+            height: 155px;
+            background: linear-gradient(135deg, oklch(0.22 0.018 290), oklch(0.18 0.014 290));
+            border: 1px solid oklch(0.72 0.19 300 / 0.30);
+            border-radius: 18px;
+            box-shadow:
+                0 30px 60px oklch(0 0 0 / 0.50),
+                0 0 0 1px oklch(0.72 0.19 300 / 0.10),
+                inset 0 1px 0 oklch(1 0 0 / 0.06);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            overflow: hidden;
             animation: float 4s ease-in-out infinite;
-            box-shadow: 0 24px 60px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(0.72 0.19 300 / 0.1);
-        }
-
-        .floating-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, oklch(0.72 0.19 300 / 0.06), transparent 60%);
-        }
-
-        .card-lines {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding: 20px;
-            width: 100%;
-        }
-
-        .card-line {
-            height: 8px;
-            border-radius: 4px;
-            background: oklch(0.28 0.018 290 / 0.6);
-        }
-        .card-line.short { width: 40%; }
-        .card-line.medium { width: 65%; }
-        .card-line.long { width: 85%; }
-
-        .question-mark {
-            position: absolute;
-            top: -16px;
-            right: -16px;
-            width: 40px;
-            height: 40px;
-            background: var(--bg);
-            border: 1px solid oklch(0.28 0.018 290 / 0.5);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Geist Mono', monospace;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--purple);
-            animation: pulse 2s ease-in-out infinite;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(-2deg); }
-            50%       { transform: translateY(-12px) rotate(1deg); }
+            50%       { transform: translateY(-18px) rotate(2deg); }
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50%       { opacity: 0.6; transform: scale(0.95); }
+        /* Chip */
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 22px; left: 22px;
+            width: 36px; height: 28px;
+            background: linear-gradient(135deg, oklch(0.82 0.12 85 / 0.7), oklch(0.72 0.09 85 / 0.5));
+            border-radius: 5px;
+            border: 1px solid oklch(0.82 0.12 85 / 0.3);
+        }
+
+        /* Stripe */
+        .card::after {
+            content: "";
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 40px;
+            background: oklch(0.72 0.19 300 / 0.12);
+            border-radius: 0 0 18px 18px;
+            border-top: 1px solid oklch(0.72 0.19 300 / 0.15);
+        }
+
+        .question-mark {
+            font-size: 72px;
+            font-weight: 800;
+            color: var(--purple);
+            line-height: 1;
+            text-shadow: 0 0 40px oklch(0.72 0.19 300 / 0.5);
+            animation: question-pulse 3s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes question-pulse {
+            0%, 100% { transform: scale(1);       opacity: 1;    }
+            30%       { transform: scale(1.08);    opacity: 0.85; }
+            60%       { transform: scale(0.96);    opacity: 1;    }
+        }
+
+        /* Shadow under card */
+        .card-shadow {
+            width: 200px;
+            height: 20px;
+            background: oklch(0 0 0 / 0.4);
+            border-radius: 50%;
+            filter: blur(14px);
+            margin: 0 auto;
+            animation: shadow-float 4s ease-in-out infinite;
+        }
+
+        @keyframes shadow-float {
+            0%, 100% { transform: scaleX(1);    opacity: 0.4; }
+            50%       { transform: scaleX(0.75); opacity: 0.2; }
+        }
+
+        /* ── Text ── */
+        .content { text-align: center; }
+
+        .code {
+            font-family: 'Geist Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--purple);
+            margin-bottom: 12px;
         }
 
         h1 {
-            font-size: clamp(22px, 4vw, 28px);
-            font-weight: 600;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--ink);
             letter-spacing: -0.02em;
-            margin-bottom: 12px;
-            position: relative;
+            margin-bottom: 10px;
         }
 
         p {
             font-size: 15px;
             color: var(--ink-dim);
-            max-width: 360px;
+            max-width: 340px;
             line-height: 1.6;
-            margin-bottom: 36px;
-            position: relative;
+            margin-bottom: 32px;
         }
 
-        .actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-            position: relative;
-        }
+        .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
-        .btn-primary {
-            padding: 11px 22px;
-            background: var(--purple-soft);
-            border: 1px solid oklch(0.72 0.19 300 / 0.3);
-            border-radius: 10px;
-            color: var(--purple);
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover {
-            background: oklch(0.72 0.19 300 / 0.18);
-            border-color: oklch(0.72 0.19 300 / 0.5);
-        }
-
-        .btn-ghost {
-            padding: 11px 22px;
-            background: transparent;
-            border: 1px solid oklch(0.28 0.018 290 / 0.5);
-            border-radius: 10px;
-            color: var(--ink-dim);
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .btn-ghost:hover {
-            border-color: oklch(0.28 0.018 290);
-            color: var(--ink);
-        }
-
-        .brand {
-            position: fixed;
-            top: 24px;
-            left: 28px;
-            display: flex;
+        .btn {
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--ink);
-            font-size: 15px;
+            gap: 7px;
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-size: 14px;
             font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
         }
-
-        .brand img { width: 26px; height: 26px; border-radius: 7px; }
+        .btn-primary {
+            background: var(--purple);
+            color: oklch(0.12 0.01 290);
+        }
+        .btn-primary:hover { background: oklch(0.78 0.19 300); transform: translateY(-1px); }
+        .btn-secondary {
+            background: var(--bg-2);
+            color: var(--ink-dim);
+            border: 1px solid var(--line-soft);
+        }
+        .btn-secondary:hover { color: var(--ink); border-color: oklch(0.72 0.19 300 / 0.30); }
     </style>
 </head>
 <body>
-    <a href="/" class="brand">
-        <img src="/icon.svg" alt="Cardifys">
-        Cardifys
-    </a>
-
-    <div class="page">
-        <span class="code">404</span>
-
-        <div class="card-visual">
-            <div class="floating-card">
-                <div class="card-lines">
-                    <div class="card-line short"></div>
-                    <div class="card-line medium"></div>
-                    <div class="card-line long"></div>
-                    <div class="card-line short"></div>
-                </div>
-            </div>
-            <div class="question-mark">?</div>
+    <div class="scene">
+        <div class="card">
+            <span class="question-mark">?</span>
         </div>
+        <div class="card-shadow"></div>
+    </div>
 
-        <h1>Cartão não encontrado</h1>
-        <p>A página que procuras não existe, foi movida ou o link está incorreto.</p>
-
+    <div class="content">
+        <div class="code">Erro 404</div>
+        <h1>Página não encontrada</h1>
+        <p>O cartão que procuras parece ter desaparecido. Pode ter sido movido, eliminado, ou nunca ter existido.</p>
         <div class="actions">
-            <a href="/" class="btn-primary">Voltar ao início</a>
-            <a href="javascript:history.back()" class="btn-ghost">Página anterior</a>
+            <a href="/" class="btn btn-primary">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Voltar ao início
+            </a>
+            <a href="javascript:history.back()" class="btn btn-secondary">Página anterior</a>
         </div>
     </div>
 </body>
