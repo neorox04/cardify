@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     };
 
     const isLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
-    const authUserName = {{ Auth::check() ? json_encode(explode(' ', Auth::user()->name)[0]) : 'null' }};
+    const authUserName = {{ \Illuminate\Support\Js::from(Auth::check() ? explode(' ', Auth::user()->name)[0] : null) }};
 
     const applyWelcome2Links = () => {
       document.querySelectorAll('a.ghost-btn[data-i18n="nav.login"]').forEach((a) => {
