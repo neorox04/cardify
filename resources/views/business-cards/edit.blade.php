@@ -21,14 +21,20 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="full_name" class="form-label">Nome Completo *</label>
-                    <input 
-                        type="text" 
-                        id="full_name" 
-                        name="full_name" 
+                    <input
+                        type="text"
+                        id="full_name"
+                        name="full_name"
                         class="form-input @error('full_name') error @enderror"
-                        value="{{ old('full_name', $businessCard->full_name) }}" 
+                        value="{{ old('full_name', $businessCard->full_name) }}"
                         required
+                        @if(!empty($nameLocked)) readonly style="opacity:0.6;cursor:not-allowed;" @endif
                     >
+                    @if(!empty($nameLocked))
+                        <div class="form-hint" style="font-size:12px;color:var(--ink-mute,#888);margin-top:6px;">
+                            O nome está associado à tua conta e não pode ser alterado.
+                        </div>
+                    @endif
                     @error('full_name')
                         <div class="error-message">{{ $message }}</div>
                     @enderror

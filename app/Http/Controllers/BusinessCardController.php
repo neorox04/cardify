@@ -43,6 +43,28 @@ class BusinessCardController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    /**
+     * Whether the card name must be forced to the account holder's name.
+     *
+     * Personal cards (no company) are always locked so a single paid account
+     * can't be used to make cards for other people. Company cards are only
+     * unlocked when the acting user is an admin of that company (they pay per
+     * seat, so distinct employee names are legitimate).
+     */
+    private function cardNameIsLocked(?int $companyId, \App\Models\User $user): bool
+    {
+        if (!$companyId) {
+            return true;
+        }
+
+        $isCompanyAdmin = $user->companies()
+            ->where('company_id', $companyId)
+            ->wherePivot('is_admin', true)
+            ->exists();
+
+        return !$isCompanyAdmin;
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -68,8 +90,17 @@ class BusinessCardController extends Controller
 
         $businessCardData = $request->except(['avatar', 'cover_image']);
         $businessCardData['user_id'] = Auth::id();
-        $businessCardData['full_name'] = $request->input('full_name') ?: Auth::user()->name;
-        
+
+        // Personal cards are always the account holder's name — this prevents
+        // one paid account from producing cards for other people. Only company
+        // admins (paying per seat) may set a different name.
+        $companyId = $request->input('company_id') ? (int) $request->input('company_id') : null;
+        if ($this->cardNameIsLocked($companyId, Auth::user())) {
+            $businessCardData['full_name'] = Auth::user()->name;
+        } else {
+            $businessCardData['full_name'] = $request->input('full_name') ?: Auth::user()->name;
+        }
+
         // Generate unique slug
         $baseSlug = Str::slug($businessCardData['full_name']);
         $slug = $baseSlug;
@@ -109,10 +140,11 @@ class BusinessCardController extends Controller
     public function edit(BusinessCard $businessCard): View
     {
         $this->authorize('update', $businessCard);
-        
+
         $companies = Auth::user()->companies;
-        
-        return view('business-cards.edit', compact('businessCard', 'companies'));
+        $nameLocked = $this->cardNameIsLocked($businessCard->company_id, Auth::user());
+
+        return view('business-cards.edit', compact('businessCard', 'companies', 'nameLocked'));
     }
 
     /**
@@ -144,6 +176,15 @@ class BusinessCardController extends Controller
         ]);
 
         $businessCardData = $request->except(['avatar', 'cover_image']);
+
+        // Lock the name on personal cards: editing must not become a way to
+        // rename a card to another person. Company admins keep name control.
+        $effectiveCompanyId = $request->filled('company_id')
+            ? (int) $request->input('company_id')
+            : $businessCard->company_id;
+        if ($this->cardNameIsLocked($effectiveCompanyId, Auth::user())) {
+            $businessCardData['full_name'] = $businessCard->user->name;
+        }
 
         if ($request->hasFile('avatar')) {
             $businessCardData['avatar'] = $request->file('avatar')->store('avatars', 'public');
