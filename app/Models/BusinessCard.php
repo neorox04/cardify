@@ -93,4 +93,33 @@ class BusinessCard extends Model
     {
         $this->increment('views_count');
     }
+
+    /**
+     * Whether the card is entitled to be served publicly — i.e. its owner
+     * still has an active (or grace-period) subscription. For company cards,
+     * any admin of the company holding an active subscription keeps it live.
+     *
+     * Cashier's subscribed('default') stays true through the paid grace
+     * period and only turns false once the period actually ends.
+     */
+    public function ownerHasActiveSubscription(): bool
+    {
+        if ($this->user && $this->user->subscribed('default')) {
+            return true;
+        }
+
+        if ($this->company_id) {
+            $company = $this->relationLoaded('company') ? $this->company : $this->company()->first();
+
+            if ($company) {
+                foreach ($company->admins as $admin) {
+                    if ($admin->subscribed('default')) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }

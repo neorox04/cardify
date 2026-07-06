@@ -173,13 +173,19 @@ class BusinessCardController extends Controller
     /**
      * Display public business card.
      */
-    public function publicCard(string $slug): View
+    public function publicCard(string $slug): View|\Illuminate\Http\Response
     {
         $businessCard = BusinessCard::where('slug', $slug)
             ->where('is_public', true)
             ->where('is_active', true)
             ->with('company')
             ->firstOrFail();
+
+        // The card only stays public while the owner keeps an active
+        // subscription. Once it lapses, the card goes dark.
+        if (!$businessCard->ownerHasActiveSubscription()) {
+            return response()->view('business-cards.unavailable', compact('businessCard'), 404);
+        }
 
         $businessCard->incrementViews();
 
@@ -227,6 +233,10 @@ class BusinessCardController extends Controller
      */
     public function saveContact(BusinessCard $businessCard)
     {
+        if (!$businessCard->ownerHasActiveSubscription()) {
+            return response()->view('business-cards.unavailable', compact('businessCard'), 404);
+        }
+
         $businessCard->increment('qr_scans');
         return view('business-cards.save-contact', compact('businessCard'));
     }
@@ -262,6 +272,10 @@ class BusinessCardController extends Controller
      */
     public function downloadVCard(BusinessCard $businessCard)
     {
+        if (!$businessCard->ownerHasActiveSubscription()) {
+            return response()->view('business-cards.unavailable', compact('businessCard'), 404);
+        }
+
         $businessCard->increment('contacts_saved');
         $vcard = "BEGIN:VCARD\r\n";
         $vcard .= "VERSION:3.0\r\n";
