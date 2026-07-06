@@ -67,6 +67,12 @@ class BusinessCardController extends Controller
 
     public function store(Request $request)
     {
+        // Mirror the create() gate on the write path — the GET form redirect
+        // is cosmetic on its own; a direct POST must also require a plan.
+        if (!Auth::user()->subscribed('default')) {
+            return redirect()->route('subscriptions.plans');
+        }
+
         $request->validate([
             'full_name' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',

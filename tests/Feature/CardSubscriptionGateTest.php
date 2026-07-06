@@ -81,6 +81,34 @@ class CardSubscriptionGateTest extends TestCase
         $this->assertEquals(0, $card->fresh()->contacts_saved);
     }
 
+    // ── Creation paywall (write path) ─────────────────────────────────────
+
+    public function test_unsubscribed_user_cannot_store_card_via_direct_post(): void
+    {
+        $user = User::factory()->create(['is_active' => true, 'type' => 'user']);
+
+        $response = $this->actingAs($user)->post('/business-cards', [
+            'email' => 'x@example.com',
+            'theme' => 'default',
+        ]);
+
+        $response->assertRedirect(route('subscriptions.plans'));
+        $this->assertDatabaseMissing('business_cards', ['email' => 'x@example.com']);
+    }
+
+    public function test_subscribed_user_can_store_card(): void
+    {
+        $user = User::factory()->create(['is_active' => true, 'type' => 'user']);
+        $this->subscribe($user);
+
+        $this->actingAs($user)->post('/business-cards', [
+            'email' => 'ok@example.com',
+            'theme' => 'default',
+        ]);
+
+        $this->assertDatabaseHas('business_cards', ['email' => 'ok@example.com']);
+    }
+
     // ── Company ───────────────────────────────────────────────────────────
 
     public function test_employee_card_live_while_company_admin_subscribed(): void
