@@ -89,6 +89,15 @@ class SubscriptionTest extends TestCase
         $this->get('/empresas')->assertStatus(200);
     }
 
+    public function test_checkout_enterprise_redirects_to_public_enterprise_page(): void
+    {
+        // Regression: /checkout/enterprise pointed at a missing view (500).
+        $user = User::factory()->create(['is_active' => true]);
+
+        $this->actingAs($user)->get('/checkout/enterprise')
+            ->assertRedirect(route('enterprise'));
+    }
+
     public function test_success_page_requires_auth(): void
     {
         $this->get('/checkout/success')->assertRedirect('/login');

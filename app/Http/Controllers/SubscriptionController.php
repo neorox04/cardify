@@ -203,10 +203,11 @@ class SubscriptionController extends Controller
         }
     }
 
-    // Página enterprise (10.000+ seats)
+    // Fluxo enterprise (10.000+ seats) → encaminha para a página pública
+    // de empresas, que tem o pricing por seats e o formulário de contacto.
     public function enterprise()
     {
-        return view('subscriptions.enterprise');
+        return redirect()->route('enterprise');
     }
 
     // Página de sucesso
