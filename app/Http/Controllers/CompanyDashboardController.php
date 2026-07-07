@@ -191,6 +191,11 @@ class CompanyDashboardController extends Controller
 
         $created = 0;
         $skipped = 0;
+        $blocked = 0;
+
+        // Each company card consumes one paid seat — import only up to the
+        // seats still available. Rows beyond the limit are blocked, not created.
+        $available = $company->availableSeats();
 
         foreach ($data as $row) {
             if (count($row) !== count($header)) { $skipped++; continue; }
@@ -198,6 +203,8 @@ class CompanyDashboardController extends Controller
 
             $fullName = trim($row['nome_completo'] ?? '');
             if (!$fullName) { $skipped++; continue; }
+
+            if ($created >= $available) { $blocked++; continue; }
 
             $cardData = ['company_id' => $company->id, 'user_id' => Auth::id(), 'is_active' => true, 'is_public' => true, 'theme' => 'default'];
             foreach ($map as $csvKey => $field) {
@@ -219,7 +226,16 @@ class CompanyDashboardController extends Controller
             $created++;
         }
 
-        return back()->with('import_success', "Importação concluída: {$created} cartões criados" . ($skipped ? ", {$skipped} linhas ignoradas." : '.'));
+        $message = "Importação concluída: {$created} cartões criados";
+        if ($skipped) {
+            $message .= ", {$skipped} linhas ignoradas";
+        }
+        if ($blocked) {
+            $message .= ". {$blocked} não importados — atingiste o limite de {$company->seatLimit()} seats. Faz upgrade do plano para adicionares mais";
+        }
+        $message .= '.';
+
+        return back()->with('import_success', $message);
     }
 
     /**

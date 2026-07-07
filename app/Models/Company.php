@@ -59,6 +59,39 @@ class Company extends Model
     }
 
     /**
+     * Number of paid seats — the quantity of the active company subscription
+     * held by any admin. Zero when the company has no active subscription.
+     * Each company card consumes one seat.
+     */
+    public function seatLimit(): int
+    {
+        foreach ($this->admins as $admin) {
+            if ($admin->subscribed('default')) {
+                $subscription = $admin->subscription('default');
+                return (int) ($subscription->quantity ?? 1);
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Company cards currently in use (each counts as one seat).
+     */
+    public function companyCardCount(): int
+    {
+        return $this->businessCards()->count();
+    }
+
+    /**
+     * Seats still available for new company cards.
+     */
+    public function availableSeats(): int
+    {
+        return max(0, $this->seatLimit() - $this->companyCardCount());
+    }
+
+    /**
      * Get the route key name for Laravel model binding.
      */
     public function getRouteKeyName(): string

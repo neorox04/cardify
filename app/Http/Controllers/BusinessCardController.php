@@ -101,10 +101,18 @@ class BusinessCardController extends Controller
         // one paid account from producing cards for other people. Only company
         // admins (paying per seat) may set a different name.
         $companyId = $request->input('company_id') ? (int) $request->input('company_id') : null;
-        if ($this->cardNameIsLocked($companyId, Auth::user())) {
-            $businessCardData['full_name'] = Auth::user()->name;
-        } else {
+        $isCompanyCard = $companyId && !$this->cardNameIsLocked($companyId, Auth::user());
+
+        if ($isCompanyCard) {
+            // Each company card consumes a paid seat.
+            $company = \App\Models\Company::find($companyId);
+            if ($company && $company->availableSeats() < 1) {
+                return back()->withInput()->with('error',
+                    "Atingiste o limite de {$company->seatLimit()} seats. Faz upgrade do plano para adicionares mais cartões.");
+            }
             $businessCardData['full_name'] = $request->input('full_name') ?: Auth::user()->name;
+        } else {
+            $businessCardData['full_name'] = Auth::user()->name;
         }
 
         // Generate unique slug

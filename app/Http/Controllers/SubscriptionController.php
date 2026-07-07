@@ -148,6 +148,17 @@ class SubscriptionController extends Controller
             $company->users()->detach($toDeactivate);
         }
 
+        // Não permitir reduzir seats abaixo dos cartões de empresa em uso —
+        // cada cartão consome um seat. O admin remove cartões primeiro.
+        $company = $user->companies()->wherePivot('is_admin', true)->first();
+        if ($company) {
+            $inUse = $company->companyCardCount();
+            if ($newSeats < $inUse) {
+                return back()->with('error',
+                    "Tens {$inUse} cartões de empresa ativos. Remove cartões ou escolhe pelo menos {$inUse} seats antes de reduzir o plano.");
+            }
+        }
+
         // Atualizar quantity no Stripe
         $subscription->updateQuantity($newSeats);
 
