@@ -3,253 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guardar Contacto - {{ $businessCard->full_name }}</title>
+    <title>Guardar contacto · {{ $businessCard->full_name }}</title>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#6366f1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg-dark: #09090b;
-            --bg-card: #18181b;
-            --text-primary: #fafafa;
-            --text-secondary: #a1a1aa;
-            --success: #22c55e;
+            --bg:        oklch(0.15 0.012 290);
+            --bg-2:      oklch(0.19 0.015 290);
+            --bg-3:      oklch(0.23 0.018 290);
+            --ink:       oklch(0.97 0.010 290);
+            --ink-dim:   oklch(0.72 0.015 290);
+            --ink-mute:  oklch(0.52 0.012 290);
+            --line-soft: oklch(0.28 0.018 290 / 0.35);
+            --line:      oklch(0.30 0.018 290 / 0.7);
+            --purple:    oklch(0.72 0.19  300);
+            --purple-deep: oklch(0.52 0.19 300);
+            --green:     oklch(0.78 0.15 162);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        html, body { background: var(--bg); color: var(--ink); font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+        body::before {
+            content: ""; position: fixed; inset: 0; pointer-events: none;
+            background: radial-gradient(ellipse 60% 40% at 50% 0%, oklch(0.72 0.19 300 / 0.1), transparent 60%);
         }
+        .wrap { position: relative; z-index: 1; max-width: 400px; margin: 0 auto; padding: 48px 22px 32px; text-align: center; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            color: var(--text-primary);
+        .card {
+            background: var(--bg-2); border: 1px solid var(--line-soft); border-radius: 24px;
+            padding: 34px 26px 28px; box-shadow: 0 24px 60px oklch(0 0 0 / 0.4);
+            animation: rise .5s ease both;
         }
+        @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 
-        .container {
-            max-width: 380px;
-            width: 100%;
-            text-align: center;
+        .check {
+            width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 18px;
+            background: oklch(0.78 0.15 162 / 0.12); border: 1px solid oklch(0.78 0.15 162 / 0.3);
+            display: flex; align-items: center; justify-content: center;
         }
+        .check svg { width: 26px; height: 26px; color: var(--green); }
 
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background: var(--success);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px;
-            animation: pulse 2s infinite;
+        .avatar, .avatar-ph {
+            width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 14px; display: block; object-fit: cover;
+            border: 2px solid oklch(0.72 0.19 300 / 0.35);
         }
-
-        .success-icon svg {
-            width: 40px;
-            height: 40px;
-            color: white;
+        .avatar-ph {
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--purple), var(--purple-deep));
+            font-size: 32px; font-weight: 600; color: #fff;
         }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .profile-photo {
-            width: 100px;
-            height: 100px;
-            border-radius: 24px;
-            object-fit: cover;
-            border: 3px solid #070915;
-            box-shadow: 0 0 0 1px #b08cff80, 0 12px 32px rgba(176, 140, 255, 0.16);
-            margin-bottom: 20px;
-        }
-
-        .profile-placeholder {
-            width: 100px;
-            height: 100px;
-            border-radius: 24px;
-            background: #070915;
-            border: 3px solid #070915;
-            box-shadow: 0 0 0 1px #b08cff80, 0 12px 32px rgba(176, 140, 255, 0.16);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            font-weight: 700;
-            color: white;
-            margin: 0 auto 20px;
-        }
-
-        h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .position {
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
+        .name { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; }
+        .position { font-size: 14px; color: var(--ink-dim); margin-top: 3px; }
         .company {
-            font-size: 14px;
-            color: var(--primary);
-            margin-bottom: 32px;
+            display: inline-block; margin-top: 9px; padding: 4px 12px;
+            background: oklch(0.72 0.19 300 / 0.12); border: 1px solid oklch(0.72 0.19 300 / 0.25);
+            border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--purple);
         }
-
-        .message {
-            font-size: 15px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 32px;
-        }
+        .note { font-size: 13px; color: var(--ink-mute); margin: 18px 0 22px; line-height: 1.6; }
 
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 16px 24px;
-            border-radius: 14px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.2s;
-            border: none;
-            cursor: pointer;
-            margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 9px;
+            height: 50px; border-radius: 13px; font-size: 15px; font-weight: 600;
+            text-decoration: none; transition: all .15s; font-family: inherit; margin-bottom: 10px;
         }
-
+        .btn svg { width: 18px; height: 18px; }
         .btn-primary {
-            background: var(--primary);
-            color: white;
+            background: linear-gradient(135deg, oklch(0.75 0.19 300), oklch(0.6 0.19 300));
+            color: #fff; box-shadow: 0 8px 24px oklch(0.72 0.19 300 / 0.35);
         }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 30px oklch(0.72 0.19 300 / 0.45); }
+        .btn-ghost { background: var(--bg-3); border: 1px solid var(--line-soft); color: var(--ink); }
+        .btn-ghost:hover { border-color: var(--line); }
 
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
-
-        .btn-secondary:hover {
-            background: #27272a;
-        }
-
-        .btn svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .powered-by {
-            margin-top: 40px;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .powered-by a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        /* Auto-download notice */
-        .auto-download {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        .auto-download p {
-            font-size: 14px;
-            color: var(--success);
-        }
+        .powered { margin-top: 22px; font-size: 12px; color: var(--ink-mute); }
+        .powered a { color: var(--ink-dim); font-weight: 600; text-decoration: none; }
+        .powered a:hover { color: var(--purple); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="success-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-        </div>
-
-        @if($businessCard->avatar)
-            <img src="{{ Storage::url($businessCard->avatar) }}" alt="{{ $businessCard->full_name }}" class="profile-photo">
-        @else
-            <div class="profile-placeholder">{{ substr($businessCard->full_name, 0, 1) }}</div>
-        @endif
-
-        <h1>{{ $businessCard->full_name }}</h1>
-        
-        @if($businessCard->position)
-            <p class="position">{{ $businessCard->position }}</p>
-        @endif
-        
-        @if($businessCard->company)
-            <p class="company">{{ $businessCard->company->name }}</p>
-        @endif
-
-        <div class="auto-download">
-            <p>📥 O contacto será transferido automaticamente</p>
-            <div class="metrics" style="margin-top: 12px; color: #a1a1aa; font-size: 13px;">
-                <span>👁️ Visualizações: {{ $businessCard->views_count ?? 0 }}</span> |
-                <span>📱 QR Scans: {{ $businessCard->qr_scans ?? 0 }}</span> |
-                <span>💾 Contacts Saved: {{ $businessCard->contacts_saved ?? 0 }}</span>
+    <div class="wrap">
+        <div class="card">
+            <div class="check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
             </div>
+
+            @if($businessCard->avatar)
+                <img src="{{ \Illuminate\Support\Facades\Storage::url($businessCard->avatar) }}" alt="{{ $businessCard->full_name }}" class="avatar">
+            @else
+                <div class="avatar-ph">{{ strtoupper(substr($businessCard->full_name, 0, 1)) }}</div>
+            @endif
+
+            <h1 class="name">{{ $businessCard->full_name }}</h1>
+            @if($businessCard->position)<p class="position">{{ $businessCard->position }}</p>@endif
+            @if($businessCard->company)<span class="company">{{ $businessCard->company->name }}</span>@endif
+
+            <p class="note">📥 O contacto vai ser transferido automaticamente. Se não começar, usa o botão abaixo.</p>
+
+            <a href="{{ route('card.vcard', $businessCard) }}" class="btn btn-primary" id="downloadBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Guardar contacto
+            </a>
+
+            <a href="{{ route('card.public', $businessCard->slug) }}" class="btn btn-ghost">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Ver cartão completo
+            </a>
         </div>
 
-        <p class="message">
-            Obrigado por guardar o meu contacto! Estou disponível para qualquer questão.
-        </p>
-
-        <a href="{{ route('card.vcard', $businessCard) }}" class="btn btn-primary" id="downloadBtn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            Guardar Contacto
-        </a>
-
-        <a href="{{ route('card.public', $businessCard->slug) }}" class="btn btn-secondary">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-            </svg>
-            Ver Cartão Completo
-        </a>
-
-        <div class="powered-by">
-            Criado com <a href="{{ route('home') }}">Cardifys</a>
-        </div>
+        <p class="powered">Criado com <a href="{{ route('home') }}">Cardifys</a></p>
     </div>
 
     <script>
-        // Auto-download vCard after a short delay
-        setTimeout(function() {
+        setTimeout(function () {
             window.location.href = "{{ route('card.vcard', $businessCard) }}";
         }, 1500);
     </script>
