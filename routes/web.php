@@ -9,6 +9,8 @@ use App\Http\Controllers\CompanyDashboardController;
 use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\BusinessCardController;
 use App\Http\Controllers\ContactShareController;
+use App\Http\Controllers\SupportController;
+use App\Http\Controllers\RoadmapController;
 use App\Http\Controllers\WebhookController;
 
 // Stripe webhook (fora do middleware de auth)
@@ -29,6 +31,10 @@ Route::get('/termos', fn() => view('termos'))->name('termos');
 Route::get('/planos', [SubscriptionController::class, 'showPlans'])->name('subscriptions.plans');
 Route::get('/empresas', [SubscriptionController::class, 'enterprisePage'])->name('enterprise');
 Route::post('/empresas/contacto', [SubscriptionController::class, 'enterpriseContact'])->name('enterprise.contact');
+
+// Public support request form
+Route::get('/suporte', [SupportController::class, 'create'])->name('support.contact');
+Route::post('/suporte', [SupportController::class, 'store'])->middleware('throttle:6,1')->name('support.store');
 
 // Authentication routes
 Route::middleware('guest')->group(function () {
@@ -152,6 +158,17 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
         Route::get('/dashboard', [AdminPanelController::class, 'index'])->name('dashboard');
         Route::get('/analytics', [AdminPanelController::class, 'analytics'])->name('analytics');
         Route::get('/crm', [AdminPanelController::class, 'crm'])->name('crm');
+
+        // Support board
+        Route::get('/support', [SupportController::class, 'index'])->name('support');
+        Route::patch('/support/{ticket}/status', [SupportController::class, 'updateStatus'])->name('support.status');
+        Route::delete('/support/{ticket}', [SupportController::class, 'destroy'])->name('support.destroy');
+
+        // Roadmap board
+        Route::get('/roadmap', [RoadmapController::class, 'index'])->name('roadmap');
+        Route::post('/roadmap', [RoadmapController::class, 'store'])->name('roadmap.store');
+        Route::patch('/roadmap/{item}', [RoadmapController::class, 'update'])->name('roadmap.update');
+        Route::delete('/roadmap/{item}', [RoadmapController::class, 'destroy'])->name('roadmap.destroy');
         Route::get('/users', [AdminPanelController::class, 'users'])->name('users');
         Route::get('/users/{user}', [AdminPanelController::class, 'showUser'])->name('users.show');
         Route::delete('/users/{user}', [AdminPanelController::class, 'destroyUser'])->name('users.destroy');
