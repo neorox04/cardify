@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\BusinessCard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Carbon\Carbon;
 
@@ -538,6 +539,63 @@ class AdminPanelController extends Controller
         $company->delete();
 
         return redirect()->route('admin.companies')->with('success', "Empresa '{$companyName}' removida com sucesso!");
+    }
+
+    /**
+     * Permanently delete a user and everything belonging to them, freeing the
+     * email for reuse. Guarded by the acting admin's password.
+     */
+    public function destroyUser(Request $request, User $user)
+    {
+        $request->validate(['password' => 'required|string']);
+
+        // Re-authenticate the acting admin — destructive and irreversible.
+        if (!Hash::check($request->input('password'), $request->user()->password)) {
+            return back()->with('error', 'Password incorreta. O utilizador não foi removido.');
+        }
+
+        if ($user->id === $request->user()->id) {
+            return back()->with('error', 'Não podes remover a tua própria conta.');
+        }
+        if ($user->isSuperAdmin()) {
+            return back()->with('error', 'Não é possível remover um super admin.');
+        }
+
+        $name  = $user->name;
+        $email = $user->email;
+
+        // Stop billing first — best-effort, never blocks the deletion.
+        if ($user->hasStripeId()) {
+            try {
+                $user->subscriptions->each(fn ($sub) => $sub->valid() ? $sub->cancelNow() : null);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        DB::transaction(function () use ($user) {
+            // Companies solely owned by this user — remove them entirely.
+            $ownedCompanyIds = $user->companies()->wherePivot('is_admin', true)->pluck('companies.id');
+            if ($ownedCompanyIds->isNotEmpty()) {
+                Company::whereIn('id', $ownedCompanyIds)->delete();
+            }
+
+            // Subscriptions have no FK cascade — clear them and their items.
+            $subIds = DB::table('subscriptions')->where('user_id', $user->id)->pluck('id');
+            if ($subIds->isNotEmpty()) {
+                DB::table('subscription_items')->whereIn('subscription_id', $subIds)->delete();
+                DB::table('subscriptions')->whereIn('id', $subIds)->delete();
+            }
+
+            // Cards (incl. soft-deleted) — cascades card_events + shared_contacts.
+            $user->businessCards()->withTrashed()->get()->each->forceDelete();
+
+            // The user — cascades company_user pivot + received shared_contacts.
+            $user->delete();
+        });
+
+        return redirect()->route('admin.users')
+            ->with('success', "Utilizador '{$name}' ({$email}) e todos os seus dados foram removidos. O email fica livre para reutilização.");
     }
 
 }

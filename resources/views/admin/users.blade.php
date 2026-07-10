@@ -152,6 +152,19 @@
                                             @endif
                                         </button>
                                     </form>
+
+                                    @unless($user->isSuperAdmin() || $user->id === auth()->id())
+                                    <button type="button" class="btn btn-icon btn-icon-danger"
+                                            title="Remover utilizador"
+                                            onclick="openDeleteUser({{ $user->id }}, @js($user->name), @js($user->email))">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                                        </svg>
+                                    </button>
+                                    @endunless
                                 </div>
                             </td>
                         </tr>
@@ -168,6 +181,42 @@
     @endif
 </div>
 
+{{-- Remover utilizador — confirmação por password --}}
+<div class="modal" id="delete-user-modal">
+    <div class="modal-backdrop" onclick="closeModal('delete-user-modal')"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Remover utilizador</h3>
+            <button type="button" class="modal-close" onclick="closeModal('delete-user-modal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="color:var(--text-secondary);font-size:14px;line-height:1.6;margin-bottom:8px;">
+                Vais remover <strong id="du-name" style="color:var(--text-primary);"></strong>
+                (<span id="du-email"></span>) e <strong style="color:var(--text-primary);">todos os seus dados</strong>
+                — cartões, estatísticas, contactos recebidos e subscrição.
+            </p>
+            <p style="color:var(--error);font-size:13px;margin-bottom:18px;">
+                Esta ação é <strong>irreversível</strong>. O email fica livre para reutilização.
+            </p>
+            <form method="POST" id="delete-user-form">
+                @csrf
+                @method('DELETE')
+                <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Confirma com a tua password de admin</label>
+                <input type="password" name="password" class="form-input" required autocomplete="current-password" placeholder="A tua password">
+                <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('delete-user-modal')">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Remover definitivamente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-icon-danger:hover { color: var(--error); border-color: var(--error); }
+    .btn-danger { background: var(--error); color: #fff; border: none; padding: 10px 18px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; font-size: 14px; }
+    .btn-danger:hover { opacity: 0.9; }
+</style>
 <style>
     .filters-form .form-row {
         display: flex;
@@ -556,6 +605,15 @@ function openModal(id) {
 function closeModal(id) {
     document.getElementById(id).classList.remove('active');
     document.body.style.overflow = '';
+}
+
+function openDeleteUser(id, name, email) {
+    var form = document.getElementById('delete-user-form');
+    form.action = '{{ url('admin/users') }}/' + id;
+    document.getElementById('du-name').textContent = name;
+    document.getElementById('du-email').textContent = email;
+    form.querySelector('input[name=password]').value = '';
+    openModal('delete-user-modal');
 }
 
 // Close modal on escape key
