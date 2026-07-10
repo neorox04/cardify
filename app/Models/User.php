@@ -107,7 +107,10 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function isCompanyAdmin(): bool
     {
-        return $this->type === 'company_admin' || $this->companies()->wherePivot('is_admin', true)->exists();
+        // Truth is ownership: a company admin actually owns a company (is_admin
+        // pivot). The `type` column can be a stale leftover from the removed
+        // invite/member flows, so it is not trusted here.
+        return $this->companies()->wherePivot('is_admin', true)->exists();
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -31,11 +32,17 @@ class UserModelTest extends TestCase
         $this->assertFalse($user->isSuperAdmin());
     }
 
-    public function test_is_company_admin_returns_true_for_company_admin_type(): void
+    public function test_is_company_admin_requires_owning_a_company(): void
     {
-        $user = User::factory()->make(['type' => 'company_admin']);
+        // A stale company_admin flag with no company is NOT a company admin.
+        $stale = User::factory()->create(['type' => 'company_admin']);
+        $this->assertFalse($stale->isCompanyAdmin());
 
-        $this->assertTrue($user->isCompanyAdmin());
+        // Owning a company (is_admin pivot) is what makes a company admin.
+        $owner   = User::factory()->create(['type' => 'company_admin']);
+        $company = Company::create(['name' => 'Acme', 'slug' => 'acme-' . uniqid(), 'is_active' => true]);
+        $company->users()->attach($owner->id, ['role' => 'admin', 'is_admin' => true]);
+        $this->assertTrue($owner->isCompanyAdmin());
     }
 
     public function test_is_company_admin_returns_false_for_regular_user(): void

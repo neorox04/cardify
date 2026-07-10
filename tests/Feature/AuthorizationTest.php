@@ -132,7 +132,9 @@ class AuthorizationTest extends TestCase
 
     public function test_company_admin_can_access_company_create(): void
     {
-        $admin = User::factory()->create(['is_active' => true, 'type' => 'company_admin']);
+        $admin   = User::factory()->create(['is_active' => true, 'type' => 'company_admin']);
+        $company = \App\Models\Company::create(['name' => 'Acme', 'slug' => 'acme-' . uniqid(), 'is_active' => true]);
+        $company->users()->attach($admin->id, ['role' => 'admin', 'is_admin' => true]);
 
         $response = $this->actingAs($admin)->get('/company/create');
 
@@ -161,6 +163,8 @@ class AuthorizationTest extends TestCase
             'is_active' => true,
             'type'      => 'company_admin',
         ]);
+        $company = \App\Models\Company::create(['name' => 'Acme', 'slug' => 'acme-' . uniqid(), 'is_active' => true]);
+        $company->users()->attach($admin->id, ['role' => 'admin', 'is_admin' => true]);
 
         $response = $this->actingAs($admin)->get('/dashboard');
 
