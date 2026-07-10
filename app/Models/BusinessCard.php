@@ -87,6 +87,29 @@ class BusinessCard extends Model
     }
 
     /**
+     * Get the interaction events for this card.
+     */
+    public function events(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CardEvent::class);
+    }
+
+    /**
+     * Record a timed interaction event (view | scan | save) with an optional
+     * channel (qr | nfc | link). Never lets logging break the request.
+     */
+    public function recordEvent(string $type, ?string $channel = null): void
+    {
+        $channel = in_array($channel, CardEvent::CHANNELS, true) ? $channel : null;
+
+        try {
+            $this->events()->create(['type' => $type, 'channel' => $channel]);
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    /**
      * Increment the views count.
      */
     public function incrementViews(): void

@@ -243,6 +243,7 @@ class BusinessCardController extends Controller
         }
 
         $businessCard->incrementViews();
+        $businessCard->recordEvent('view', request('src', 'link'));
 
         return view('business-cards.public', compact('businessCard'));
     }
@@ -293,6 +294,7 @@ class BusinessCardController extends Controller
         }
 
         $businessCard->increment('qr_scans');
+        $businessCard->recordEvent('scan', request('src', 'qr'));
         return view('business-cards.save-contact', compact('businessCard'));
     }
 
@@ -332,6 +334,7 @@ class BusinessCardController extends Controller
         }
 
         $businessCard->increment('contacts_saved');
+        $businessCard->recordEvent('save', request('src'));
         $vcard = "BEGIN:VCARD\r\n";
         $vcard .= "VERSION:3.0\r\n";
         $vcard .= "FN:{$businessCard->full_name}\r\n";

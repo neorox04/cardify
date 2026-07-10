@@ -817,6 +817,14 @@
                     </svg>
                     Cartões
                 </a>
+
+                <a href="{{ route('user.analytics') }}"
+                   class="nav-item {{ request()->routeIs('user.analytics') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M8 15l3-3 3 2 4-5"/>
+                    </svg>
+                    Analytics
+                </a>
             </div>
 
             <div class="nav-section">

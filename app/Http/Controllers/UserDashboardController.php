@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\BusinessCard;
+use App\Models\CardEvent;
 use App\Models\Company;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -23,6 +25,74 @@ class UserDashboardController extends Controller
         $totalViews = $businessCards->sum('views_count');
 
         return view('dashboards.user', compact('user', 'businessCards', 'totalViews'));
+    }
+
+    /**
+     * Personal analytics — how the user's cards are performing.
+     */
+    public function analytics(): View
+    {
+        $user    = Auth::user();
+        $cards   = $user->businessCards()->get();
+        $cardIds = $cards->pluck('id');
+
+        // ── KPIs (all-time, from cumulative counters) ──────────────────────
+        $activeCards = $cards->where('is_active', true)->count();
+        $totalViews  = (int) $cards->sum('views_count');
+        $totalScans  = (int) $cards->sum('qr_scans');
+        $totalSaves  = (int) $cards->sum('contacts_saved');
+        $conversion  = $totalScans > 0 ? round(($totalSaves / $totalScans) * 100, 1) : 0;
+
+        // ── Scan activity — last 30 days (from events) ─────────────────────
+        $now   = Carbon::now();
+        $start = $now->copy()->subDays(29)->startOfDay();
+
+        $dailyRaw = $cardIds->isEmpty() ? collect() : CardEvent::whereIn('business_card_id', $cardIds)
+            ->where('type', 'scan')
+            ->where('created_at', '>=', $start)
+            ->selectRaw('DATE(created_at) as d, COUNT(*) as c')
+            ->groupBy('d')
+            ->pluck('c', 'd');
+
+        $days = [];
+        $daily = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $day     = $now->copy()->subDays($i);
+            $days[]  = $day->format('d/m');
+            $daily[] = (int) ($dailyRaw[$day->format('Y-m-d')] ?? 0);
+        }
+        $scans30 = array_sum($daily);
+
+        // ── Channel breakdown — last 30 days (from events) ─────────────────
+        $channels = ['qr' => 0, 'nfc' => 0, 'link' => 0];
+        if ($cardIds->isNotEmpty()) {
+            $rows = CardEvent::whereIn('business_card_id', $cardIds)
+                ->where('type', 'scan')
+                ->where('created_at', '>=', $start)
+                ->selectRaw('channel, COUNT(*) as c')
+                ->groupBy('channel')
+                ->get();
+            foreach ($rows as $row) {
+                $ch = in_array($row->channel, ['qr', 'nfc', 'link'], true) ? $row->channel : 'link';
+                $channels[$ch] += (int) $row->c;
+            }
+        }
+
+        // ── Per-card breakdown ─────────────────────────────────────────────
+        $cardStats = $cards->map(fn ($c) => (object) [
+            'name'   => $c->full_name,
+            'slug'   => $c->slug,
+            'active' => (bool) $c->is_active,
+            'views'  => (int) $c->views_count,
+            'scans'  => (int) $c->qr_scans,
+            'saves'  => (int) $c->contacts_saved,
+            'conv'   => $c->qr_scans > 0 ? round(($c->contacts_saved / $c->qr_scans) * 100) : 0,
+        ])->sortByDesc('views')->values();
+
+        return view('user.analytics', compact(
+            'activeCards', 'totalViews', 'totalScans', 'totalSaves', 'conversion',
+            'days', 'daily', 'scans30', 'channels', 'cardStats'
+        ));
     }
 
     /**

@@ -118,6 +118,7 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
     // User Dashboard
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/analytics', [UserDashboardController::class, 'analytics'])->name('analytics');
         Route::get('/profile', [UserDashboardController::class, 'profile'])->name('profile');
         Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
     });
