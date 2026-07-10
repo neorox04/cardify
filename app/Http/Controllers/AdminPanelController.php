@@ -415,10 +415,50 @@ class AdminPanelController extends Controller
             });
         }
 
-        $users = $query->with(['businessCards', 'companies'])->paginate(20);
+        $users = $query->with(['businessCards', 'companies', 'subscriptions'])->paginate(20);
         $companies = Company::orderBy('name')->get();
 
         return view('admin.users', compact('users', 'companies'));
+    }
+
+    /**
+     * Admin view of a single user — profile, subscription and stats overview.
+     */
+    public function showUser(User $user): View
+    {
+        $user->load(['businessCards', 'companies', 'subscriptions']);
+
+        $cards       = $user->businessCards;
+        $ownsCompany = $user->companies->contains(fn ($c) => $c->pivot->is_admin);
+
+        // Subscription
+        $subscription = $user->subscriptions->firstWhere('type', 'default');
+        [$planKey, $mrr] = $this->subscriptionMonthlyValue(
+            $subscription->stripe_price ?? null,
+            (int) ($subscription->quantity ?? 1)
+        );
+        $planLabel = $this->planLabel($planKey, (int) ($subscription->quantity ?? 1));
+
+        // Stats overview
+        $totalViews  = (int) $cards->sum('views_count');
+        $totalScans  = (int) $cards->sum('qr_scans');
+        $totalSaves  = (int) $cards->sum('contacts_saved');
+        $conversion  = $totalScans > 0 ? round(($totalSaves / $totalScans) * 100, 1) : 0;
+        $receivedCount = $user->receivedContacts()->count();
+
+        $cardStats = $cards->map(fn ($c) => (object) [
+            'name'   => $c->full_name,
+            'slug'   => $c->slug,
+            'active' => (bool) $c->is_active,
+            'views'  => (int) $c->views_count,
+            'scans'  => (int) $c->qr_scans,
+            'saves'  => (int) $c->contacts_saved,
+        ])->sortByDesc('views')->values();
+
+        return view('admin.user-show', compact(
+            'user', 'ownsCompany', 'subscription', 'planKey', 'planLabel', 'mrr',
+            'totalViews', 'totalScans', 'totalSaves', 'conversion', 'receivedCount', 'cardStats'
+        ));
     }
 
     /**

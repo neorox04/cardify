@@ -79,6 +79,7 @@
                         <th>Utilizador</th>
                         <th>Tipo</th>
                         <th>Empresas</th>
+                        <th>Subscrição</th>
                         <th>Estado</th>
                         <th>Registado em</th>
                         <th>Ações</th>
@@ -91,7 +92,7 @@
                                 <div class="user-info">
                                     <x-avatar :name="$user->name" :photo="$user->avatar" :style="$user->avatar_style" :size="34" />
                                     <div>
-                                        <strong>{{ $user->name }}</strong>
+                                        <strong><a href="{{ route('admin.users.show', $user) }}" class="user-link">{{ $user->name }}</a></strong>
                                         <br><small style="color: var(--text-tertiary);">{{ $user->email }}</small>
                                     </div>
                                 </div>
@@ -126,6 +127,25 @@
                                         @endif
                                     </div>
                                 @endif
+                            </td>
+                            <td>
+                                @php $sub = $user->subscriptions->firstWhere('type', 'default'); @endphp
+                                @switch($sub?->stripe_status)
+                                    @case('active')
+                                        <span class="sub-badge sub-active">Ativa</span>
+                                        @break
+                                    @case('trialing')
+                                        <span class="sub-badge sub-trial">Trial</span>
+                                        @break
+                                    @case('past_due')
+                                        <span class="sub-badge sub-pastdue">Em atraso</span>
+                                        @break
+                                    @case('canceled')
+                                        <span class="sub-badge sub-none">Cancelada</span>
+                                        @break
+                                    @default
+                                        <span class="sub-badge sub-none">Sem sub</span>
+                                @endswitch
                             </td>
                             <td>
                                 <span class="status-badge {{ $user->is_active ? 'status-active' : 'status-inactive' }}">
@@ -216,6 +236,15 @@
     .btn-icon-danger:hover { color: var(--error); border-color: var(--error); }
     .btn-danger { background: var(--error); color: #fff; border: none; padding: 10px 18px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; font-size: 14px; }
     .btn-danger:hover { opacity: 0.9; }
+
+    .user-link { color: inherit; text-decoration: none; }
+    .user-link:hover { color: var(--accent, #B884FF); text-decoration: underline; }
+
+    .sub-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .sub-active   { background: rgba(52,211,153,0.12);  color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+    .sub-trial    { background: rgba(184,132,255,0.12); color: #B884FF; border: 1px solid rgba(184,132,255,0.3); }
+    .sub-pastdue  { background: rgba(245,158,11,0.12);  color: #e0a43a; border: 1px solid rgba(245,158,11,0.3); }
+    .sub-none     { background: rgba(255,255,255,0.05); color: var(--text-tertiary); border: 1px solid rgba(255,255,255,0.09); }
 </style>
 <style>
     .filters-form .form-row {

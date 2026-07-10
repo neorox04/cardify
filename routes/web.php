@@ -153,6 +153,7 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
         Route::get('/analytics', [AdminPanelController::class, 'analytics'])->name('analytics');
         Route::get('/crm', [AdminPanelController::class, 'crm'])->name('crm');
         Route::get('/users', [AdminPanelController::class, 'users'])->name('users');
+        Route::get('/users/{user}', [AdminPanelController::class, 'showUser'])->name('users.show');
         Route::delete('/users/{user}', [AdminPanelController::class, 'destroyUser'])->name('users.destroy');
         Route::get('/companies', [AdminPanelController::class, 'companies'])->name('companies');
         Route::get('/business-cards', [AdminPanelController::class, 'businessCards'])->name('business-cards');
