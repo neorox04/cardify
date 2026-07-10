@@ -12,12 +12,6 @@
         <a href="{{ route('dashboard') }}" style="font-size:13px;color:oklch(0.72 0.015 290);text-decoration:none;">← Voltar</a>
     </div>
 
-    @if(session('success'))
-        <div style="background:oklch(0.78 0.17 160/0.12);border:1px solid oklch(0.78 0.17 160/0.3);border-radius:10px;padding:12px 16px;margin-bottom:20px;color:oklch(0.78 0.17 160);font-size:13px;">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div style="background:oklch(0.19 0.015 290);border:1px solid oklch(0.28 0.018 290/0.5);border-radius:16px;overflow:hidden;">
 
         @if($invoices->isEmpty())

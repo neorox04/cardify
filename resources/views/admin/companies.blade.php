@@ -17,18 +17,6 @@
     </a>
 </div>
 
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-
-@if(session('error'))
-    <div class="alert alert-error">
-        {{ session('error') }}
-    </div>
-@endif
-
 <!-- Filtros -->
 <div class="content-section" style="margin-bottom: 24px;">
     <form method="GET" action="{{ route('admin.companies') }}" class="filters-form">

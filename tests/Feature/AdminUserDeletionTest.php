@@ -82,6 +82,20 @@ class AdminUserDeletionTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'gone@example.com']);
     }
 
+    public function test_success_message_is_shown_only_once(): void
+    {
+        $admin = $this->superAdmin();
+        [$user] = $this->targetWithData();
+
+        $response = $this->actingAs($admin)
+            ->followingRedirects()
+            ->delete("/admin/users/{$user->id}", ['password' => 'secret123']);
+
+        $response->assertStatus(200);
+        // The flash message must render exactly once (layout only, not duplicated).
+        $this->assertEquals(1, substr_count($response->getContent(), 'foram removidos'));
+    }
+
     public function test_wrong_password_does_not_delete(): void
     {
         $admin = $this->superAdmin();

@@ -22,9 +22,6 @@
         {{ session('import_success') }}
     </div>
 @endif
-@if(session('error'))
-    <div class="alert-error" style="margin-bottom:20px;">{{ session('error') }}</div>
-@endif
 @if($errors->has('csv_file'))
     <div class="alert-error" style="margin-bottom:20px;">{{ $errors->first('csv_file') }}</div>
 @endif
