@@ -639,7 +639,7 @@
                 <tr>
                     <td>
                         <div style="display:flex;align-items:center;gap:10px;">
-                            <div class="u-avatar">{{ strtoupper(substr($u->name, 0, 1)) }}</div>
+                            <x-avatar :name="$u->name" :photo="$u->avatar" :style="$u->avatar_style" :size="32" />
                             <div>
                                 <div style="font-weight:600;color:var(--text-primary);font-size:13px;">{{ $u->name }}</div>
                                 <div style="font-size:11px;color:var(--text-tertiary);">{{ $u->email }}</div>

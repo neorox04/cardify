@@ -87,10 +87,51 @@
             </div>
         </div>
 
+        <div class="form-section">
+            <h3 class="form-section-title">Avatar</h3>
+            <p style="font-size:13px;color:var(--ink-mute,#8b8b93);margin:-4px 0 16px;">
+                Escolhe o estilo do teu avatar. É usado nos teus cartões quando não tens foto carregada.
+            </p>
+            <div class="avatar-picker">
+                @foreach(\App\Support\Avatar::STYLES as $key => $label)
+                    <label class="avatar-tile {{ old('avatar_style', $user->avatar_style ?? \App\Support\Avatar::DEFAULT_STYLE) === $key ? 'selected' : '' }}">
+                        <input type="radio" name="avatar_style" value="{{ $key }}"
+                               {{ old('avatar_style', $user->avatar_style ?? \App\Support\Avatar::DEFAULT_STYLE) === $key ? 'checked' : '' }}>
+                        <span class="avatar-tile-av"><x-avatar :name="$user->name" :style="$key" :size="72" /></span>
+                        <span class="avatar-tile-label">{{ $label }}</span>
+                    </label>
+                @endforeach
+            </div>
+        </div>
+
         <div class="form-actions">
             <a href="{{ route('dashboard') }}" class="btn btn-secondary">Cancelar</a>
             <button type="submit" class="btn btn-primary">Guardar Alterações</button>
         </div>
     </form>
 </div>
+
+@push('styles')
+<style>
+    .avatar-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .avatar-tile { background: var(--bg-2, #0f1117); border: 2px solid var(--line-soft, rgba(255,255,255,0.09)); border-radius: 14px; padding: 14px 8px 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 9px; transition: all .15s; }
+    .avatar-tile:hover { border-color: rgba(184,132,255,0.45); }
+    .avatar-tile.selected { border-color: #B884FF; box-shadow: 0 0 0 3px rgba(184,132,255,0.15); }
+    .avatar-tile input { position: absolute; opacity: 0; pointer-events: none; }
+    .avatar-tile-label { font-size: 12px; font-weight: 600; color: var(--ink-dim, #c9c9d1); }
+    .avatar-tile.selected .avatar-tile-label { color: var(--ink, #fff); }
+    @media (max-width: 520px) { .avatar-picker { grid-template-columns: repeat(2, 1fr); } }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.avatar-picker input[type=radio]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            document.querySelectorAll('.avatar-tile').forEach(function (t) { t.classList.remove('selected'); });
+            input.closest('.avatar-tile').classList.add('selected');
+        });
+    });
+</script>
+@endpush
 @endsection

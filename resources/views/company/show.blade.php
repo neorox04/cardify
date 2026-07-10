@@ -252,7 +252,7 @@
                     <tr>
                         <td>
                             <div class="td-name">
-                                <div class="td-avatar">{{ strtoupper(substr($card->full_name ?? $card->title ?? '?', 0, 1)) }}</div>
+                                <x-avatar :name="$card->full_name ?? $card->title ?? '?'" :photo="$card->avatar" :style="$card->user?->avatar_style" :size="34" />
                                 <div>
                                     <div class="td-main">{{ $card->full_name ?? $card->title }}</div>
                                     <div class="td-sub">{{ $card->email }}</div>

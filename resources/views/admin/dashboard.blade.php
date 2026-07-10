@@ -159,9 +159,7 @@
                     <tr>
                         <td>
                             <div style="display:flex;align-items:center;gap:10px;">
-                                <div style="width:30px;height:30px;border-radius:50%;background:var(--accent-subtle);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">
-                                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                                </div>
+                                <x-avatar :name="$user->name" :photo="$user->avatar" :style="$user->avatar_style" :size="30" />
                                 <div>
                                     <div style="font-weight:600;font-size:14px;">{{ $user->name }}</div>
                                     <div style="font-size:12px;color:var(--text-tertiary);">{{ $user->email }}</div>

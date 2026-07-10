@@ -45,11 +45,12 @@ class UserDashboardController extends Controller
             'phone' => 'nullable|string|max:20',
             'bio' => 'nullable|string|max:500',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar_style' => ['nullable', 'string', \Illuminate\Validation\Rule::in(array_keys(\App\Support\Avatar::STYLES))],
         ]);
 
         $user = Auth::user();
-        
-        $userData = $request->only(['email', 'phone', 'bio']);
+
+        $userData = $request->only(['email', 'phone', 'bio', 'avatar_style']);
 
         if ($request->hasFile('avatar')) {
             // Handle avatar upload

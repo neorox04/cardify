@@ -54,16 +54,7 @@
 
         /* Profile */
         .profile { text-align: center; }
-        .avatar, .avatar-ph {
-            width: 96px; height: 96px; border-radius: 50%;
-            margin: 0 auto 16px; display: block; object-fit: cover;
-            border: 2px solid oklch(0.72 0.19 300 / 0.35);
-        }
-        .avatar-ph {
-            display: flex; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, var(--purple), var(--purple-deep));
-            font-size: 38px; font-weight: 600; color: #fff;
-        }
+        .avatar-wrap { width: 96px; margin: 0 auto 16px; }
         .name { font-size: 23px; font-weight: 600; letter-spacing: -0.02em; }
         .position { font-size: 14px; color: var(--ink-dim); margin-top: 4px; }
         .company {
@@ -144,11 +135,9 @@
         <div class="vcard">
 
             <div class="profile">
-                @if($businessCard->avatar)
-                    <img src="{{ asset('storage/' . $businessCard->avatar) }}" alt="{{ $businessCard->full_name }}" class="avatar">
-                @else
-                    <div class="avatar-ph">{{ strtoupper(substr($businessCard->full_name, 0, 1)) }}</div>
-                @endif
+                <div class="avatar-wrap">
+                    <x-avatar :name="$businessCard->full_name" :photo="$businessCard->avatar" :style="$businessCard->user?->avatar_style" :size="96" />
+                </div>
 
                 <h1 class="name">{{ $businessCard->full_name }}</h1>
                 @if($businessCard->position)<p class="position">{{ $businessCard->position }}</p>@endif

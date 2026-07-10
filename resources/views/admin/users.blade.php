@@ -89,9 +89,7 @@
                         <tr>
                             <td>
                                 <div class="user-info">
-                                    <div class="user-avatar-small">
-                                        {{ strtoupper(substr($user->name, 0, 1)) }}
-                                    </div>
+                                    <x-avatar :name="$user->name" :photo="$user->avatar" :style="$user->avatar_style" :size="34" />
                                     <div>
                                         <strong>{{ $user->name }}</strong>
                                         <br><small style="color: var(--text-tertiary);">{{ $user->email }}</small>

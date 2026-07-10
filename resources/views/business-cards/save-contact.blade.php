@@ -44,15 +44,7 @@
         }
         .check svg { width: 26px; height: 26px; color: var(--green); }
 
-        .avatar, .avatar-ph {
-            width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 14px; display: block; object-fit: cover;
-            border: 2px solid oklch(0.72 0.19 300 / 0.35);
-        }
-        .avatar-ph {
-            display: flex; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, var(--purple), var(--purple-deep));
-            font-size: 32px; font-weight: 600; color: #fff;
-        }
+        .avatar-wrap { width: 84px; margin: 0 auto 14px; }
         .name { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; }
         .position { font-size: 14px; color: var(--ink-dim); margin-top: 3px; }
         .company {
@@ -88,11 +80,9 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
             </div>
 
-            @if($businessCard->avatar)
-                <img src="{{ \Illuminate\Support\Facades\Storage::url($businessCard->avatar) }}" alt="{{ $businessCard->full_name }}" class="avatar">
-            @else
-                <div class="avatar-ph">{{ strtoupper(substr($businessCard->full_name, 0, 1)) }}</div>
-            @endif
+            <div class="avatar-wrap">
+                <x-avatar :name="$businessCard->full_name" :photo="$businessCard->avatar" :style="$businessCard->user?->avatar_style" :size="84" />
+            </div>
 
             <h1 class="name">{{ $businessCard->full_name }}</h1>
             @if($businessCard->position)<p class="position">{{ $businessCard->position }}</p>@endif
