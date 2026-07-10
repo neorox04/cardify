@@ -68,9 +68,11 @@ class Avatar
             $inner = '<tspan fill="white">' . e($letters) . '</tspan>';
         }
 
-        $text = '<text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" '
-              . 'font-family="Geist, Arial, sans-serif" font-weight="700" font-size="' . $fontSize . '" '
-              . 'letter-spacing="-1">' . $inner . '</text>';
+        // Vertical centering: dy≈0.34em (half the uppercase cap-height) is far
+        // more consistent across renderers than dominant-baseline="central".
+        $text = '<text x="50%" y="50%" dy="0.34em" text-anchor="middle" '
+              . 'font-family="Geist, Arial, sans-serif" font-weight="700" font-size="' . $fontSize . '">'
+              . $inner . '</text>';
 
         $ring = '<circle cx="' . $r . '" cy="' . $r . '" r="' . ($r - $ringW) . '" fill="none" '
               . 'stroke="' . self::PURPLE . '" stroke-opacity="0.22" stroke-width="' . $ringW . '"/>';
