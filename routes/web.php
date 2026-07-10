@@ -158,9 +158,7 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
         Route::get('/companies', [AdminPanelController::class, 'companies'])->name('companies');
         Route::get('/business-cards', [AdminPanelController::class, 'businessCards'])->name('business-cards');
         
-        // Company management
-        Route::get('/companies/create', [AdminPanelController::class, 'createCompany'])->name('companies.create');
-        Route::post('/companies', [AdminPanelController::class, 'storeCompany'])->name('companies.store');
+        // Company management (companies are created self-serve at registration).
         Route::delete('/companies/{company}', [AdminPanelController::class, 'destroyCompany'])->name('companies.destroy');
         
         // Status toggles

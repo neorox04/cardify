@@ -538,39 +538,6 @@ class AdminPanelController extends Controller
     }
 
     /**
-     * Show form to create a new company.
-     */
-    public function createCompany(): View
-    {
-        return view('admin.companies-create');
-    }
-
-    /**
-     * Store a new company.
-     */
-    public function storeCompany(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:companies,slug',
-            'description' => 'nullable|string',
-            'website' => 'nullable|url|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'address' => 'nullable|string|max:500',
-            'industry' => 'nullable|string|max:100',
-            'size' => 'nullable|string|max:50',
-            'founded_year' => 'nullable|integer|min:1800|max:' . date('Y'),
-        ]);
-
-        $validated['is_active'] = true;
-
-        Company::create($validated);
-
-        return redirect()->route('admin.companies')->with('success', 'Empresa criada com sucesso!');
-    }
-
-    /**
      * Delete a company.
      */
     public function destroyCompany(Company $company)
