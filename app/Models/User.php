@@ -67,6 +67,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Contacts shared back to this user by card visitors.
+     */
+    public function receivedContacts(): HasMany
+    {
+        return $this->hasMany(SharedContact::class, 'recipient_user_id');
+    }
+
+    /**
      * Get the companies associated with the user.
      */
     public function companies(): BelongsToMany

@@ -96,6 +96,38 @@ class UserDashboardController extends Controller
     }
 
     /**
+     * Contacts that visitors shared back with the user.
+     */
+    public function receivedContacts(): View
+    {
+        $contacts = Auth::user()->receivedContacts()
+            ->with('businessCard:id,full_name,slug')
+            ->latest()
+            ->paginate(30);
+
+        return view('user.received-contacts', compact('contacts'));
+    }
+
+    /**
+     * Download a received contact's vCard (recipient only, never expires).
+     */
+    public function downloadReceived(\App\Models\SharedContact $sharedContact)
+    {
+        abort_unless($sharedContact->recipient_user_id === Auth::id(), 403);
+
+        $vcard = \App\Support\VCard::build([
+            'full_name' => $sharedContact->full_name,
+            'email'     => $sharedContact->email,
+            'phone'     => $sharedContact->phone,
+        ]);
+
+        return response($vcard, 200, [
+            'Content-Type'        => 'text/vcard; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . \Illuminate\Support\Str::slug($sharedContact->full_name) . '.vcf"',
+        ]);
+    }
+
+    /**
      * Show user profile.
      */
     public function profile(): View

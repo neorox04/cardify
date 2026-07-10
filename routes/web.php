@@ -8,6 +8,7 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\CompanyDashboardController;
 use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\BusinessCardController;
+use App\Http\Controllers\ContactShareController;
 use App\Http\Controllers\WebhookController;
 
 // Stripe webhook (fora do middleware de auth)
@@ -88,6 +89,12 @@ Route::get('/card/{slug}', [BusinessCardController::class, 'publicCard'])->name(
 Route::get('/card/{businessCard}/vcard', [BusinessCardController::class, 'downloadVCard'])->name('card.vcard');
 Route::get('/card/{businessCard}/save', [BusinessCardController::class, 'saveContact'])->name('card.save');
 
+// Reciprocity — a visitor shares their contact back with the card owner
+Route::post('/card/{businessCard}/share', [ContactShareController::class, 'store'])
+    ->middleware('throttle:8,1')->name('card.share');
+Route::get('/contact/{token}', [ContactShareController::class, 'qr'])->name('contact.qr');
+Route::get('/contact/{token}/vcard', [ContactShareController::class, 'vcard'])->name('contact.vcard');
+
 // Authentication required routes
 Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
     
@@ -119,6 +126,8 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
         Route::get('/analytics', [UserDashboardController::class, 'analytics'])->name('analytics');
+        Route::get('/received-contacts', [UserDashboardController::class, 'receivedContacts'])->name('received-contacts');
+        Route::get('/received-contacts/{sharedContact}/vcard', [UserDashboardController::class, 'downloadReceived'])->name('received-contacts.vcard');
         Route::get('/profile', [UserDashboardController::class, 'profile'])->name('profile');
         Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
     });

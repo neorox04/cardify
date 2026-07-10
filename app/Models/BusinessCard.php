@@ -95,6 +95,14 @@ class BusinessCard extends Model
     }
 
     /**
+     * Contacts shared back by visitors of this card.
+     */
+    public function sharedContacts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SharedContact::class);
+    }
+
+    /**
      * Record a timed interaction event (view | scan | save) with an optional
      * channel (qr | nfc | link). Never lets logging break the request.
      */

@@ -101,13 +101,73 @@
             </a>
         </div>
 
+        <style>
+            .share-card { text-align: left; margin-top: 14px; padding: 22px 22px 20px; }
+            .share-title { font-size: 16px; font-weight: 600; }
+            .share-sub { font-size: 12.5px; color: var(--ink-mute); margin: 4px 0 16px; line-height: 1.5; }
+            .s-input { width: 100%; height: 44px; padding: 0 14px; margin-bottom: 9px; background: var(--bg-3); border: 1.5px solid var(--line-soft); border-radius: 10px; color: var(--ink); font-family: inherit; font-size: 14px; outline: none; transition: border-color .15s; }
+            .s-input::placeholder { color: var(--ink-mute); }
+            .s-input:focus { border-color: oklch(0.72 0.19 300 / 0.6); }
+            .s-err { font-size: 12px; color: oklch(0.68 0.19 22); margin: -4px 0 8px; }
+            .s-actions { display: flex; flex-direction: column; gap: 9px; margin-top: 6px; }
+            .share-done { text-align: center; }
+            .share-done .check { margin-bottom: 14px; }
+        </style>
+
+        @if(session('shared_ok') === 'email')
+            <div class="card share-done">
+                <div class="check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                </div>
+                <h1 class="name">Contacto enviado! 🎉</h1>
+                <p class="note">Enviámos o teu contacto a {{ $businessCard->full_name }}. Ficam ligados.</p>
+                <a href="{{ route('register') }}" class="btn btn-primary">
+                    Cria o teu cartão Cardifys
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+        @else
+            <div class="card share-card">
+                <div class="share-title">Partilha o teu contacto também</div>
+                <div class="share-sub">{{ $businessCard->full_name }} fica com o teu contacto e ligam-se — sem trocar números à mão.</div>
+
+                <form method="POST" action="{{ route('card.share', $businessCard) }}" id="shareForm">
+                    @csrf
+                    <input type="hidden" name="method" id="shareMethod" value="">
+                    <input class="s-input" name="full_name" placeholder="O teu nome" required value="{{ old('full_name') }}">
+                    <input class="s-input" name="phone" placeholder="Telemóvel" required value="{{ old('phone') }}">
+                    <input class="s-input" type="email" name="email" placeholder="Email" required value="{{ old('email') }}">
+                    @error('full_name')<div class="s-err">{{ $message }}</div>@enderror
+                    @error('phone')<div class="s-err">{{ $message }}</div>@enderror
+                    @error('email')<div class="s-err">{{ $message }}</div>@enderror
+
+                    <div class="s-actions">
+                        <button type="submit" class="btn btn-primary" onclick="document.getElementById('shareMethod').value='email'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            Enviar por email
+                        </button>
+                        <button type="submit" class="btn btn-ghost" onclick="document.getElementById('shareMethod').value='qr'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 21v.01M17 21h.01M21 17h.01"/></svg>
+                            QR ao vivo (5 min)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @endif
+
         <p class="powered">Criado com <a href="{{ route('home') }}">Cardifys</a></p>
     </div>
 
     <script>
-        setTimeout(function () {
+        // Auto-download the owner's contact — but not if the visitor is busy
+        // filling in the share-back form.
+        var shareForm = document.getElementById('shareForm');
+        var autoDl = setTimeout(function () {
             window.location.href = "{{ route('card.vcard', $businessCard) }}";
-        }, 1500);
+        }, 1800);
+        if (shareForm) {
+            shareForm.addEventListener('focusin', function () { clearTimeout(autoDl); });
+        }
     </script>
 </body>
 </html>
