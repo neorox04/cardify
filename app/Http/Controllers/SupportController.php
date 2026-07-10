@@ -67,10 +67,14 @@ class SupportController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    public function destroy(SupportTicket $ticket)
+    public function destroy(Request $request, SupportTicket $ticket)
     {
         $ticket->delete();
 
-        return back()->with('success', 'Pedido de suporte removido.');
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
+
+        return redirect()->route('admin.support')->with('success', 'Pedido de suporte removido.');
     }
 }

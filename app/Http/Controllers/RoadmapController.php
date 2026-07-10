@@ -24,14 +24,20 @@ class RoadmapController extends Controller
             'status'      => ['nullable', 'in:' . implode(',', array_keys(RoadmapItem::STATUSES))],
         ]);
 
-        RoadmapItem::create([
+        $item = RoadmapItem::create([
             'title'       => $data['title'],
             'description' => $data['description'] ?? null,
             'priority'    => $data['priority'] ?? 'medium',
             'status'      => $data['status'] ?? 'todo',
         ]);
 
-        return back()->with('success', 'Item adicionado ao roadmap.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'item' => $item->only('id', 'title', 'description', 'status', 'priority'),
+            ]);
+        }
+
+        return redirect()->route('admin.roadmap')->with('success', 'Item adicionado ao roadmap.');
     }
 
     public function update(Request $request, RoadmapItem $item)
@@ -50,13 +56,17 @@ class RoadmapController extends Controller
             return response()->json(['ok' => true]);
         }
 
-        return back()->with('success', 'Item atualizado.');
+        return redirect()->route('admin.roadmap')->with('success', 'Item atualizado.');
     }
 
-    public function destroy(RoadmapItem $item)
+    public function destroy(Request $request, RoadmapItem $item)
     {
         $item->delete();
 
-        return back()->with('success', 'Item removido do roadmap.');
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
+
+        return redirect()->route('admin.roadmap')->with('success', 'Item removido do roadmap.');
     }
 }

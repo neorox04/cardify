@@ -16,7 +16,7 @@
 </div>
 
 {{-- New item --}}
-<form method="POST" action="{{ route('admin.roadmap.store') }}" class="rm-add">
+<form method="POST" action="{{ route('admin.roadmap.store') }}" class="rm-add" id="rm-add-form" data-del-base="{{ url('admin/roadmap/__ID__') }}">
     @csrf
     <input type="text" name="title" class="rm-input" placeholder="Nova tarefa / ideia…" required maxlength="255">
     <select name="priority" class="rm-input rm-select">
@@ -46,12 +46,9 @@
                         @endif
                         <div class="kb-card-foot">
                             <span class="kb-pill" style="color:{{ $pr[1] }};background:{{ $pr[2] }};">{{ $pr[0] }}</span>
-                            <form method="POST" action="{{ route('admin.roadmap.destroy', $item) }}" onsubmit="return confirm('Remover este item?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="kb-del" title="Remover">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                </button>
-                            </form>
+                            <button type="button" class="kb-del" data-del-url="{{ route('admin.roadmap.destroy', $item) }}" title="Remover">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -63,6 +60,66 @@
 </div>
 
 @include('admin.partials.kanban-assets')
+
+@push('scripts')
+<script>
+    (function () {
+        var form = document.getElementById('rm-add-form');
+        if (!form || !window.KB) return;
+
+        var PR = {
+            low:    ['Baixa', '#7a7a85', 'rgba(255,255,255,0.06)'],
+            medium: ['Média', '#B884FF', 'rgba(184,132,255,0.14)'],
+            high:   ['Alta',  '#ef4444', 'rgba(239,68,68,0.14)'],
+        };
+        var TRASH = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var titleInput = form.querySelector('[name=title]');
+            if (!titleInput.value.trim()) return;
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': window.KB.CSRF, 'Accept': 'application/json' },
+                body: new FormData(form)
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.item) return;
+                var it = data.item;
+                var pr = PR[it.priority] || PR.medium;
+
+                var card = document.createElement('div');
+                card.className = 'kb-card';
+                card.dataset.id = it.id;
+                var delUrl = form.dataset.delBase.replace('__ID__', it.id);
+                card.innerHTML =
+                    '<div class="kb-card-title"></div>' +
+                    (it.description ? '<div class="kb-card-body"></div>' : '') +
+                    '<div class="kb-card-foot">' +
+                        '<span class="kb-pill" style="color:' + pr[1] + ';background:' + pr[2] + ';">' + pr[0] + '</span>' +
+                        '<button type="button" class="kb-del" data-del-url="' + delUrl + '" title="Remover">' + TRASH + '</button>' +
+                    '</div>';
+                card.querySelector('.kb-card-title').textContent = it.title;
+                if (it.description) card.querySelector('.kb-card-body').textContent = it.description;
+
+                var todo = document.querySelector('.kb-col[data-status="todo"]');
+                var list = todo.querySelector('.kb-list');
+                var empty = list.querySelector('.kb-empty');
+                if (empty) empty.remove();
+                list.insertBefore(card, list.firstChild);
+                window.KB.bindCard(card);
+                window.KB.recount(todo.closest('.kb-board'));
+
+                titleInput.value = '';
+                titleInput.focus();
+            })
+            .catch(function () {});
+        });
+    })();
+</script>
+@endpush
 
 @push('styles')
 <style>

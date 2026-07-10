@@ -26,32 +26,46 @@
 
 @push('scripts')
 <script>
-    (function () {
+    window.KB = (function () {
         var CSRF = '{{ csrf_token() }}';
         var dragId = null;
 
-        function bindCards() {
-            document.querySelectorAll('.kb-card').forEach(function (card) {
-                card.setAttribute('draggable', 'true');
-                card.addEventListener('dragstart', function (e) {
-                    dragId = card.dataset.id;
-                    card.classList.add('kb-dragging');
-                    e.dataTransfer.effectAllowed = 'move';
-                });
-                card.addEventListener('dragend', function () {
-                    dragId = null;
-                    card.classList.remove('kb-dragging');
-                });
+        function bindCard(card) {
+            if (card.dataset.kbBound) return;
+            card.dataset.kbBound = '1';
+            card.setAttribute('draggable', 'true');
+            card.addEventListener('dragstart', function (e) {
+                dragId = card.dataset.id;
+                card.classList.add('kb-dragging');
+                e.dataTransfer.effectAllowed = 'move';
             });
+            card.addEventListener('dragend', function () {
+                dragId = null;
+                card.classList.remove('kb-dragging');
+            });
+        }
+
+        function bindAll() {
+            document.querySelectorAll('.kb-card').forEach(bindCard);
         }
 
         function recount(board) {
             board.querySelectorAll('.kb-col').forEach(function (col) {
                 var badge = col.querySelector('.kb-count');
                 if (badge) badge.textContent = col.querySelectorAll('.kb-card').length;
+                var list = col.querySelector('.kb-list');
+                var hasCards = col.querySelectorAll('.kb-card').length > 0;
+                var empty = list.querySelector('.kb-empty');
+                if (!hasCards && !empty) {
+                    var e = document.createElement('div');
+                    e.className = 'kb-empty';
+                    e.textContent = 'Vazio.';
+                    list.appendChild(e);
+                }
             });
         }
 
+        // Drag between columns
         document.querySelectorAll('.kb-col').forEach(function (col) {
             var list = col.querySelector('.kb-list');
             col.addEventListener('dragover', function (e) { e.preventDefault(); col.classList.add('kb-over'); });
@@ -63,21 +77,37 @@
                 var card = document.querySelector('.kb-card[data-id="' + dragId + '"]');
                 if (!card) return;
                 var board = col.closest('.kb-board');
-                var status = col.dataset.status;
                 var empty = list.querySelector('.kb-empty');
                 if (empty) empty.remove();
                 list.appendChild(card);
                 recount(board);
-
                 fetch(board.dataset.url.replace('__ID__', dragId), {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-                    body: JSON.stringify({ status: status })
+                    body: JSON.stringify({ status: col.dataset.status })
                 }).catch(function () {});
             });
         });
 
-        bindCards();
+        // Delete (AJAX) — buttons with data-del-url, no page reload
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('.kb-del[data-del-url]');
+            if (!btn) return;
+            e.preventDefault();
+            if (!confirm('Remover este item?')) return;
+            var card = btn.closest('.kb-card');
+            var board = btn.closest('.kb-board');
+            fetch(btn.dataset.delUrl, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+            }).then(function () {
+                if (card) card.remove();
+                if (board) recount(board);
+            }).catch(function () {});
+        });
+
+        bindAll();
+        return { bindCard: bindCard, bindAll: bindAll, recount: recount, CSRF: CSRF };
     })();
 </script>
 @endpush
