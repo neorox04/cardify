@@ -33,7 +33,7 @@
                 <select name="type" class="form-input">
                     <option value="">Todos os tipos</option>
                     <option value="user" {{ request('type') === 'user' ? 'selected' : '' }}>User</option>
-                    <option value="company_admin" {{ request('type') === 'company_admin' ? 'selected' : '' }}>Company Admin</option>
+                    <option value="company" {{ request('type') === 'company' ? 'selected' : '' }}>Empresa</option>
                     <option value="super_admin" {{ request('type') === 'super_admin' ? 'selected' : '' }}>Super Admin</option>
                 </select>
             </div>
@@ -97,17 +97,15 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="type-badge type-{{ $user->type }}">
-                                    @switch($user->type)
-                                        @case('super_admin')
-                                            Super Admin
-                                            @break
-                                        @case('company_admin')
-                                            Admin Empresa
-                                            @break
-                                        @default
-                                            Utilizador
-                                    @endswitch
+                                @php $ownsCompany = $user->companies->filter(fn($c) => $c->pivot->is_admin)->isNotEmpty(); @endphp
+                                <span class="type-badge {{ $user->type === 'super_admin' ? 'type-super_admin' : ($ownsCompany ? 'type-company_admin' : 'type-user') }}">
+                                    @if($user->type === 'super_admin')
+                                        Super Admin
+                                    @elseif($ownsCompany)
+                                        Empresa
+                                    @else
+                                        Utilizador
+                                    @endif
                                 </span>
                             </td>
                             <td>

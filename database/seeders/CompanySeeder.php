@@ -111,7 +111,7 @@ class CompanySeeder extends Seeder
                     'password' => Hash::make('password123'),
                     'phone' => fake()->phoneNumber(),
                     'bio' => fake()->sentence(10),
-                    'type' => $isFirstUser ? 'company_admin' : 'user',
+                    'type' => 'user',
                     'is_active' => true,
                     'email_verified_at' => now(),
                 ]);

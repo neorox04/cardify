@@ -396,7 +396,12 @@ class AdminPanelController extends Controller
         }
 
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            if ($request->type === 'company') {
+                // "Company" is derived from owning a company, not a role.
+                $query->whereHas('companies', fn ($q) => $q->where('company_user.is_admin', true));
+            } else {
+                $query->where('type', $request->type);
+            }
         }
 
         if ($request->filled('status')) {

@@ -50,6 +50,24 @@ class AuthTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'testuser@example.com']);
     }
 
+    public function test_company_registration_creates_plain_user_who_owns_a_company(): void
+    {
+        $this->post('/register', [
+            'account_type'          => 'company',
+            'name'                  => 'Rui Dono',
+            'email'                 => 'rui@empresa.pt',
+            'password'              => 'password123',
+            'password_confirmation' => 'password123',
+            'company_name'          => 'Acme Lda',
+        ])->assertRedirect('/email/verify');
+
+        $user = User::where('email', 'rui@empresa.pt')->first();
+        // Role stays 'user' — being a company is derived from ownership.
+        $this->assertEquals('user', $user->type);
+        $this->assertTrue($user->isCompanyAdmin());
+        $this->assertDatabaseHas('companies', ['name' => 'Acme Lda']);
+    }
+
     public function test_registration_fails_with_duplicate_email(): void
     {
         User::factory()->create(['email' => 'existing@example.com']);

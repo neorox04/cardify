@@ -103,11 +103,14 @@ class AuthController extends Controller
             'company_name.required' => 'O nome da empresa é obrigatório.',
         ]);
 
+        // Only two roles exist: regular user and Cardifys super admin. Being a
+        // "company" is derived from owning a company (the is_admin pivot below),
+        // not a separate account type.
         $user = User::create([
             'name'      => $request->name,
             'email'     => $request->email,
             'password'  => Hash::make($request->password),
-            'type'      => $isCompany ? 'company_admin' : 'user',
+            'type'      => 'user',
             'is_active' => true,
         ]);
 
