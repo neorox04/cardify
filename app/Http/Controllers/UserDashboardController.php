@@ -21,9 +21,8 @@ class UserDashboardController extends Controller
         $user = Auth::user();
         $businessCards = $user->businessCards()->latest()->get();
         $totalViews = $businessCards->sum('views_count');
-        $companies = $user->companies()->get();
 
-        return view('dashboards.user', compact('user', 'businessCards', 'totalViews', 'companies'));
+        return view('dashboards.user', compact('user', 'businessCards', 'totalViews'));
     }
 
     /**
@@ -61,61 +60,5 @@ class UserDashboardController extends Controller
         $user->update($userData);
 
         return redirect()->back()->with('success', 'Perfil atualizado com sucesso!');
-    }
-
-    /**
-     * Show company details for the user.
-     */
-    public function companyShow(Company $company): View
-    {
-        $user = Auth::user();
-        
-        // Check if user belongs to this company
-        $membership = $user->companies()->where('company_id', $company->id)->first();
-        
-        if (!$membership) {
-            abort(403, 'Não pertences a esta empresa.');
-        }
-
-        $colleagues = $company->users()->where('user_id', '!=', $user->id)->get();
-        $companyCards = $company->businessCards()->with('user')->latest()->get();
-        $myRole = $membership->pivot->role;
-
-        return view('user.company-show', compact('company', 'colleagues', 'companyCards', 'myRole', 'membership'));
-    }
-
-    /**
-     * Show company colleagues.
-     */
-    public function companyColleagues(Company $company): View
-    {
-        $user = Auth::user();
-        
-        // Check if user belongs to this company
-        if (!$user->companies()->where('company_id', $company->id)->exists()) {
-            abort(403, 'Não pertences a esta empresa.');
-        }
-
-        $colleagues = $company->users()->get();
-
-        return view('user.company-colleagues', compact('company', 'colleagues'));
-    }
-
-    /**
-     * Leave a company.
-     */
-    public function leaveCompany(Company $company)
-    {
-        $user = Auth::user();
-        
-        // Check if user belongs to this company
-        if (!$user->companies()->where('company_id', $company->id)->exists()) {
-            abort(403, 'Não pertences a esta empresa.');
-        }
-
-        // Remove user from company
-        $user->companies()->detach($company->id);
-
-        return redirect()->route('user.dashboard')->with('success', "Saíste da empresa {$company->name}.");
     }
 }

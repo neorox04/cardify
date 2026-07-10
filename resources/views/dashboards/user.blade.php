@@ -41,48 +41,7 @@
             <div class="stat-label">Visualizações Totais</div>
         </div>
     </div>
-
-    <div class="stat-card">
-        <div class="stat-icon purple">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-        </div>
-        <div>
-            <div class="stat-value">{{ $companies->count() }}</div>
-            <div class="stat-label">Empresas</div>
-        </div>
-    </div>
 </div>
-
-<!-- Empresas do Utilizador -->
-@if($companies->isNotEmpty())
-<div class="content-section">
-    <div class="section-header">
-        <h2 class="section-title">As Minhas Empresas</h2>
-    </div>
-    
-    <div class="companies-grid">
-        @foreach($companies as $company)
-            <a href="{{ route('user.company.show', $company) }}" class="company-card">
-                <div class="company-avatar">
-                    {{ strtoupper(substr($company->name, 0, 2)) }}
-                </div>
-                <div class="company-info">
-                    <h3 class="company-name">{{ $company->name }}</h3>
-                    <p class="company-role">{{ $company->pivot->role }}</p>
-                    @if($company->industry)
-                        <span class="company-industry">{{ $company->industry }}</span>
-                    @endif
-                </div>
-                <svg class="company-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </a>
-        @endforeach
-    </div>
-</div>
-@endif
 
 <div class="content-section">
     <div class="section-header">

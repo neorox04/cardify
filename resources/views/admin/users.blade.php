@@ -118,12 +118,12 @@
                                 @else
                                     <div class="companies-list">
                                         @foreach($user->companies->take(2) as $company)
-                                            <a href="{{ route('admin.companies.members', $company) }}" class="company-tag" title="{{ $company->name }}">
+                                            <span class="company-tag" title="{{ $company->name }}">
                                                 {{ Str::limit($company->name, 15) }}
                                                 @if($company->pivot->is_admin)
                                                     <span class="admin-star">★</span>
                                                 @endif
-                                            </a>
+                                            </span>
                                         @endforeach
                                         @if($user->companies->count() > 2)
                                             <span class="company-tag more">+{{ $user->companies->count() - 2 }}</span>
@@ -139,11 +139,6 @@
                             <td>{{ $user->created_at->format('d/m/Y') }}</td>
                             <td>
                                 <div class="actions-group">
-                                    <button type="button" class="btn btn-icon" title="Gerir empresas" onclick="openModal('modal-{{ $user->id }}')">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                        </svg>
-                                    </button>
                                     <form method="POST" action="{{ route('admin.users.toggle-status', $user) }}" style="display: inline;">
                                         @csrf
                                         @method('PATCH')
@@ -176,89 +171,6 @@
         @endif
     @endif
 </div>
-
-<!-- Modais para gerir empresas de cada utilizador -->
-@foreach($users as $user)
-<div class="modal" id="modal-{{ $user->id }}">
-    <div class="modal-backdrop" onclick="closeModal('modal-{{ $user->id }}')"></div>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Gerir Empresas de {{ $user->name }}</h3>
-            <button type="button" class="modal-close" onclick="closeModal('modal-{{ $user->id }}')">&times;</button>
-        </div>
-        <div class="modal-body">
-            <!-- Empresas atuais -->
-            <div class="modal-section">
-                <h4>Empresas Atuais</h4>
-                @if($user->companies->isEmpty())
-                    <p class="text-muted">Este utilizador não pertence a nenhuma empresa.</p>
-                @else
-                    <div class="current-companies">
-                        @foreach($user->companies as $company)
-                            <div class="company-row">
-                                <div class="company-info-modal">
-                                    <strong>{{ $company->name }}</strong>
-                                    <span class="role-tag">{{ ucfirst($company->pivot->role) }}</span>
-                                    @if($company->pivot->is_admin)
-                                        <span class="admin-tag">Admin</span>
-                                    @endif
-                                </div>
-                                <form action="{{ route('admin.companies.members.remove', [$company, $user]) }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Remover {{ $user->name }} de {{ $company->name }}?')">
-                                        Remover
-                                    </button>
-                                </form>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-
-            <!-- Adicionar a empresa -->
-            <div class="modal-section">
-                <h4>Adicionar a Empresa</h4>
-                @php
-                    $userCompanyIds = $user->companies->pluck('id')->toArray();
-                    $availableCompanies = $companies->whereNotIn('id', $userCompanyIds);
-                @endphp
-                @if($availableCompanies->isEmpty())
-                    <p class="text-muted">Este utilizador já pertence a todas as empresas.</p>
-                @else
-                    <form action="{{ route('admin.users.add-company', $user) }}" method="POST" class="add-company-form">
-                        @csrf
-                        <div class="form-row">
-                            <div class="form-group" style="flex: 2;">
-                                <select name="company_id" class="form-input" required>
-                                    <option value="">Selecionar empresa...</option>
-                                    @foreach($availableCompanies as $company)
-                                        <option value="{{ $company->id }}">{{ $company->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <select name="role" class="form-input" required>
-                                    <option value="employee">Colaborador</option>
-                                    <option value="manager">Gestor</option>
-                                    <option value="admin">Administrador</option>
-                                </select>
-                            </div>
-                            <div class="form-group checkbox-group">
-                                <label>
-                                    <input type="checkbox" name="is_admin" value="1">
-                                    Admin da Empresa
-                                </label>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Adicionar</button>
-                        </div>
-                    </form>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
-@endforeach
 
 <style>
     .filters-form .form-row {

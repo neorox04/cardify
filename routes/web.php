@@ -8,7 +8,6 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\CompanyDashboardController;
 use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\BusinessCardController;
-use App\Http\Controllers\CompanyInviteController;
 use App\Http\Controllers\WebhookController;
 
 // Stripe webhook (fora do middleware de auth)
@@ -121,14 +120,6 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [UserDashboardController::class, 'profile'])->name('profile');
         Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
-        Route::get('/invites', [CompanyInviteController::class, 'index'])->name('invites');
-        Route::post('/invites/{invite}/accept', [CompanyInviteController::class, 'accept'])->name('invites.accept');
-        Route::post('/invites/{invite}/decline', [CompanyInviteController::class, 'decline'])->name('invites.decline');
-        
-        // User's company area
-        Route::get('/company/{company}', [UserDashboardController::class, 'companyShow'])->name('company.show');
-        Route::get('/company/{company}/colleagues', [UserDashboardController::class, 'companyColleagues'])->name('company.colleagues');
-        Route::post('/company/{company}/leave', [UserDashboardController::class, 'leaveCompany'])->name('company.leave');
     });
 
     // Business Cards
@@ -142,15 +133,8 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
         Route::get('/{company}', [CompanyDashboardController::class, 'show'])->name('show');
         Route::get('/{company}/edit', [CompanyDashboardController::class, 'edit'])->name('edit');
         Route::put('/{company}', [CompanyDashboardController::class, 'update'])->name('update');
-        Route::get('/{company}/employees', [CompanyDashboardController::class, 'employees'])->name('employees');
         Route::get('/{company}/import/template', [CompanyDashboardController::class, 'downloadTemplate'])->name('import.template');
         Route::post('/{company}/import', [CompanyDashboardController::class, 'importCards'])->name('import');
-
-        // Company invites
-        Route::get('/{company}/invites', [CompanyInviteController::class, 'create'])->name('invites');
-        Route::post('/{company}/invites', [CompanyInviteController::class, 'store'])->name('invites.store');
-        Route::delete('/invites/{invite}', [CompanyInviteController::class, 'cancel'])->name('invites.cancel');
-        Route::delete('/{company}/members/{user}', [CompanyInviteController::class, 'removeMember'])->name('members.remove');
     });
 
     // Admin Panel - for super admins only
@@ -166,20 +150,6 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
         Route::get('/companies/create', [AdminPanelController::class, 'createCompany'])->name('companies.create');
         Route::post('/companies', [AdminPanelController::class, 'storeCompany'])->name('companies.store');
         Route::delete('/companies/{company}', [AdminPanelController::class, 'destroyCompany'])->name('companies.destroy');
-        
-        // Company invites (admin can manage any company)
-        Route::get('/companies/{company}/invites', [CompanyInviteController::class, 'create'])->name('companies.invites');
-        Route::post('/companies/{company}/invites', [CompanyInviteController::class, 'store'])->name('companies.invites.store');
-        Route::delete('/invites/{invite}', [CompanyInviteController::class, 'cancel'])->name('invites.cancel');
-        Route::delete('/companies/{company}/members/{user}', [CompanyInviteController::class, 'removeMember'])->name('companies.members.remove');
-        
-        // Company members management (assign users directly)
-        Route::get('/companies/{company}/members', [AdminPanelController::class, 'companyMembers'])->name('companies.members');
-        Route::post('/companies/{company}/members', [AdminPanelController::class, 'addCompanyMember'])->name('companies.members.add');
-        Route::patch('/companies/{company}/members/{user}', [AdminPanelController::class, 'updateCompanyMember'])->name('companies.members.update');
-        
-        // User company management (from users page)
-        Route::post('/users/{user}/add-company', [AdminPanelController::class, 'addUserToCompany'])->name('users.add-company');
         
         // Status toggles
         Route::patch('/users/{user}/toggle-status', [AdminPanelController::class, 'toggleUserStatus'])->name('users.toggle-status');

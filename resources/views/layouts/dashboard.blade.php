@@ -829,20 +829,6 @@
                     </svg>
                     Perfil
                 </a>
-
-                <a href="{{ route('user.invites') }}"
-                   class="nav-item {{ request()->routeIs('user.invites') ? 'active' : '' }}">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    Convites
-                    @php
-                        $pendingInvitesCount = Auth::check() ? \App\Models\CompanyInvite::forEmail(auth()->user()->email)->pending()->count() : 0;
-                    @endphp
-                    @if($pendingInvitesCount > 0)
-                        <span class="nav-badge">{{ $pendingInvitesCount }}</span>
-                    @endif
-                </a>
             </div>
 
             @auth

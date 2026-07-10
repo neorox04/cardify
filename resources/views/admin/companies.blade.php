@@ -98,19 +98,6 @@
                             <td>{{ $company->created_at->format('d/m/Y') }}</td>
                             <td>
                                 <div class="actions-group">
-                                    <a href="{{ route('admin.companies.members', $company) }}" class="btn btn-icon" title="Gerir membros">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
-                                            <circle cx="8.5" cy="7" r="4"></circle>
-                                            <line x1="20" y1="8" x2="20" y2="14"></line>
-                                            <line x1="23" y1="11" x2="17" y2="11"></line>
-                                        </svg>
-                                    </a>
-                                    <a href="{{ route('admin.companies.invites', $company) }}" class="btn btn-icon" title="Enviar convites">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                        </svg>
-                                    </a>
                                     <form action="{{ route('admin.companies.toggle-status', $company) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('PATCH')

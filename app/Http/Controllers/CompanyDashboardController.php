@@ -93,10 +93,10 @@ class CompanyDashboardController extends Controller
 
         $user          = Auth::user();
         $businessCards = $company->businessCards()->with('user')->orderByDesc('views_count')->get();
-        $employees     = $company->users()->withPivot(['role', 'is_admin'])->get();
         $subscription  = $user->subscription('default');
         $currentSeats  = $subscription ? ($subscription->quantity ?? 0) : 0;
-        $usedSeats     = $employees->count();
+        // Each company card consumes one seat (single-account model).
+        $usedSeats     = $businessCards->count();
 
         $totalViews    = $businessCards->sum('views_count');
         $maxViews      = $businessCards->max('views_count') ?: 1;
@@ -115,7 +115,7 @@ class CompanyDashboardController extends Controller
             ->values();
 
         return view('company.show', compact(
-            'company', 'businessCards', 'employees',
+            'company', 'businessCards',
             'subscription', 'currentSeats', 'usedSeats',
             'totalViews', 'maxViews', 'topCards', 'departmentStats'
         ));
@@ -282,17 +282,5 @@ class CompanyDashboardController extends Controller
         $company->update($companyData);
 
         return redirect()->back()->with('success', 'Empresa atualizada com sucesso!');
-    }
-
-    /**
-     * Manage company employees.
-     */
-    public function employees(Company $company): View
-    {
-        $this->authorize('update', $company);
-        
-        $employees = $company->users()->withPivot(['role', 'is_admin'])->get();
-        
-        return view('company.employees', compact('company', 'employees'));
     }
 }

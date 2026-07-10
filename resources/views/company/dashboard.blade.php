@@ -115,13 +115,11 @@
                         <h3>{{ $company->name }}</h3>
                         <span class="card-badge active">Ativa</span>
                     </div>
-                    <p class="card-subtitle">{{ $company->users->count() }} colaboradores</p>
-                    <p class="card-company">{{ $company->businessCards->count() }} cartões criados</p>
-                    
+                    <p class="card-subtitle">{{ $company->businessCards->count() }} cartões</p>
+
                     <div class="card-actions">
                         <a href="{{ route('company.show', $company) }}" class="btn-link">Ver</a>
                         <a href="{{ route('company.edit', $company) }}" class="btn-link">Editar</a>
-                        <a href="{{ route('company.employees', $company) }}" class="btn-link">Colaboradores</a>
                     </div>
                 </div>
             @endforeach
