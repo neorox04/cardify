@@ -20,14 +20,20 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="full_name" class="form-label">Nome Completo *</label>
-                    <input 
-                        type="text" 
-                        id="full_name" 
-                        name="full_name" 
+                    <input
+                        type="text"
+                        id="full_name"
+                        name="full_name"
                         class="form-input @error('full_name') error @enderror"
-                        value="{{ old('full_name') }}" 
+                        value="{{ old('full_name', auth()->user()->name) }}"
+                        data-account-name="{{ auth()->user()->name }}"
                         required
+                        readonly
+                        style="opacity:0.65;cursor:not-allowed;"
                     >
+                    <div class="form-hint" id="name-hint" style="font-size:12px;color:var(--ink-mute,#8b8b93);margin-top:6px;">
+                        O nome está associado à tua conta e não pode ser alterado.
+                    </div>
                     @error('full_name')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
@@ -196,4 +202,36 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+    // Personal cards: the name is locked to the account holder. Only when a
+    // company is picked (team cards, paid per seat) may the name differ.
+    (function () {
+        var select = document.getElementById('company_id');
+        var name   = document.getElementById('full_name');
+        var hint   = document.getElementById('name-hint');
+        if (!name) return;
+
+        function sync() {
+            var isCompanyCard = select && select.value !== '';
+            if (isCompanyCard) {
+                name.removeAttribute('readonly');
+                name.style.opacity = '1';
+                name.style.cursor = 'text';
+                if (hint) hint.textContent = 'Cartão de empresa — podes definir o nome do colaborador.';
+            } else {
+                name.setAttribute('readonly', 'readonly');
+                name.value = name.dataset.accountName || name.value;
+                name.style.opacity = '0.65';
+                name.style.cursor = 'not-allowed';
+                if (hint) hint.textContent = 'O nome está associado à tua conta e não pode ser alterado.';
+            }
+        }
+
+        if (select) select.addEventListener('change', sync);
+        sync();
+    })();
+</script>
+@endpush
 @endsection

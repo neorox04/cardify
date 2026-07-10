@@ -33,6 +33,20 @@ class CardNameLockTest extends TestCase
         return $user;
     }
 
+    // ── Create form (UX lock) ─────────────────────────────────────────────
+
+    public function test_create_form_prefills_and_locks_the_name(): void
+    {
+        $user = $this->subscribedUser(['name' => 'Rui Dono']);
+
+        $response = $this->actingAs($user)->get('/business-cards/create');
+
+        $response->assertStatus(200);
+        $response->assertSee('value="Rui Dono"', false);   // prefilled
+        $response->assertSee('readonly', false);           // locked
+        $response->assertSee('associado à tua conta');     // explanatory hint
+    }
+
     // ── Create ────────────────────────────────────────────────────────────
 
     public function test_store_forces_account_name_on_personal_card(): void
