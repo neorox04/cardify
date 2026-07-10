@@ -134,6 +134,7 @@ Route::middleware(['auth', 'verified', 'active.user'])->group(function () {
         Route::get('/analytics', [UserDashboardController::class, 'analytics'])->name('analytics');
         Route::get('/received-contacts', [UserDashboardController::class, 'receivedContacts'])->name('received-contacts');
         Route::get('/received-contacts/{sharedContact}/vcard', [UserDashboardController::class, 'downloadReceived'])->name('received-contacts.vcard');
+        Route::get('/support', [SupportController::class, 'userForm'])->name('support');
         Route::get('/profile', [UserDashboardController::class, 'profile'])->name('profile');
         Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
     });

@@ -27,9 +27,9 @@
             <div class="kb-list">
                 @forelse($col as $ticket)
                     <div class="kb-card" data-id="{{ $ticket->id }}">
-                        <div class="kb-card-title">{{ $ticket->subject }}</div>
+                        <div class="kb-card-title">{{ $ticket->subject ?: \Illuminate\Support\Str::limit($ticket->message, 42) }}</div>
                         <div class="kb-card-meta">{{ $ticket->name }} · {{ $ticket->email }}</div>
-                        <div class="kb-card-body">{{ \Illuminate\Support\Str::limit($ticket->message, 160) }}</div>
+                        @if($ticket->subject)<div class="kb-card-body">{{ \Illuminate\Support\Str::limit($ticket->message, 160) }}</div>@endif
                         <div class="kb-card-foot">
                             <span class="kb-card-meta">{{ $ticket->created_at->locale('pt')->diffForHumans() }}</span>
                             <div style="display:flex;gap:6px;align-items:center;">

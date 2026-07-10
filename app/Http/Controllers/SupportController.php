@@ -17,12 +17,20 @@ class SupportController extends Controller
         return view('support.contact');
     }
 
+    /**
+     * In-dashboard support form for logged-in users.
+     */
+    public function userForm(): View
+    {
+        return view('user.support');
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
             'name'    => 'required|string|max:255',
             'email'   => 'required|email|max:255',
-            'subject' => 'required|string|max:255',
+            'subject' => 'nullable|string|max:255',
             'message' => 'required|string|max:5000',
         ]);
 
@@ -31,20 +39,20 @@ class SupportController extends Controller
         // Notify the team by email (support also lands in the admin board).
         $admins = User::where('type', 'super_admin')->pluck('email');
         if ($admins->isNotEmpty()) {
+            $subject = $ticket->subject ?: \Illuminate\Support\Str::limit($ticket->message, 50);
             $body = "Novo pedido de suporte\n\n"
-                . "De: {$ticket->name} <{$ticket->email}>\n"
-                . "Assunto: {$ticket->subject}\n\n"
+                . "De: {$ticket->name} <{$ticket->email}>\n\n"
                 . "{$ticket->message}\n";
             try {
                 Mail::raw($body, fn ($m) => $m->to($admins->all())
                     ->replyTo($ticket->email, $ticket->name)
-                    ->subject("[Suporte] {$ticket->subject}"));
+                    ->subject("[Suporte] {$subject}"));
             } catch (\Throwable $e) {
                 report($e);
             }
         }
 
-        return redirect()->route('support.contact')->with('support_sent', true);
+        return back()->with('support_sent', true);
     }
 
     // ── Admin: kanban board ───────────────────────────────────────────────

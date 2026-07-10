@@ -66,11 +66,6 @@
                         @error('email')<div class="err">{{ $message }}</div>@enderror
                     </div>
                     <div class="field">
-                        <label for="subject">Assunto</label>
-                        <input type="text" id="subject" name="subject" value="{{ old('subject') }}" required>
-                        @error('subject')<div class="err">{{ $message }}</div>@enderror
-                    </div>
-                    <div class="field">
                         <label for="message">Mensagem</label>
                         <textarea id="message" name="message" required>{{ old('message') }}</textarea>
                         @error('message')<div class="err">{{ $message }}</div>@enderror

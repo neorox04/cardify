@@ -29,12 +29,11 @@ class SupportBoardTest extends TestCase
         Mail::fake();
         $this->superAdmin(); // recipient
 
-        $this->post('/suporte', [
+        $this->from('/suporte')->post('/suporte', [
             'name'    => 'Ana Cliente',
             'email'   => 'ana@example.com',
-            'subject' => 'Não consigo criar cartão',
             'message' => 'Aparece um erro quando guardo.',
-        ])->assertRedirect(route('support.contact'))->assertSessionHas('support_sent');
+        ])->assertRedirect('/suporte')->assertSessionHas('support_sent');
 
         $this->assertDatabaseHas('support_tickets', [
             'email'  => 'ana@example.com',
@@ -42,10 +41,42 @@ class SupportBoardTest extends TestCase
         ]);
     }
 
-    public function test_submitting_validates(): void
+    public function test_submitting_validates_name_email_message(): void
     {
         $this->post('/suporte', ['name' => 'X'])
-            ->assertSessionHasErrors(['email', 'subject', 'message']);
+            ->assertSessionHasErrors(['email', 'message'])
+            ->assertSessionDoesntHaveErrors('subject');
+    }
+
+    // ── User dashboard support tab ────────────────────────────────────────
+
+    public function test_user_support_tab_prefills_account_details(): void
+    {
+        $user = User::factory()->create(['is_active' => true, 'name' => 'Sue User', 'email' => 'sue@example.com']);
+
+        $this->actingAs($user)->get('/user/support')
+            ->assertStatus(200)
+            ->assertSee('Suporte')
+            ->assertSee('value="Sue User"', false)
+            ->assertSee('value="sue@example.com"', false);
+    }
+
+    public function test_user_can_submit_from_dashboard(): void
+    {
+        $user = User::factory()->create(['is_active' => true]);
+
+        $this->actingAs($user)->from(route('user.support'))->post('/suporte', [
+            'name'    => $user->name,
+            'email'   => $user->email,
+            'message' => 'Preciso de ajuda com a subscrição.',
+        ])->assertRedirect(route('user.support'))->assertSessionHas('support_sent');
+
+        $this->assertDatabaseHas('support_tickets', ['email' => $user->email, 'status' => 'received']);
+    }
+
+    public function test_support_tab_requires_auth(): void
+    {
+        $this->get('/user/support')->assertRedirect('/login');
     }
 
     // ── Admin board ───────────────────────────────────────────────────────
