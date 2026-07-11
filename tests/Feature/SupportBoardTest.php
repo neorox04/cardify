@@ -65,7 +65,8 @@ class SupportBoardTest extends TestCase
     {
         $user = User::factory()->create(['is_active' => true]);
 
-        $this->actingAs($user)->from(route('user.support'))->post('/suporte', [
+        $this->actingAs($user)->post('/suporte', [
+            'source'  => 'dashboard',
             'name'    => $user->name,
             'email'   => $user->email,
             'message' => 'Preciso de ajuda com a subscrição.',

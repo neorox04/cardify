@@ -23,6 +23,7 @@
     @else
         <form method="POST" action="{{ route('support.store') }}" class="sup-form">
             @csrf
+            <input type="hidden" name="source" value="dashboard">
             <div class="sup-field">
                 <label for="name">Nome</label>
                 <input type="text" id="name" name="name" value="{{ old('name', auth()->user()->name) }}" required>

@@ -52,7 +52,12 @@ class SupportController extends Controller
             }
         }
 
-        return back()->with('support_sent', true);
+        // Return to the page the request came from — explicit, never home.
+        $target = $request->input('source') === 'dashboard'
+            ? redirect()->route('user.support')
+            : redirect()->route('support.contact');
+
+        return $target->with('support_sent', true);
     }
 
     // ── Admin: kanban board ───────────────────────────────────────────────

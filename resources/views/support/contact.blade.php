@@ -55,6 +55,7 @@
                 <p class="sub">Envia-nos o teu pedido e a equipa Cardifys responde-te por email.</p>
                 <form method="POST" action="{{ route('support.store') }}">
                     @csrf
+                    <input type="hidden" name="source" value="public">
                     <div class="field">
                         <label for="name">Nome</label>
                         <input type="text" id="name" name="name" value="{{ old('name', auth()->user()->name ?? '') }}" required>
