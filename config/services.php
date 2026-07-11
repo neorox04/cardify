@@ -37,8 +37,8 @@ return [
 
     'stripe' => [
         'prices' => [
-            'individual_monthly' => env('STRIPE_PRICE_INDIVIDUAL_MONTHLY', 'price_1TFgXeCcmLy5PiLsbrLtDCfP'),
-            'individual_yearly'  => env('STRIPE_PRICE_INDIVIDUAL_YEARLY', 'price_1TFgXKCcmLy5PiLs5xZdP87O'),
+            'individual_monthly' => env('STRIPE_PRICE_INDIVIDUAL_MONTHLY', 'price_1TFd0ECcmLy5PiLsyNTp0QdH'),
+            'individual_yearly'  => env('STRIPE_PRICE_INDIVIDUAL_YEARLY', 'price_1TFgErCcmLy5PiLsBEFd1ahy'),
             'company'            => env('STRIPE_PRICE_COMPANY', 'price_1TM7hJCcmLy5PiLsPioHECxJ'),
         ],
     ],
