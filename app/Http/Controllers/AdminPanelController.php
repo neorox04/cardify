@@ -99,20 +99,25 @@ class AdminPanelController extends Controller
             ? round(($churnedThisMonth / $activeAtStartOfMonth) * 100, 1)
             : 0;
 
-        // Monthly vs Annual breakdown
-        $monthlySubCount = DB::table('subscriptions')
+        // Monthly vs Annual breakdown + MRR — classify by the real price ID
+        // (same logic as the CRM). Subscription `type` is always 'default',
+        // so the plan can only be told apart by matching the Stripe price.
+        $activeSubs = DB::table('subscriptions')
             ->where('stripe_status', 'active')
-            ->where(function ($q) {
-                $q->where('type', 'like', '%monthly%')
-                  ->orWhere('type', 'like', '%mensal%')
-                  ->orWhere('stripe_price', 'like', '%month%');
-            })->count();
-        $annualSubCount = $totalActive - $monthlySubCount;
+            ->get(['stripe_price', 'quantity']);
 
-        // MRR calculation (monthly * price + annual / 12)
-        $monthlyPrice = 10; // €10/mês
-        $annualPrice = 84;  // €84/ano
-        $mrr = ($monthlySubCount * $monthlyPrice) + ($annualSubCount * ($annualPrice / 12));
+        $monthlySubCount = 0;
+        $annualSubCount  = 0;
+        $mrr = 0.0;
+        foreach ($activeSubs as $s) {
+            [$key, $monthly] = $this->subscriptionMonthlyValue($s->stripe_price, (int) ($s->quantity ?: 1));
+            $mrr += $monthly;
+            if ($key === 'individual_monthly') {
+                $monthlySubCount++;
+            } elseif ($key === 'individual_yearly') {
+                $annualSubCount++;
+            }
+        }
         $arr = $mrr * 12;
 
         // ── GROWTH CHARTS (last 12 months) ───────────────────
