@@ -213,13 +213,14 @@ class SubscriptionTest extends TestCase
         $builderMock = Mockery::mock(\Laravel\Cashier\SubscriptionBuilder::class);
         $builderMock->shouldReceive('checkout')->andReturn($this->checkoutStub('https://checkout.stripe.com/pay/cs_test_monthly'));
 
+        $price = config('services.stripe.prices.individual_monthly');
         $userMock = Mockery::mock($user)->makePartial();
         $userMock->shouldReceive('newSubscription')
-                 ->with('default', 'price_1TFgXeCcmLy5PiLsbrLtDCfP')
+                 ->with('default', $price)
                  ->andReturn($builderMock);
 
         $this->actingAs($userMock)
-             ->post('/checkout', ['price' => 'price_1TFgXeCcmLy5PiLsbrLtDCfP'])
+             ->post('/checkout', ['price' => $price])
              ->assertRedirect('https://checkout.stripe.com/pay/cs_test_monthly');
     }
 
@@ -230,13 +231,14 @@ class SubscriptionTest extends TestCase
         $builderMock = Mockery::mock(\Laravel\Cashier\SubscriptionBuilder::class);
         $builderMock->shouldReceive('checkout')->andReturn($this->checkoutStub('https://checkout.stripe.com/pay/cs_test_yearly'));
 
+        $price = config('services.stripe.prices.individual_yearly');
         $userMock = Mockery::mock($user)->makePartial();
         $userMock->shouldReceive('newSubscription')
-                 ->with('default', 'price_1TFgXKCcmLy5PiLs5xZdP87O')
+                 ->with('default', $price)
                  ->andReturn($builderMock);
 
         $this->actingAs($userMock)
-             ->post('/checkout', ['price' => 'price_1TFgXKCcmLy5PiLs5xZdP87O'])
+             ->post('/checkout', ['price' => $price])
              ->assertRedirect('https://checkout.stripe.com/pay/cs_test_yearly');
     }
 
