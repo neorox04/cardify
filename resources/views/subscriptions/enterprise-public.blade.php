@@ -337,7 +337,7 @@
         <div class="form-info">
             <h2>Vamos conversar</h2>
             <p>Para equipas com mais de 10 000 colaboradores ou para uma demonstração personalizada, entra em contacto. Respondemos em menos de 24 horas.</p>
-            <div class="contact-detail"><span>✉️</span><span>hello@cardifys.com</span></div>
+            <div class="contact-detail"><span>✉️</span><span>{{ config('mail.general_address') }}</span></div>
             <div class="contact-detail"><span>⏱️</span><span>Resposta em menos de 24h</span></div>
             <div class="contact-detail"><span>🎯</span><span>Demo personalizada incluída</span></div>
         </div>
@@ -349,7 +349,7 @@
                 <div class="alert success">✓ Mensagem enviada! Entraremos em contacto em breve.</div>
             @endif
             @if(session('enterprise_error'))
-                <div class="alert error">Erro ao enviar. Escreve-nos diretamente para hello@cardifys.com.</div>
+                <div class="alert error">Erro ao enviar. Escreve-nos diretamente para {{ config('mail.general_address') }}.</div>
             @endif
 
             <form method="POST" action="{{ route('enterprise.contact') }}">

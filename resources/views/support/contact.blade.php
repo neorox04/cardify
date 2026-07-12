@@ -75,7 +75,7 @@
                 </form>
             @endif
         </div>
-        <p class="foot">Ou escreve-nos diretamente para <a href="mailto:suporte@cardifys.com">suporte@cardifys.com</a></p>
+        <p class="foot">Ou escreve-nos diretamente para <a href="mailto:{{ config('mail.support_address') }}">{{ config('mail.support_address') }}</a></p>
     </div>
 </body>
 </html>

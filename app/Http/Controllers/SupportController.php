@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\SupportTicket;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
@@ -36,15 +35,15 @@ class SupportController extends Controller
 
         $ticket = SupportTicket::create($data + ['status' => 'received']);
 
-        // Notify the team by email (support also lands in the admin board).
-        $admins = User::where('type', 'super_admin')->pluck('email');
-        if ($admins->isNotEmpty()) {
+        // Notify the support inbox (the request also lands on the admin board).
+        $supportInbox = config('mail.support_address');
+        if ($supportInbox) {
             $subject = $ticket->subject ?: \Illuminate\Support\Str::limit($ticket->message, 50);
             $body = "Novo pedido de suporte\n\n"
                 . "De: {$ticket->name} <{$ticket->email}>\n\n"
                 . "{$ticket->message}\n";
             try {
-                Mail::raw($body, fn ($m) => $m->to($admins->all())
+                Mail::raw($body, fn ($m) => $m->to($supportInbox)
                     ->replyTo($ticket->email, $ticket->name)
                     ->subject("[Suporte] {$subject}"));
             } catch (\Throwable $e) {

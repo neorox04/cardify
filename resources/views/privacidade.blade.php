@@ -27,5 +27,5 @@
         <li>Solicitar informações sobre o tratamento dos seus dados.</li>
     </ul>
     <h2>6. Contacto</h2>
-    <p>Para questões relacionadas com privacidade, contacte-nos através do email: suporte@cardifys.com</p>
+    <p>Para questões relacionadas com privacidade, contacte-nos através do email: {{ config('mail.support_address') }}</p>
 @endsection

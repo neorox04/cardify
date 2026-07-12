@@ -17,5 +17,5 @@
     <h2>5. Alterações</h2>
     <p>Reservamo-nos o direito de alterar estes termos a qualquer momento. As alterações serão comunicadas na plataforma.</p>
     <h2>6. Contacto</h2>
-    <p>Para dúvidas sobre estes termos, contacte-nos: suporte@cardifys.com</p>
+    <p>Para dúvidas sobre estes termos, contacte-nos: {{ config('mail.support_address') }}</p>
 @endsection

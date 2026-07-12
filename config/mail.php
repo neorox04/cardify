@@ -115,4 +115,17 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Contact inboxes
+    |--------------------------------------------------------------------------
+    |
+    | Where support requests land and the address shown for general / sales
+    | enquiries. Kept out of the code so they can be swapped via env.
+    |
+    */
+
+    'support_address' => env('MAIL_SUPPORT_ADDRESS', 'support.cardifys@gmail.com'),
+    'general_address' => env('MAIL_GENERAL_ADDRESS', 'geral.cardifys@gmail.com'),
+
 ];

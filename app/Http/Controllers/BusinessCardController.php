@@ -256,7 +256,7 @@ class BusinessCardController extends Controller
         $businessCard = new BusinessCard([
             'full_name' => 'Cardifys',
             'position' => 'Cartão de Visita Digital',
-            'email' => 'hello@cardifys.com',
+            'email' => config('mail.general_address'),
             'phone' => '+351 912 345 678',
             'mobile' => '+351 912 345 678',
             'website' => 'https://cardifys.com',
@@ -309,7 +309,7 @@ class BusinessCardController extends Controller
         $vcard .= "N:;Cardifys;;;\r\n";
         $vcard .= "TITLE:Cartão de Visita Digital\r\n";
         $vcard .= "ORG:Cardifys\r\n";
-        $vcard .= "EMAIL;TYPE=WORK:hello@cardifys.com\r\n";
+        $vcard .= "EMAIL;TYPE=WORK:" . config('mail.general_address') . "\r\n";
         $vcard .= "TEL;TYPE=WORK:+351 912 345 678\r\n";
         $vcard .= "TEL;TYPE=CELL:+351 912 345 678\r\n";
         $vcard .= "URL:https://cardifys.com\r\n";

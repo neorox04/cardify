@@ -192,7 +192,7 @@ class SubscriptionController extends Controller
                 . "Mensagem: " . ($data['message'] ?? '—');
 
             Mail::raw($body, function ($msg) use ($data) {
-                $msg->to('hello@cardifys.com')
+                $msg->to(config('mail.general_address'))
                     ->replyTo($data['email'], $data['name'])
                     ->subject("Demo Empresas — {$data['company']}");
             });

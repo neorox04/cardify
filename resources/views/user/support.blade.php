@@ -40,7 +40,7 @@
                 @error('message')<div class="sup-err">{{ $message }}</div>@enderror
             </div>
             <button type="submit" class="sup-btn">Enviar pedido</button>
-            <p class="sup-hint">Ou escreve-nos diretamente para <a href="mailto:suporte@cardifys.com">suporte@cardifys.com</a></p>
+            <p class="sup-hint">Ou escreve-nos diretamente para <a href="mailto:{{ config('mail.support_address') }}">{{ config('mail.support_address') }}</a></p>
         </form>
     @endif
 </div>
