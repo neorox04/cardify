@@ -51,9 +51,11 @@ class RoadmapController extends Controller
 
         $item->update($data);
 
-        // Status-only updates come from drag-and-drop (AJAX).
+        // Drag (status) and edit (title/description/priority) both come via AJAX.
         if ($request->expectsJson() || ($request->has('status') && $request->keys() === ['status'])) {
-            return response()->json(['ok' => true]);
+            return response()->json([
+                'item' => $item->only('id', 'title', 'description', 'status', 'priority'),
+            ]);
         }
 
         return redirect()->route('admin.roadmap')->with('success', 'Item atualizado.');

@@ -57,6 +57,27 @@ class RoadmapTest extends TestCase
           ->assertJsonPath('item.status', 'todo');
     }
 
+    public function test_can_edit_title_description_and_priority(): void
+    {
+        $admin = $this->superAdmin();
+        $item  = RoadmapItem::create(['title' => 'Antigo', 'status' => 'doing', 'priority' => 'low']);
+
+        $this->actingAs($admin)->patchJson("/admin/roadmap/{$item->id}", [
+            'title'       => 'Título novo',
+            'description' => 'Com mais detalhe agora.',
+            'priority'    => 'high',
+        ])->assertStatus(200)
+          ->assertJsonPath('item.title', 'Título novo')
+          ->assertJsonPath('item.priority', 'high');
+
+        $fresh = $item->fresh();
+        $this->assertEquals('Título novo', $fresh->title);
+        $this->assertEquals('Com mais detalhe agora.', $fresh->description);
+        $this->assertEquals('high', $fresh->priority);
+        // Editing must not move the card between columns.
+        $this->assertEquals('doing', $fresh->status);
+    }
+
     public function test_status_updates_via_drag(): void
     {
         $admin = $this->superAdmin();
@@ -64,7 +85,7 @@ class RoadmapTest extends TestCase
 
         $this->actingAs($admin)
             ->patchJson("/admin/roadmap/{$item->id}", ['status' => 'done'])
-            ->assertStatus(200)->assertJson(['ok' => true]);
+            ->assertStatus(200)->assertJsonPath('item.status', 'done');
 
         $this->assertEquals('done', $item->fresh()->status);
     }
