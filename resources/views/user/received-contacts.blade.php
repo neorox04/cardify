@@ -8,7 +8,15 @@
         <h1 class="page-title">Contactos recebidos</h1>
         <p class="page-subtitle">Pessoas que retribuíram o contacto ao ler os teus cartões</p>
     </div>
-    <span class="rc-count">{{ $contacts->total() }}</span>
+    <div class="rc-head-right">
+        <span class="rc-count">{{ $contacts->total() }}</span>
+        @if($contacts->total())
+            <a href="{{ route('user.received-contacts.export') }}" class="rc-export">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exportar CSV
+            </a>
+        @endif
+    </div>
 </div>
 
 @if($contacts->count())
@@ -59,6 +67,9 @@
 <style>
     .rc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
     .rc-count { font-size: 13px; font-weight: 600; color: var(--purple, oklch(0.72 0.19 300)); background: oklch(0.72 0.19 300 / 0.12); border: 1px solid oklch(0.72 0.19 300 / 0.25); padding: 5px 13px; border-radius: 999px; }
+    .rc-head-right { display: flex; align-items: center; gap: 12px; }
+    .rc-export { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: #fff; text-decoration: none; background: linear-gradient(135deg, oklch(0.75 0.19 300), oklch(0.6 0.19 300)); padding: 8px 15px; border-radius: 10px; box-shadow: 0 6px 18px oklch(0.72 0.19 300 / 0.3); transition: transform .15s; }
+    .rc-export:hover { transform: translateY(-1px); }
     .rc-panel { background: var(--bg-2, #16181f); border: 1px solid var(--line-soft, rgba(255,255,255,0.08)); border-radius: 16px; padding: 8px 4px; }
     .rc-table { width: 100%; border-collapse: collapse; }
     .rc-table th { text-align: left; font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-mute, #7a7a85); padding: 12px 16px 10px; }

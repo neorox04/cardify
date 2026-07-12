@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UserDashboardController extends Controller
 {
@@ -124,6 +125,50 @@ class UserDashboardController extends Controller
         return response($vcard, 200, [
             'Content-Type'        => 'text/vcard; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . \Illuminate\Support\Str::slug($sharedContact->full_name) . '.vcf"',
+        ]);
+    }
+
+    /**
+     * Export every received contact as a CSV ready to import into any CRM
+     * (HubSpot, Pipedrive, Salesforce, Zoho, Notion, Google Contacts…).
+     * Standard column headers keep the CRM's import mapping automatic.
+     */
+    public function exportReceivedContacts(): StreamedResponse
+    {
+        $user     = Auth::user();
+        $filename = 'cardifys-contactos-' . now()->format('Y-m-d') . '.csv';
+
+        return response()->streamDownload(function () use ($user) {
+            $out = fopen('php://output', 'w');
+            // UTF-8 BOM so Excel opens accented names correctly.
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, ['first_name', 'last_name', 'email', 'phone', 'source', 'channel', 'captured_at']);
+
+            $user->receivedContacts()
+                ->with('businessCard:id,full_name')
+                ->latest()
+                ->chunk(500, function ($chunk) use ($out) {
+                    foreach ($chunk as $c) {
+                        $name  = trim((string) $c->full_name);
+                        $space = mb_strrpos($name, ' ');
+                        $first = $space === false ? $name : mb_substr($name, 0, $space);
+                        $last  = $space === false ? ''    : mb_substr($name, $space + 1);
+
+                        fputcsv($out, [
+                            $first,
+                            $last,
+                            $c->email,
+                            $c->phone,
+                            $c->businessCard->full_name ?? 'Cardifys',
+                            $c->method === 'qr' ? 'QR' : 'Email',
+                            optional($c->created_at)->format('Y-m-d H:i:s'),
+                        ]);
+                    }
+                });
+
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 
