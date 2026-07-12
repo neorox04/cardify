@@ -5,7 +5,7 @@
 @section('content')
 @php
     $colColors = ['todo' => '#7a7a85', 'doing' => '#B884FF', 'done' => '#34d399'];
-    $prColors = ['low' => ['Baixa', '#7a7a85', 'rgba(255,255,255,0.06)'], 'medium' => ['Média', '#B884FF', 'rgba(184,132,255,0.14)'], 'high' => ['Alta', '#ef4444', 'rgba(239,68,68,0.14)']];
+    $prColors = ['low' => ['Baixa', '#34d399', 'rgba(52,211,153,0.14)'], 'medium' => ['Média', '#eab308', 'rgba(234,179,8,0.14)'], 'high' => ['Alta', '#ef4444', 'rgba(239,68,68,0.14)']];
 @endphp
 
 <div class="dashboard-header">
@@ -102,8 +102,8 @@
         if (!window.KB) return;
 
         var PR = {
-            low:    ['Baixa', '#7a7a85', 'rgba(255,255,255,0.06)'],
-            medium: ['Média', '#B884FF', 'rgba(184,132,255,0.14)'],
+            low:    ['Baixa', '#34d399', 'rgba(52,211,153,0.14)'],
+            medium: ['Média', '#eab308', 'rgba(234,179,8,0.14)'],
             high:   ['Alta',  '#ef4444', 'rgba(239,68,68,0.14)'],
         };
         var DEL_BASE = '{{ url('admin/roadmap/__ID__') }}';
