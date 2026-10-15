@@ -100,6 +100,6 @@ on the homepage). Communicate with the founder in Portuguese.
   (people who scanned a card). `privacidade.blade.php` / `termos.blade.php` are
   thin and should be expanded (collection, legal basis, retention, erasure,
   Stripe as processor).
-- **Hardening**: no error tracking (add Sentry, since `APP_DEBUG=false` hides
-  errors), automated DB backups, and a short deploy runbook (README is the
-  Laravel default).
+- **Hardening**: Sentry is installed and wired into the exception handler
+  (`bootstrap/app.php`) — inactive until `SENTRY_LARAVEL_DSN` is set in prod.
+  A deploy runbook lives at `docs/DEPLOY.md`. Still open: automated DB backups.

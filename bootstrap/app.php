@@ -25,5 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Report unhandled exceptions to Sentry. No-op when SENTRY_LARAVEL_DSN
+        // is unset (dev/test), so this is safe everywhere.
+        \Sentry\Laravel\Integration::handles($exceptions);
     })->create();

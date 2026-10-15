@@ -10,7 +10,8 @@
         "laravel/cashier": "^16.5",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "resend/resend-php": "^1.0"
+        "resend/resend-php": "^1.0",
+        "sentry/sentry-laravel": "^4.29"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
