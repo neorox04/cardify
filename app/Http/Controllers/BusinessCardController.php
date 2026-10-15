@@ -16,6 +16,9 @@ class BusinessCardController extends Controller
 {
     use AuthorizesRequests;
 
+    /** Max personal cards on the individual plan (company cards are capped by seats). */
+    private const PERSONAL_CARD_LIMIT = 5;
+
     /**
      * Display a listing of the resource.
      */
@@ -112,6 +115,12 @@ class BusinessCardController extends Controller
             }
             $businessCardData['full_name'] = $request->input('full_name') ?: Auth::user()->name;
         } else {
+            // Personal plan is capped at PERSONAL_CARD_LIMIT cards.
+            $personalCount = Auth::user()->businessCards()->whereNull('company_id')->count();
+            if ($personalCount >= self::PERSONAL_CARD_LIMIT) {
+                return redirect()->route('business-cards.index')->with('error',
+                    'Atingiste o limite de ' . self::PERSONAL_CARD_LIMIT . ' cartões do plano individual.');
+            }
             $businessCardData['full_name'] = Auth::user()->name;
         }
 

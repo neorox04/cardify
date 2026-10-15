@@ -41,6 +41,14 @@ on the homepage). Communicate with the founder in Portuguese.
 - **Subscription gating**: creating a card requires `subscribed('default')`;
   public card display requires `BusinessCard::ownerHasActiveSubscription()`.
   (Closing this abuse hole was deliberate — keep both checks in place.)
+- **Free trial**: individual plans (monthly/yearly) get a **7-day trial, card
+  required upfront** (`->trialDays(7)` in `SubscriptionController::checkout`).
+  The sub sits in `trialing` (Cashier treats it as active, so gating/cards work
+  unchanged). Company plans have no trial. Marketing copy may say "7 dias grátis"
+  but **not** "sem cartão" (a card is required).
+- **Card limits**: the individual plan is capped at **5 personal cards**
+  (`BusinessCardController::PERSONAL_CARD_LIMIT`); company cards are capped by
+  paid seats instead.
 - **Plans**: individual monthly, individual yearly, company (per-seat). Price IDs
   come from `config('services.stripe.prices.*)`.
 - **Stripe webhook**: `WebhookController` extends Cashier's (signature verified

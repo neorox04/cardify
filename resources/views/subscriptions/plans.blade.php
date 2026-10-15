@@ -378,6 +378,12 @@
             gap: 8px;
             margin-top: auto;
         }
+        .plan-trial-note {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 12.5px;
+            color: var(--ink-mute, #7a7a85);
+        }
         .plan-cta-primary {
             background: var(--purple);
             color: oklch(0.12 0.01 290);
@@ -628,6 +634,9 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </a>
             @endauth
+            @if(!auth()->check() || !auth()->user()->subscribed('default'))
+                <p class="plan-trial-note">7 dias grátis · cancela quando quiseres</p>
+            @endif
         </div>
 
         <!-- Empresas -->

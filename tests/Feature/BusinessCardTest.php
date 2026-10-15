@@ -105,6 +105,42 @@ class BusinessCardTest extends TestCase
         ]);
     }
 
+    public function test_personal_cards_are_capped_at_five(): void
+    {
+        $user = $this->subscribedUser();
+        for ($i = 0; $i < 5; $i++) {
+            $this->makeCard($user);
+        }
+
+        $response = $this->actingAs($user)->post('/business-cards', [
+            'email' => 'sexto@example.com',
+            'theme' => 'default',
+        ]);
+
+        $response->assertRedirect(route('business-cards.index'));
+        $response->assertSessionHas('error');
+        // The 6th card was not created.
+        $this->assertDatabaseMissing('business_cards', ['email' => 'sexto@example.com']);
+        $this->assertEquals(5, $user->businessCards()->whereNull('company_id')->count());
+    }
+
+    public function test_fifth_personal_card_is_allowed(): void
+    {
+        $user = $this->subscribedUser();
+        for ($i = 0; $i < 4; $i++) {
+            $this->makeCard($user);
+        }
+
+        $response = $this->actingAs($user)->post('/business-cards', [
+            'email' => 'quinto@example.com',
+            'theme' => 'default',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('business_cards', ['email' => 'quinto@example.com']);
+        $this->assertEquals(5, $user->businessCards()->whereNull('company_id')->count());
+    }
+
     public function test_store_fails_without_email(): void
     {
         $user = $this->subscribedUser();
