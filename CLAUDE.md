@@ -96,10 +96,12 @@ on the homepage). Communicate with the founder in Portuguese.
   with SPF/DKIM. **Mail is now queued** (all Mailables implement `ShouldQueue`),
   so production MUST run a queue worker (`php artisan queue:work`, e.g. under
   supervisor) or no email is ever sent.
-- **Legal (RGPD)**: `shared_contacts` stores personal data of non-users
-  (people who scanned a card). `privacidade.blade.php` / `termos.blade.php` are
-  thin and should be expanded (collection, legal basis, retention, erasure,
-  Stripe as processor).
+- **Legal (RGPD)**: `privacidade.blade.php` / `termos.blade.php` are now proper
+  RGPD/consumer-aware drafts (controller identity, data categories incl. the
+  reciprocity-loop third parties, legal bases, processors, retention, data
+  rights, CNPD). **Placeholders `[Nome legal da entidade]` / `[morada]` /
+  `[NIF]` / `[comarca]` must be filled in**, and a lawyer should review before
+  launch.
 - **Hardening**: Sentry is installed and wired into the exception handler
   (`bootstrap/app.php`) — inactive until `SENTRY_LARAVEL_DSN` is set in prod.
   A deploy runbook lives at `docs/DEPLOY.md`. Still open: automated DB backups.
