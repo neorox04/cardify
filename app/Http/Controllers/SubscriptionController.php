@@ -72,6 +72,12 @@ class SubscriptionController extends Controller
 
         if ($price === self::priceCompany()) {
             $subscription->quantity($seats);
+        } else {
+            // Individual plans get a 7-day free trial. The card is collected
+            // upfront at checkout but only charged when the trial ends — the
+            // subscription sits in `trialing`, which Cashier treats as active,
+            // so the user's cards go live immediately.
+            $subscription->trialDays(7);
         }
 
         return redirect($subscription->checkout($checkoutOptions)->url);

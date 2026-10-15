@@ -211,6 +211,7 @@ class SubscriptionTest extends TestCase
         $user = $this->verifiedUser();
 
         $builderMock = Mockery::mock(\Laravel\Cashier\SubscriptionBuilder::class);
+        $builderMock->shouldReceive('trialDays')->with(7)->once()->andReturnSelf();
         $builderMock->shouldReceive('checkout')->andReturn($this->checkoutStub('https://checkout.stripe.com/pay/cs_test_monthly'));
 
         $price = config('services.stripe.prices.individual_monthly');
@@ -229,6 +230,7 @@ class SubscriptionTest extends TestCase
         $user = $this->verifiedUser();
 
         $builderMock = Mockery::mock(\Laravel\Cashier\SubscriptionBuilder::class);
+        $builderMock->shouldReceive('trialDays')->with(7)->once()->andReturnSelf();
         $builderMock->shouldReceive('checkout')->andReturn($this->checkoutStub('https://checkout.stripe.com/pay/cs_test_yearly'));
 
         $price = config('services.stripe.prices.individual_yearly');
