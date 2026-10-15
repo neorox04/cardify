@@ -503,7 +503,7 @@ class SubscriptionTest extends TestCase
             'data' => ['object' => ['customer' => 'cus_test_onboarding']],
         ]);
 
-        Mail::assertSent(\App\Mail\OnboardingEmail::class, fn ($m) => $m->hasTo($user->email));
+        Mail::assertQueued(\App\Mail\OnboardingEmail::class, fn ($m) => $m->hasTo($user->email));
     }
 
     public function test_webhook_sends_exactly_one_email_per_checkout(): void
@@ -522,7 +522,7 @@ class SubscriptionTest extends TestCase
             'data' => ['object' => ['customer' => 'cus_test_single_email']],
         ]);
 
-        Mail::assertSentCount(1);
+        Mail::assertQueuedCount(1);
     }
 
     public function test_webhook_skips_email_when_customer_id_missing(): void
@@ -576,7 +576,7 @@ class SubscriptionTest extends TestCase
             'data' => ['object' => ['customer' => 'cus_user_b']],
         ]);
 
-        Mail::assertSent(\App\Mail\OnboardingEmail::class, fn ($m) => $m->hasTo($userB->email));
-        Mail::assertNotSent(\App\Mail\OnboardingEmail::class, fn ($m) => $m->hasTo($userA->email));
+        Mail::assertQueued(\App\Mail\OnboardingEmail::class, fn ($m) => $m->hasTo($userB->email));
+        Mail::assertNotQueued(\App\Mail\OnboardingEmail::class, fn ($m) => $m->hasTo($userA->email));
     }
 }

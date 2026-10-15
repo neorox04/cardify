@@ -61,7 +61,7 @@ class ContactShareTest extends TestCase
             'full_name'         => 'Ana Visitante',
             'method'            => 'email',
         ]);
-        Mail::assertSent(SharedContactEmail::class, fn ($m) => $m->hasTo('owner@example.com'));
+        Mail::assertQueued(SharedContactEmail::class, fn ($m) => $m->hasTo('owner@example.com'));
     }
 
     public function test_share_by_qr_sets_expiry_and_redirects_to_qr(): void

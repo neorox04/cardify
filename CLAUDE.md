@@ -92,9 +92,10 @@ on the homepage). Communicate with the founder in Portuguese.
 ## Launch-readiness notes (open items, as of this writing)
 - **Blockers (config/ops, not product code)**: set production `.env`
   (`APP_ENV=production`, `APP_DEBUG=false`, real DB, live Stripe keys +
-  registered webhook secret); mailables are **not** `ShouldQueue` yet, so mail
-  sends synchronously (risky inside the Stripe webhook) — queue them and run a
-  worker; move off gmail SMTP to a transactional provider with SPF/DKIM.
+  registered webhook secret); move off gmail SMTP to a transactional provider
+  with SPF/DKIM. **Mail is now queued** (all Mailables implement `ShouldQueue`),
+  so production MUST run a queue worker (`php artisan queue:work`, e.g. under
+  supervisor) or no email is ever sent.
 - **Legal (RGPD)**: `shared_contacts` stores personal data of non-users
   (people who scanned a card). `privacidade.blade.php` / `termos.blade.php` are
   thin and should be expanded (collection, legal basis, retention, erasure,
